@@ -185,12 +185,38 @@
       <el-button @click="updateRepair()">添加</el-button>
     </el-dialog>
     <el-dialog title="水表信息" :visible.sync="waterMeterDialog">
-      {{ waterMeterInfo }}
+      <!-- {{ waterMeterInfo }}  -->
+      <div
+        v-for="waterMeterInfoText in waterMeterInfo"
+        :key="waterMeterInfoText"
+      >
+        {{ waterMeterInfoText }}
+      </div>
       <div class="waterMeterDialog">
-        <el-input class="dialogInput" placeholder="缴费号"> </el-input>
-        <el-input class="dialogInput" placeholder="户号"> </el-input>
-        <el-input class="dialogInput" placeholder="户名"> </el-input>
-        <el-input class="dialogInput" placeholder="状态"> </el-input>
+        <el-input
+          class="dialogInput"
+          v-model="waterMeterForm.paymentNumber"
+          placeholder="缴费号"
+        >
+        </el-input>
+        <el-input
+          class="dialogInput"
+          v-model="waterMeterForm.accountNumber"
+          placeholder="户号"
+        >
+        </el-input>
+        <el-input
+          class="dialogInput"
+          v-model="waterMeterForm.accountName"
+          placeholder="户名"
+        >
+        </el-input>
+        <el-input
+          class="dialogInput"
+          v-model="waterMeterForm.status"
+          placeholder="状态"
+        >
+        </el-input>
         <el-button type="primary" @click="updateWaterMeter()">
           新增水表信息
         </el-button>
@@ -371,13 +397,43 @@ export default class SearchAll extends Vue {
   }
 
   public async updateWaterMeter(): Promise<void> {
-    const res = await this["axios"].post(`Tygs/updateWaterMeter`, {
+    let waterMeterInfo: string | Record<string, string>[] = this.waterMeterInfo;
+    console.log(waterMeterInfo);
+    if (this.waterMeterInfo === "") {
+      console.log(222);
+      waterMeterInfo = [];
+      waterMeterInfo.push({
+        ...this.waterMeterForm,
+        time: new Date().toLocaleString(),
+      });
+      console.log(waterMeterInfo);
+    } else {
+      console.log(222);
+      // console.log(this.repairInfo);
+      const waterMeterInfoArr =
+        (this.waterMeterInfo as any) instanceof Array
+          ? this.waterMeterInfo
+          : JSON.parse(this.waterMeterInfo);
+      waterMeterInfoArr.push({
+        ...this.waterMeterForm,
+        time: new Date().toLocaleString(),
+      });
+    }
+
+    // console.log(repairInfoArr);
+    const res = await this["axios"].post(`Tygs/updateWaterMeterInfo`, {
       id: this.waterMeterId,
-      ...this.waterMeterForm,
+      waterMeterInfo: JSON.stringify(waterMeterInfo),
     });
+
     console.log(res);
     if (res.data.code === 0) {
-      this.waterMeterDialog = false;
+      this.waterMeterForm = {
+        paymentNumber: "", //缴费号
+        accountNumber: "", //户号
+        accountName: "", //户名
+        status: "", //状态
+      };
     }
   }
 }
