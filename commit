@@ -1,0 +1,31 @@
+#!/bin/bash
+sign=true
+message="some changes"
+for i in $*
+do
+  index=$[index+1]
+  if [ $i = "-ns" ]
+  then
+    sign=false
+  fi
+  if [ $i = "-m" ]
+  then
+    #将-m后所有参数作为commit信息,除了-m本身
+    message=${@:$index:$#} # ${@:$index:$#}意思是从第index个参数开始，到最后一个参数结束
+    message=${message//-m/} # ${message//-m/} 意思是将-m替换为空
+    #如果有多个-m参数，则只取第一个
+    break
+    #如果没有-m参数，则使用默认commit信息    
+  fi
+done
+
+echo "commit message: $message"
+
+git add .
+if [ $sign = true ]
+then
+  git commit -s -m "$message"
+else
+  git commit -m "$message"
+fi
+git push
