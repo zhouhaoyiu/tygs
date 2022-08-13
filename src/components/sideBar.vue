@@ -12,7 +12,7 @@
         :key="button.name"
       >
         <button
-          :class="getActive(button.path,button.children) ? 'active' : ''"
+          :class="getActive(button.path, button.children) ? 'active' : ''"
           @click="emitGoPage(button.path, buttonIndex)"
           class="button-inside"
         >
@@ -24,12 +24,12 @@
         </button>
         <div
           style="display: flex; flex-direction: column"
-          v-if="index === buttonIndex"
+          v-if="getChildrenListShow(button)"
         >
           <button
             @click="emitGoChildPage(childrenBtn.path, childrenBtnIndex)"
             class="button-child-inside"
-            :class="childrenIndex === childrenBtnIndex ? 'active' : ''"
+            :class="getChildActive(childrenBtn.path) ? 'active' : ''"
             v-for="(childrenBtn, childrenBtnIndex) in button.children"
             :key="childrenBtnIndex"
           >
@@ -107,7 +107,7 @@ export default class SideBar extends Vue {
     },
     {
       name: "录入",
-      path: "inputInfor",
+      path: "InputInfor",
       role: 1,
     },
   ];
@@ -165,10 +165,26 @@ export default class SideBar extends Vue {
     });
   }
   // 根据当前url来判断是否需要高亮显示按钮
-  public getActive(path:string,children: btn[] | undefined){
-    console.log(path);
-    console.log(this.routePath);
-    return this.routePath === path || (children && children.some(child => child.path === this.routePath));
+  public getActive(path: string, children: btn[] | undefined) {
+    // console.log(path);
+    // console.log(this.routePath);
+    return (
+      this.routePath === path ||
+      (children && children.some((child) => child.path === this.routePath))
+    );
+  }
+
+  // 根据当前url来判断是否需要显示子按钮
+  public getChildrenListShow(button: btn): boolean {
+    return (
+      button.children &&
+      button.children.some((child) => child.path === this.routePath) || false
+    );
+  }
+
+  // 根据当前url来判断是否需要高亮显示子按钮
+  public getChildActive(path: string): boolean {
+    return this.routePath === path;
   }
 
   // mounted(): void {

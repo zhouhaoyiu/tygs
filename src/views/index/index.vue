@@ -2,7 +2,12 @@
   <div class="page">
     <Title>首页</Title>
     <div class="cardContent">
-      <div class="card" v-for="card in cardArr" :key="card.title">
+      <div
+        @click="goPage(card.path)"
+        class="card"
+        v-for="card in cardArr"
+        :key="card.title"
+      >
         {{ card.title }}
       </div>
     </div>
@@ -49,6 +54,10 @@ export default class homeIndex extends Vue {
       path: "/InputInfor",
     },
   ];
+
+  public goPage(path: string) {
+    this.$router.push("/home" + path);
+  }
 }
 </script>
 
@@ -74,6 +83,13 @@ export default class homeIndex extends Vue {
       cursor: pointer;
       background: var(--primary-color);
       color: white;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    // 点击时候的效果
+    .card:active {
+      transform: scale(0.95);
     }
   }
 }
