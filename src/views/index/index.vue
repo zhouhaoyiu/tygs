@@ -1,6 +1,11 @@
 <template>
   <div class="page">
     <Title>首页</Title>
+    <div class="cardContent">
+      <div class="card" v-for="card in cardArr" :key="card.title">
+        {{ card.title }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -13,13 +18,63 @@ import Title from "../../components/title.vue";
     Title,
   },
 })
-export default class homeIndex extends Vue {}
+export default class homeIndex extends Vue {
+  public cardArr: Record<string, string>[] = [
+    {
+      title: "查询全部",
+      path: "/searchAll",
+    },
+    {
+      title: "表井",
+      path: "/searchWaterMeterWell",
+    },
+    {
+      title: "水表间",
+      path: "/searchWaterMeterRoom",
+    },
+    {
+      title: "消防栓",
+      path: "/searchFireHydrant",
+    },
+    {
+      title: "阀门井",
+      path: "/searchValueWall",
+    },
+    {
+      title: "卡片",
+      path: "/card",
+    },
+    {
+      title: "录入",
+      path: "/InputInfor",
+    },
+  ];
+}
 </script>
 
 <style lang="scss">
 .page {
   .name {
     font-size: 48px;
+  }
+  .cardContent {
+    display: flex;
+    flex-wrap: wrap;
+    // justify-content: center;
+    align-items: center;
+    .card {
+      height: 55px;
+      width: 30%;
+      margin: 7px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--primary-color);
+      border-radius: 5px;
+      cursor: pointer;
+      background: var(--primary-color);
+      color: white;
+    }
   }
 }
 </style>

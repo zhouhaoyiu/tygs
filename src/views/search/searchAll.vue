@@ -184,14 +184,57 @@
       <el-input v-model="addRepairText" />
       <el-button @click="updateRepair()">添加</el-button>
     </el-dialog>
-    <el-dialog title="水表信息" :visible.sync="waterMeterDialog">
+    <el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
       <!-- {{ waterMeterInfo }}  -->
-      <div
-        v-for="waterMeterInfoText in waterMeterInfo"
-        :key="waterMeterInfoText"
+      <!-- <div
+        v-for="waterMeterInfoText in waterMeterInfoArr"
+        :key="waterMeterInfoText.id"
       >
         {{ waterMeterInfoText }}
-      </div>
+        <el-button
+          @click="deleteWaterMeter(waterMeterInfoText.id)"
+          type="danger"
+          size="mini"
+        >
+          删除
+        </el-button>
+      </div> -->
+      <el-table
+        :data="waterMeterInfoArr"
+        max-height="400px"
+        style="margin-top: 20px; width: 1200px"
+      >
+        <!-- <el-table-column align="center" prop="id" label="id">
+        </el-table-column> -->
+        <el-table-column align="center" prop="paymentNumber" label="缴费号">
+        </el-table-column>
+        <el-table-column align="center" prop="accountNumber" label="户号">
+        </el-table-column>
+        <el-table-column align="center" prop="accountName" label="户名">
+        </el-table-column>
+        <el-table-column align="center" prop="status" label="用水性质">
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          width="100px"
+          fixed="right"
+        >
+          <template v-slot="scope">
+            <div
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <el-button type="danger" @click="deleteWaterMeter(scope.row.id)">
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="waterMeterDialog">
         <el-input
           class="dialogInput"
@@ -214,10 +257,10 @@
         <el-input
           class="dialogInput"
           v-model="waterMeterForm.status"
-          placeholder="状态"
+          placeholder="用水性质"
         >
         </el-input>
-        <el-button type="primary" @click="updateWaterMeter()">
+        <el-button type="primary" @click="insertWaterMeterInfo()">
           新增水表信息
         </el-button>
       </div>
@@ -227,9 +270,12 @@
 
 <script lang="ts">
 import { SET_INFO } from "@/store/type/mutation-type";
+import _ from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
+import { nanoid } from "nanoid";
+import dayjs from "dayjs";
 @Component({
   components: {
     Title,
@@ -262,8 +308,8 @@ export default class SearchAll extends Vue {
   public addRepairText = ""; // 新增的维修记录
 
   public waterMeterDialog = false;
-  public waterMeterId = 0;
-  public waterMeterInfo = "";
+  public waterMeterDialogId = 0;
+  public waterMeterInfoArr = [];
   public waterMeterForm = {
     paymentNumber: "", //缴费号
     accountNumber: "", //户号
@@ -383,47 +429,42 @@ export default class SearchAll extends Vue {
     this.repairInfo = res.data.data;
   }
 
+  // 打开水表信息编辑弹窗
   public async openWaterMeter(id: number): Promise<void> {
     this.waterMeterDialog = true;
-    this.waterMeterId = id;
-    const res = await this["axios"].get(`Tygs/getWaterMeterById`, {
+    this.waterMeterDialogId = id;
+    await this.getWaterMeterInfoById(id);
+  }
+
+  // 根据id获取水表信息
+  public async getWaterMeterInfoById(wallId: number): Promise<void> {
+    const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
       params: {
-        id: id,
+        wallId: wallId,
       },
     });
     console.log(res);
     this.$message.success(res.data.msg);
-    this.waterMeterInfo = res.data.data;
+    this.waterMeterInfoArr = res.data.data;
   }
 
-  public async updateWaterMeter(): Promise<void> {
-    let waterMeterInfo: string | Record<string, string>[] = this.waterMeterInfo;
-    console.log(waterMeterInfo);
-    if (this.waterMeterInfo === "") {
-      console.log(222);
-      waterMeterInfo = [];
-      waterMeterInfo.push({
-        ...this.waterMeterForm,
-        time: new Date().toLocaleString(),
-      });
-      console.log(waterMeterInfo);
-    } else {
-      console.log(222);
-      // console.log(this.repairInfo);
-      const waterMeterInfoArr =
-        (this.waterMeterInfo as any) instanceof Array
-          ? this.waterMeterInfo
-          : JSON.parse(this.waterMeterInfo);
-      waterMeterInfoArr.push({
-        ...this.waterMeterForm,
-        time: new Date().toLocaleString(),
-      });
-    }
+  // 更新水表信息
+  public async insertWaterMeterInfo(): Promise<void> {
+    this.sendWaterMeterInfo(this.waterMeterForm);
+  }
 
+  public async sendWaterMeterInfo(waterMeterForm: {
+    paymentNumber: string; //缴费号
+    accountNumber: string; //户号
+    accountName: string; //户名
+    status: string;
+  }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`Tygs/updateWaterMeterInfo`, {
-      id: this.waterMeterId,
-      waterMeterInfo: JSON.stringify(waterMeterInfo),
+    const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
+      wallId: this.waterMeterDialogId,
+      waterMeterId: nanoid(),
+      updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+      ...waterMeterForm,
     });
 
     console.log(res);
@@ -434,7 +475,18 @@ export default class SearchAll extends Vue {
         accountName: "", //户名
         status: "", //状态
       };
+      await this.getWaterMeterInfoById(this.waterMeterDialogId);
     }
+  }
+
+  public async deleteWaterMeter(waterMeterId: string): Promise<void> {
+    // console.log(this.waterMeterInfo);
+    // 从this.waterMeterInfoArr中删除waterMeterId对应的数据
+    this.waterMeterInfoArr = this.waterMeterInfoArr.filter(
+      (item: { id: string }) => {
+        return item.id !== waterMeterId;
+      }
+    );
   }
 }
 </script>
@@ -449,6 +501,7 @@ export default class SearchAll extends Vue {
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
+    margin-top: 40px;
   }
   .dialogInput {
     width: 20%;

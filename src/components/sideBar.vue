@@ -12,7 +12,7 @@
         :key="button.name"
       >
         <button
-          :class="index === buttonIndex ? 'active' : ''"
+          :class="getActive(button.path,button.children) ? 'active' : ''"
           @click="emitGoPage(button.path, buttonIndex)"
           class="button-inside"
         >
@@ -163,6 +163,12 @@ export default class SideBar extends Vue {
     return this.buttonArr.filter((button: btn) => {
       return button.role >= this.$store.getters[GET_ADMIN_INFO].adminRole;
     });
+  }
+  // 根据当前url来判断是否需要高亮显示按钮
+  public getActive(path:string,children: btn[] | undefined){
+    console.log(path);
+    console.log(this.routePath);
+    return this.routePath === path || (children && children.some(child => child.path === this.routePath));
   }
 
   // mounted(): void {
