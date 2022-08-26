@@ -161,19 +161,19 @@
           <div
             style="display: flex; justify-content: center; align-items: center"
           >
-            <!-- <el-button size="small" @click="modify(scope.row)" type="primary">
-              修改信息
-            </el-button> -->
             <el-button size="small" @click="openWaterMeter(scope.row.id)">
               水表信息
             </el-button>
-            <el-button
+            <el-button size="small" @click="modify(scope.row)" type="primary">
+              修改信息
+            </el-button>
+            <!-- <el-button
               size="small"
               @click="openRepair(scope.row.id)"
               type="primary"
             >
               维修记录
-            </el-button>
+            </el-button> -->
             <!-- <el-button @click="seeDetail(scope.row)" type=""> 查看 </el-button> -->
           </div>
         </template>
@@ -356,7 +356,9 @@ export default class SearchAll extends Vue {
   }
 
   public async getRes(): Promise<void> {
-    const res = await this["axios"].get("/Tygs/getAllInfo");
+    const res = await this["axios"].get(
+      "/Watermeterwell/getAllWatermeterwellInfo"
+    );
     this.res = res.data;
     this.$store.commit(SET_INFO, res.data);
     this.searchRes = res.data.sort(
@@ -403,10 +405,13 @@ export default class SearchAll extends Vue {
       });
       // console.log(repairInfoArr);
     }
-    const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
-      id: this.repairId,
-      repairInfo: JSON.stringify(repairInfo),
-    });
+    const res = await this["axios"].post(
+      `Watermeterwell/updateWatermeterwellRepairInfoWithId`,
+      {
+        id: this.repairId,
+        repairInfo: JSON.stringify(repairInfo),
+      }
+    );
     // console.log(res);
     if (res.data.code === 0) {
       this.addRepairText = "";
@@ -420,11 +425,14 @@ export default class SearchAll extends Vue {
   }
 
   public async getRepair(id: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getRepairInfoById`, {
-      params: {
-        id: id,
-      },
-    });
+    const res = await this["axios"].get(
+      `Watermeterwell/getWatermeterwellRepairInfoById`,
+      {
+        params: {
+          id: id,
+        },
+      }
+    );
     this.$message.success(res.data.msg);
     this.repairInfo = res.data.data;
   }
@@ -438,11 +446,14 @@ export default class SearchAll extends Vue {
 
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
-      params: {
-        wallId: wallId,
-      },
-    });
+    const res = await this["axios"].get(
+      `Watermeterwell/getWatermeterwellWaterMeterInfoByWallId`,
+      {
+        params: {
+          wallId: wallId,
+        },
+      }
+    );
     console.log(res);
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
@@ -460,12 +471,15 @@ export default class SearchAll extends Vue {
     status: string;
   }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
-      wallId: this.waterMeterDialogId,
-      waterMeterId: nanoid(),
-      updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      ...waterMeterForm,
-    });
+    const res = await this["axios"].post(
+      `Watermeterwell/insertWatermeterwellWaterMeterInfo`,
+      {
+        wallId: this.waterMeterDialogId,
+        waterMeterId: nanoid(),
+        updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        ...waterMeterForm,
+      }
+    );
 
     console.log(res);
     if (res.data.code === 0) {

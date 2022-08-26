@@ -79,7 +79,7 @@ export default class SideBar extends Vue {
           role: 1,
         },
         {
-          name: "表井",
+          name: "表井(总表)",
           path: "searchWaterMeterWell",
           role: 1,
         },
@@ -89,12 +89,12 @@ export default class SideBar extends Vue {
           role: 1,
         },
         {
-          name: "水表间",
+          name: "水表间(户表)",
           path: "searchWaterMeterRoom",
           role: 1,
         },
         {
-          name: "消防栓",
+          name: "消火栓",
           path: "searchFireHydrant",
           role: 1,
         },
@@ -177,8 +177,9 @@ export default class SideBar extends Vue {
   // 根据当前url来判断是否需要显示子按钮
   public getChildrenListShow(button: btn): boolean {
     return (
-      button.children &&
-      button.children.some((child) => child.path === this.routePath) || false
+      (button.children &&
+        button.children.some((child) => child.path === this.routePath)) ||
+      false
     );
   }
 
@@ -300,10 +301,9 @@ export default class SideBar extends Vue {
       // background-color: blue;
       // border: none;
       border-radius: 6px;
-      // // border-top: 1px solid brown;
+      // border-top: 1px solid brown;
       // color: #fff;
       // font-size: 14px;
-      // cursor: pointer;
     }
   }
 }
