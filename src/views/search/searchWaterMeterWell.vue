@@ -265,6 +265,20 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
+      <div>
+        <div style="display: flex;">填写人<el-input v-model="wallInfoForm.filledBy"></el-input></div>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+        <el-input></el-input>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -316,6 +330,11 @@ export default class SearchAll extends Vue {
     accountName: "", //户名
     status: "", //状态
   };
+
+  public wallInfoDialog = false;
+  public wallInfoId = 0;
+
+  public wallInfoForm = {};
 
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
@@ -376,8 +395,11 @@ export default class SearchAll extends Vue {
     await this.getRes();
   }
 
-  public modify(FilledBy: any): void {
-    console.log(FilledBy);
+  public modify(info: any): void {
+    console.log(info);
+    this.wallInfoDialog = true;
+    this.wallInfoId = info.id;
+    this.wallInfoForm = _.cloneDeep(info);
   }
 
   public seeDetail(FilledBy: any): void {

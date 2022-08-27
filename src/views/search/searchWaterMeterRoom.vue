@@ -266,7 +266,6 @@
       </div>
     </el-dialog>
     <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
-
     </el-dialog>
   </div>
 </template>
@@ -320,7 +319,7 @@ export default class SearchAll extends Vue {
     status: "", //状态
   };
 
-  public wallInfoDialog = false
+  public wallInfoDialog = false;
 
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
