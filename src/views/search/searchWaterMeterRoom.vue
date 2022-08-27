@@ -265,6 +265,9 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
+
+    </el-dialog>
   </div>
 </template>
 
@@ -317,6 +320,8 @@ export default class SearchAll extends Vue {
     status: "", //状态
   };
 
+  public wallInfoDialog = false
+
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
       if (item) {
@@ -332,22 +337,22 @@ export default class SearchAll extends Vue {
       value: "filledBy",
       label: "填写人",
     },
-    {
-      value: "department",
-      label: "所在部门",
-    },
-    {
-      value: "accountIdentifier",
-      label: "编号",
-    },
-    {
-      value: "caliber",
-      label: "口径",
-    },
-    {
-      value: "waterNature",
-      label: "用水性质",
-    },
+    // {
+    //   value: "department",
+    //   label: "所在部门",
+    // },
+    // {
+    //   value: "accountIdentifier",
+    //   label: "编号",
+    // },
+    // {
+    //   value: "caliber",
+    //   label: "口径",
+    // },
+    // {
+    //   value: "waterNature",
+    //   label: "用水性质",
+    // },
   ];
 
   public async mounted(): Promise<void> {
