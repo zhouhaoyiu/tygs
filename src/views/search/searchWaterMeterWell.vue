@@ -31,16 +31,16 @@
           重置
         </el-button>
       </div>
+      <el-select>
+        <el-option
+          v-for="item in calibers"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+        </el-option>
+      </el-select>
       <!-- <div>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
         <el-select>
           <el-option
             v-for="item in options"
@@ -267,7 +267,9 @@
     </el-dialog>
     <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
       <div>
-        <div style="display: flex;">填写人<el-input v-model="wallInfoForm.filledBy"></el-input></div>
+        <div style="display: flex">
+          填写人<el-input v-model="wallInfoForm.filledBy"></el-input>
+        </div>
         <el-input></el-input>
         <el-input></el-input>
         <el-input></el-input>
@@ -336,24 +338,80 @@ export default class SearchAll extends Vue {
 
   public wallInfoForm = {};
 
+  public calibers: { value: string; label: string }[] = [
+    {
+      value: "DN15",
+      label: "DN15",
+    },
+    {
+      value: "DN20",
+      label: "DN20",
+    },
+    {
+      value: "DN25",
+      label: "DN25",
+    },
+    {
+      value: "DN40",
+      label: "DN40",
+    },
+    {
+      value: "DN50",
+      label: "DN50",
+    },
+    {
+      value: "DN80",
+      label: "DN80",
+    },
+    {
+      value: "DN100",
+      label: "DN100",
+    },
+    {
+      value: "DN150",
+      label: "DN150",
+    },
+    {
+      value: "DN200",
+      label: "DN200",
+    },
+    {
+      value: "DN300",
+      label: "DN300",
+    },
+  ];
+
   public searchFilled() {
+    console.log(this.searchBy);
     this.displayRes = this.res.filter((item) => {
       if (item) {
+        // console.log(item);
         // return item[this.searchBy] === this.searchText;
         // 匹配搜索字段
-        return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
+        if (typeof item[this.searchBy] === "string") {
+          return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
+        } else if (typeof item[this.searchBy] === "number") {
+          // 如果是id，则判断是否相等
+          return item[this.searchBy] == this.searchText;
+        } else {
+          throw new Error("not string or number");
+        }
       }
     });
   }
 
   public options: Record<string, string>[] = [
     {
+      value: "id",
+      label: "id",
+    },
+    {
       value: "filledBy",
       label: "填写人",
     },
     {
-      value: "department",
-      label: "所在部门",
+      value: "accountNumber",
+      label: "户号",
     },
     {
       value: "accountIdentifier",
@@ -379,12 +437,24 @@ export default class SearchAll extends Vue {
       "/Watermeterwell/getAllWatermeterwellInfo"
     );
     this.res = res.data;
-    this.$store.commit(SET_INFO, res.data);
-    this.searchRes = res.data.sort(
-      (a: { filledBy: string }, b: { filledBy: string }) => {
-        return a.filledBy.localeCompare(b.filledBy);
-      }
-    );
+    this.searchRes = res.data;
+
+    // this.$store.commit(SET_INFO, res.data);
+    // let calibers = new Set() as any;
+    // this.searchRes.forEach((item) => {
+    //   console.log(item);
+    //   calibers.add(item.caliber);
+    // });
+    // calibers.forEach((caliber: any) => {
+    //   this.calibers.push({ value: caliber, label: caliber });
+    // });
+    // console.log(calibers);
+
+    // .sort(
+    //   (a: { filledBy: string }, b: { filledBy: string }) => {
+    //     return a.filledBy.localeCompare(b.filledBy);
+    //   }
+    // );
     // 结果前100条
     this.displayRes = this.searchRes.slice(0, 100);
   }

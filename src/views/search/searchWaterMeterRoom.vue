@@ -1,6 +1,6 @@
 <template>
   <div class="page">
-    <Title>查询 水表间</Title>
+    <Title>查询 水表间(户表)</Title>
     <div>
       <div>
         <el-select v-model="searchBy" style="margin-right: 15px">
@@ -86,60 +86,9 @@
 
       <el-table-column
         align="center"
-        prop="accountName"
+        prop="userType"
         width="150px"
-        label="户名"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="accountNumber"
-        width="150px"
-        label="户号"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="coordinates"
-        width="250px"
-        label="坐标"
-      >
-      </el-table-column>
-      <el-table-column align="center" prop="caliber" width="100px" label="口径">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        width="150px"
-        prop="operatingStatus"
-        label="运行状态"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        width="150px"
-        prop="waterNature"
-        label="用水性质"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="wellDepth"
-        width="150px"
-        label="井深"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="includedFacilities"
-        width="150px"
-        label="内含设施"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="waterMeterManufacturer"
-        label="水表厂家"
-        width="150px"
+        label="用户类型"
       >
       </el-table-column>
       <el-table-column
@@ -151,9 +100,102 @@
       </el-table-column>
       <el-table-column
         align="center"
-        prop="writtingTime"
+        prop="communityName"
+        width="250px"
+        label="小区名称"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="detailedAddress"
+        width="100px"
+        label="详细地址"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
         width="150px"
-        label="填写时间"
+        prop="location"
+        label="位置"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        width="150px"
+        prop="watermeterLocation"
+        label="水表位置"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="watermeterType"
+        width="150px"
+        label="水表类型"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="totalHouseholds"
+        width="150px"
+        label="总户数"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="numberHouseholds"
+        label="居民户数"
+        width="150px"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="numberNoHouseholds"
+        width="150px"
+        label="非居民户数"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="numberHouseholdsWithSubitems"
+        width="150px"
+        label="带分项户数"
+      >
+      </el-table-column>
+      <el-table-column align="center" prop="pipe" width="150px" label="管材">
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="conditionOfWaterSeparator"
+        width="150px"
+        label="分水器情况"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="troubleshooting"
+        width="150px"
+        label="排查情况"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="personLiable"
+        width="150px"
+        label="排查情况"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="WaterMeterRoomOutSide"
+        width="150px"
+        label="表间外拍照"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="WaterMeterRoomInside"
+        width="150px"
+        label="表间内拍照"
       >
       </el-table-column>
       <el-table-column align="center" label="操作" width="200px" fixed="right">
@@ -265,8 +307,6 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
-    </el-dialog>
   </div>
 </template>
 
@@ -319,8 +359,6 @@ export default class SearchAll extends Vue {
     status: "", //状态
   };
 
-  public wallInfoDialog = false;
-
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
       if (item) {
@@ -336,22 +374,22 @@ export default class SearchAll extends Vue {
       value: "filledBy",
       label: "填写人",
     },
-    // {
-    //   value: "department",
-    //   label: "所在部门",
-    // },
-    // {
-    //   value: "accountIdentifier",
-    //   label: "编号",
-    // },
-    // {
-    //   value: "caliber",
-    //   label: "口径",
-    // },
-    // {
-    //   value: "waterNature",
-    //   label: "用水性质",
-    // },
+    {
+      value: "department",
+      label: "所在部门",
+    },
+    {
+      value: "accountIdentifier",
+      label: "编号",
+    },
+    {
+      value: "caliber",
+      label: "口径",
+    },
+    {
+      value: "waterNature",
+      label: "用水性质",
+    },
   ];
 
   public async mounted(): Promise<void> {
@@ -360,9 +398,10 @@ export default class SearchAll extends Vue {
   }
 
   public async getRes(): Promise<void> {
-    const res = await this["axios"].get("/Tygs/getAllInfo");
+    const res = await this["axios"].get("/WaterMeterRoom/getAllWaterMeterRoomInfo");
     this.res = res.data;
-    this.$store.commit(SET_INFO, res.data);
+    // console.log(this.res)
+    // this.$store.commit(SET_INFO, res.data);
     this.searchRes = res.data.sort(
       (a: { filledBy: string }, b: { filledBy: string }) => {
         return a.filledBy.localeCompare(b.filledBy);
