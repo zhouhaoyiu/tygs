@@ -30,8 +30,8 @@ import dayjs from "dayjs";
   components: {},
 })
 export default class Login extends Vue {
-  public username = "";
-  public password = "";
+  public username = "zhy";
+  public password = "111111";
 
   public async login(): Promise<void> {
     let publicKey: { [x: string]: string; data: string };
