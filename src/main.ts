@@ -15,8 +15,8 @@ Vue.config.productionTip = false;
 Vue.prototype._ = _;
 Vue.prototype.$axios = axios;
 Vue.use(ElementUI);
-Vue.prototype.$axios.defaults.baseURL = "http://localhost:8090/";
-// Vue.prototype.$axios.defaults.baseURL = "http://192.168.88.113:8090/";
+// Vue.prototype.$axios.defaults.baseURL = "http://localhost:8090/";
+Vue.prototype.$axios.defaults.baseURL = "http://192.168.88.3:8090/";
 Vue.use(VueAxios, axios);
 Vue.use(Vuex);
 
