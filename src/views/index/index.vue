@@ -43,7 +43,7 @@ export default class homeIndex extends Vue {
     },
     {
       title: "阀门井",
-      path: "/searchValueWall",
+      path: "/searchValueWell",
     },
     {
       title: "卡片",
