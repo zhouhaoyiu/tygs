@@ -38,11 +38,11 @@ const routes: Array<RouteConfig> = [
           ),
       },
       {
-        path: "searchValueWall",
-        name: "searchValueWall",
+        path: "searchValueWell",
+        name: "searchValueWell",
         component: () =>
           import(
-            /* webpackChunkName: "searchValueWall" */ "../views/search/searchValueWall.vue"
+            /* webpackChunkName: "searchValueWell" */ "../views/search/searchValueWell.vue"
           ),
       },
       {

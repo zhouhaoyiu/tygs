@@ -85,7 +85,7 @@ export default class SideBar extends Vue {
         },
         {
           name: "阀门井",
-          path: "searchValueWall",
+          path: "searchValueWell",
           role: 1,
         },
         {

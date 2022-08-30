@@ -1,8 +1,40 @@
 <template>
   <div class="page">
     <Title>查询 表井</Title>
-    <div>
-      <div>
+    <div class="searchArea">
+      <div class="searchSelects">
+        <span>口径: </span>
+        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>类型: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>状态: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="searchInput">
         <el-select v-model="searchBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
@@ -31,35 +63,6 @@
           重置
         </el-button>
       </div>
-      <el-select>
-        <el-option
-          v-for="item in calibers"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        >
-        </el-option>
-      </el-select>
-      <!-- <div>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div> -->
     </div>
     <!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
       {{ people.FilledBy }}
@@ -83,7 +86,6 @@
         label="所在部门"
       >
       </el-table-column>
-
       <el-table-column
         align="center"
         prop="accountName"
@@ -265,20 +267,75 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog center title="表井信息" :visible.sync="wallInfoDialog">
-      <div>
-        <div style="display: flex">
-          填写人<el-input v-model="wallInfoForm.filledBy"></el-input>
-        </div>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
-        <el-input></el-input>
+    <el-dialog title="表井信息" :visible.sync="wallInfoDialog">
+      <el-form :model="wallInfoForm" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="户名" prop="accountName">
+          <el-input
+            v-model="wallInfoForm.accountName"
+            placeholder="户名"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="户号" prop="accountNumber">
+          <el-input
+            v-model="wallInfoForm.accountNumber"
+            placeholder="户号"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="坐标" prop="coordinates">
+          <el-input
+            v-model="wallInfoForm.coordinates"
+            placeholder="坐标"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="口径" prop="caliber">
+          <el-input
+            v-model="wallInfoForm.caliber"
+            placeholder="口径"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="运行状态" prop="operatingStatus">
+          <el-input
+            v-model="wallInfoForm.operatingStatus"
+            placeholder="运行状态"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="用水性质" prop="waterNature">
+          <el-input
+            v-model="wallInfoForm.waterNature"
+            placeholder="用水性质"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="井深" prop="wellDepth">
+          <el-input
+            v-model="wallInfoForm.wellDepth"
+            placeholder="井深"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="内含设施" prop="includedFacilities">
+          <el-input
+            v-model="wallInfoForm.includedFacilities"
+            placeholder="内含设施"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="水表厂家" prop="waterMeterManufacturer">
+          <el-input
+            v-model="wallInfoForm.waterMeterManufacturer"
+            placeholder="水表厂家"
+          ></el-input>
+        </el-form-item>
+        <el-table-column
+          align="center"
+          prop="accountIdentifier"
+          width="150px"
+          label="编号"
+        >
+        </el-table-column>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="wallInfoDialog = false">取 消</el-button>
+        <el-button type="primary" @click="wallInfoDialog = false"
+          >确 定</el-button
+        >
       </div>
     </el-dialog>
   </div>
@@ -292,6 +349,7 @@ import Component from "vue-class-component";
 import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
+import { calibers } from "./info";
 @Component({
   components: {
     Title,
@@ -300,21 +358,15 @@ import dayjs from "dayjs";
 export default class SearchAll extends Vue {
   public searchBy = "filledBy";
   public searchText = "";
-  public searchRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+
+  public searchSelectBy = {
+    caliber: "",
+  };
+  public searchRes: Record<string, string>[] = [];
 
   public formLabelWidth = "120px";
 
-  public displayRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+  public displayRes: Record<string, string>[] = [];
 
   public res = [];
 
@@ -336,65 +388,31 @@ export default class SearchAll extends Vue {
   public wallInfoDialog = false;
   public wallInfoId = 0;
 
-  public wallInfoForm = {};
+  public wallInfoForm: Record<string, string> = {
+    accountName: "", //户名
+    accountNumber: "", //户号
+    coordinates: "", //坐标
+    caliber: "", //口径
+    operatingStatus: "", //运行状态
+    waterNature: "", //用水性质
+    wellDepth: "", //井深
+    includedFacilities: "", //内含设施
+    waterMeterManufacturer: "", //水表厂家
+  };
 
-  public calibers: { value: string; label: string }[] = [
-    {
-      value: "DN15",
-      label: "DN15",
-    },
-    {
-      value: "DN20",
-      label: "DN20",
-    },
-    {
-      value: "DN25",
-      label: "DN25",
-    },
-    {
-      value: "DN40",
-      label: "DN40",
-    },
-    {
-      value: "DN50",
-      label: "DN50",
-    },
-    {
-      value: "DN80",
-      label: "DN80",
-    },
-    {
-      value: "DN100",
-      label: "DN100",
-    },
-    {
-      value: "DN150",
-      label: "DN150",
-    },
-    {
-      value: "DN200",
-      label: "DN200",
-    },
-    {
-      value: "DN300",
-      label: "DN300",
-    },
-  ];
+  public calibers: { value: string; label: string }[] = calibers;
 
   public searchFilled() {
     console.log(this.searchBy);
     this.displayRes = this.res.filter((item) => {
       if (item) {
-        // console.log(item);
-        // return item[this.searchBy] === this.searchText;
-        // 匹配搜索字段
         if (typeof item[this.searchBy] === "string") {
           return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
         } else if (typeof item[this.searchBy] === "number") {
           // 如果是id，则判断是否相等
-          return item[this.searchBy] == this.searchText;
+          return item[this.searchBy] === Number(this.searchText);
         } else {
-          throw new Error("not string or number");
+          throw new Error("搜索字段类型错误");
         }
       }
     });
@@ -416,10 +434,6 @@ export default class SearchAll extends Vue {
     {
       value: "accountIdentifier",
       label: "编号",
-    },
-    {
-      value: "caliber",
-      label: "口径",
     },
     {
       value: "waterNature",
@@ -456,7 +470,7 @@ export default class SearchAll extends Vue {
     //   }
     // );
     // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 100);
+    this.displayRes = this.searchRes.slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -599,8 +613,13 @@ export default class SearchAll extends Vue {
 
 <style lang="scss">
 .page {
-  .name {
-    font-size: 48px;
+  .searchInput {
+  }
+  .searchSelects {
+    margin-bottom: 15px;
+    .searchSelect {
+      margin-right: 20px;
+    }
   }
   .waterMeterDialog {
     display: flex;

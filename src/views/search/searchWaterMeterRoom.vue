@@ -398,7 +398,9 @@ export default class SearchAll extends Vue {
   }
 
   public async getRes(): Promise<void> {
-    const res = await this["axios"].get("/WaterMeterRoom/getAllWaterMeterRoomInfo");
+    const res = await this["axios"].get(
+      "/WaterMeterRoom/getAllWaterMeterRoomInfo"
+    );
     this.res = res.data;
     // console.log(this.res)
     // this.$store.commit(SET_INFO, res.data);
@@ -407,8 +409,8 @@ export default class SearchAll extends Vue {
         return a.filledBy.localeCompare(b.filledBy);
       }
     );
-    // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 100);
+    // 结果前30条
+    this.displayRes = this.searchRes.slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -446,10 +448,13 @@ export default class SearchAll extends Vue {
       });
       // console.log(repairInfoArr);
     }
-    const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
-      id: this.repairId,
-      repairInfo: JSON.stringify(repairInfo),
-    });
+    const res = await this["axios"].post(
+      `WaterMeterRoom/updateWaterMeterRoomRepairInfoWithId`,
+      {
+        id: this.repairId,
+        repairInfo: JSON.stringify(repairInfo),
+      }
+    );
     // console.log(res);
     if (res.data.code === 0) {
       this.addRepairText = "";
@@ -463,11 +468,14 @@ export default class SearchAll extends Vue {
   }
 
   public async getRepair(id: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getRepairInfoById`, {
-      params: {
-        id: id,
-      },
-    });
+    const res = await this["axios"].get(
+      `WaterMeterRoom/getWaterMeterRoomRepairInfoById`,
+      {
+        params: {
+          id: id,
+        },
+      }
+    );
     this.$message.success(res.data.msg);
     this.repairInfo = res.data.data;
   }
@@ -481,11 +489,14 @@ export default class SearchAll extends Vue {
 
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
-      params: {
-        wallId: wallId,
-      },
-    });
+    const res = await this["axios"].get(
+      `WaterMeterRoom/getWatermeterRoomWaterMeterInfoByWallId`,
+      {
+        params: {
+          wallId: wallId,
+        },
+      }
+    );
     console.log(res);
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
@@ -503,12 +514,15 @@ export default class SearchAll extends Vue {
     status: string;
   }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
-      wallId: this.waterMeterDialogId,
-      waterMeterId: nanoid(),
-      updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      ...waterMeterForm,
-    });
+    const res = await this["axios"].post(
+      `WaterMeterRoom/insertWaterMeterRoomWaterMeterInfo`,
+      {
+        wallId: this.waterMeterDialogId,
+        waterMeterId: nanoid(),
+        updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        ...waterMeterForm,
+      }
+    );
 
     console.log(res);
     if (res.data.code === 0) {
