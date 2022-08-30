@@ -400,7 +400,7 @@ export default class SearchAll extends Vue {
     waterMeterManufacturer: "", //水表厂家
   };
 
-  public calibers: { value: string; label: string }[] = calibers;
+  public calibers: { value: string | null; label: string }[] = calibers;
 
   public searchFilled() {
     console.log(this.searchBy);
@@ -614,9 +614,11 @@ export default class SearchAll extends Vue {
 <style lang="scss">
 .page {
   .searchInput {
+    background: transparent;
   }
   .searchSelects {
     margin-bottom: 15px;
+    font-weight: bold;
     .searchSelect {
       margin-right: 20px;
     }

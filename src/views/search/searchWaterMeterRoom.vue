@@ -550,9 +550,7 @@ export default class SearchAll extends Vue {
 
 <style lang="scss">
 .page {
-  .name {
-    font-size: 48px;
-  }
+
   .waterMeterDialog {
     display: flex;
     flex-wrap: wrap;

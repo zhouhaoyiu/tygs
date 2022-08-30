@@ -61,9 +61,6 @@
         </el-select>
       </div> -->
     </div>
-    <!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
-      {{ people.FilledBy }}
-    </div> -->
     <el-table
       :data="displayRes"
       max-height="550px"
@@ -86,76 +83,119 @@
 
       <el-table-column
         align="center"
-        prop="accountName"
+        prop="fillingTime"
         width="150px"
-        label="户名"
+        label="填写时间"
       >
       </el-table-column>
       <el-table-column
         align="center"
-        prop="accountNumber"
+        prop="customerType"
         width="150px"
-        label="户号"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="coordinates"
-        width="250px"
-        label="坐标"
-      >
-      </el-table-column>
-      <el-table-column align="center" prop="caliber" width="100px" label="口径">
-      </el-table-column>
-      <el-table-column
-        align="center"
-        width="150px"
-        prop="operatingStatus"
-        label="运行状态"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        width="150px"
-        prop="waterNature"
-        label="用水性质"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="wellDepth"
-        width="150px"
-        label="井深"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="includedFacilities"
-        width="150px"
-        label="内含设施"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="waterMeterManufacturer"
-        label="水表厂家"
-        width="150px"
+        label="用户类型"
       >
       </el-table-column>
       <el-table-column
         align="center"
         prop="accountIdentifier"
-        width="150px"
+        width="250px"
         label="编号"
       >
       </el-table-column>
       <el-table-column
         align="center"
-        prop="writtingTime"
-        width="150px"
-        label="填写时间"
+        prop="streetName"
+        width="100px"
+        label="街道名称"
       >
       </el-table-column>
+      <el-table-column
+        align="center"
+        width="150px"
+        prop="wellChamberType"
+        label="井室类型"
+      >
+      </el-table-column>
+      <el-table-column align="center" width="150px" prop="caliber" label="口径">
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="runningState"
+        width="150px"
+        label="运行状态"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="quantity"
+        width="150px"
+        label="数量"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="wellDepth"
+        label="井深"
+        width="150px"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="positioningCoordinates"
+        width="150px"
+        label="定位坐标"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="photosInTheWell"
+        width="150px"
+        label="井内照片"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="photosOutsideTheWell"
+        width="150px"
+        label="井外照片"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="manufactor"
+        width="150px"
+        label="厂家"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="personLiable"
+        width="150px"
+        label="责任人"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="troubleshootingTime"
+        width="150px"
+        label="排查时间"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="runTime"
+        width="150px"
+        label="运行时间"
+      >
+      </el-table-column>
+      <el-table-column
+        align="center"
+        prop="repairTime"
+        width="150px"
+        label="修复时间"
+      >
+      </el-table-column>
+
       <el-table-column align="center" label="操作" width="200px" fixed="right">
         <template v-slot="scope">
           <div
@@ -283,24 +323,14 @@ import dayjs from "dayjs";
     Title,
   },
 })
-export default class SearchAll extends Vue {
+export default class SearchValueWell extends Vue {
   public searchBy = "filledBy";
   public searchText = "";
-  public searchRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+  public searchRes: Record<string, string>[] = [];
 
   public formLabelWidth = "120px";
 
-  public displayRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+  public displayRes: Record<string, string>[] = [];
 
   public res = [];
 
@@ -360,16 +390,18 @@ export default class SearchAll extends Vue {
   }
 
   public async getRes(): Promise<void> {
-    const res = await this["axios"].get("/Tygs/getAllInfo");
+    const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
     this.res = res.data;
-    this.$store.commit(SET_INFO, res.data);
-    this.searchRes = res.data.sort(
-      (a: { filledBy: string }, b: { filledBy: string }) => {
-        return a.filledBy.localeCompare(b.filledBy);
-      }
-    );
+    // console.log(this.res);
+    // this.$store.commit(SET_INFO, res.data);
+    this.searchRes = res.data;
+    // .sort(
+    //   (a: { filledBy: string }, b: { filledBy: string }) => {
+    //     return a.filledBy.localeCompare(b.filledBy);
+    //   }
+    // );
     // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 100);
+    this.displayRes = this.searchRes.slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -407,10 +439,13 @@ export default class SearchAll extends Vue {
       });
       // console.log(repairInfoArr);
     }
-    const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
-      id: this.repairId,
-      repairInfo: JSON.stringify(repairInfo),
-    });
+    const res = await this["axios"].post(
+      `ValueWell/updateValueWellRepairInfoWithId`,
+      {
+        id: this.repairId,
+        repairInfo: JSON.stringify(repairInfo),
+      }
+    );
     // console.log(res);
     if (res.data.code === 0) {
       this.addRepairText = "";
@@ -424,11 +459,14 @@ export default class SearchAll extends Vue {
   }
 
   public async getRepair(id: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getRepairInfoById`, {
-      params: {
-        id: id,
-      },
-    });
+    const res = await this["axios"].get(
+      `ValueWell/getValueWellRepairInfoById`,
+      {
+        params: {
+          id: id,
+        },
+      }
+    );
     this.$message.success(res.data.msg);
     this.repairInfo = res.data.data;
   }
@@ -442,11 +480,14 @@ export default class SearchAll extends Vue {
 
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
-    const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
-      params: {
-        wallId: wallId,
-      },
-    });
+    const res = await this["axios"].get(
+      `ValueWell/getValueWellWaterMeterInfoByWallId`,
+      {
+        params: {
+          wallId: wallId,
+        },
+      }
+    );
     console.log(res);
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
@@ -464,12 +505,15 @@ export default class SearchAll extends Vue {
     status: string;
   }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
-      wallId: this.waterMeterDialogId,
-      waterMeterId: nanoid(),
-      updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      ...waterMeterForm,
-    });
+    const res = await this["axios"].post(
+      `ValueWell/insertValueWellWaterMeterInfo`,
+      {
+        wallId: this.waterMeterDialogId,
+        waterMeterId: nanoid(),
+        updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        ...waterMeterForm,
+      }
+    );
 
     console.log(res);
     if (res.data.code === 0) {
@@ -497,8 +541,15 @@ export default class SearchAll extends Vue {
 
 <style lang="scss">
 .page {
-  .name {
-    font-size: 48px;
+  .searchInput {
+    background: transparent;
+  }
+  .searchSelects {
+    margin-bottom: 15px;
+    font-weight: bold;
+    .searchSelect {
+      margin-right: 20px;
+    }
   }
   .waterMeterDialog {
     display: flex;
