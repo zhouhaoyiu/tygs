@@ -25,6 +25,13 @@ import TopBar from "../components/topBar.vue";
   components: { SideBar, TopBar },
 })
 export default class Home extends Vue {
+  public mounted(): void {
+    // 如果没有登录，跳转到登录页面
+    if (!localStorage.getItem("userName")) {
+      this.$router.push("/login");
+    }
+  }
+
   public goPage(page: string): void {
     this["$router"].push(`/home/${page}`);
     localStorage.setItem("page", page);
