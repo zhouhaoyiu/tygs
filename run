@@ -1,2 +1,8 @@
 #!/bin/bash
+
+#如果不存在node_modules目录，则先安装依赖
+if [ ! -d "node_modules" ]; then
+    yarn install
+fi
+
 yarn serve

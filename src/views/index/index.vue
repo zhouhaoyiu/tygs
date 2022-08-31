@@ -24,6 +24,14 @@ import Title from "../../components/title.vue";
   },
 })
 export default class homeIndex extends Vue {
+  public async mounted() {
+    const res = await this.axios.get("/Tygs/getWaterMeterCount");
+    console.log(res);
+  }
+
+  // echarts 饼状图
+  
+
   public cardArr: Record<string, string>[] = [
     {
       title: "查询全部",

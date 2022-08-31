@@ -68,8 +68,10 @@
       {{ people.FilledBy }}
     </div> -->
     <el-table
-      :data="displayRes"
-      max-height="550px"
+      :data="
+        displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
+      max-height="495px"
       style="margin-top: 20px; width: 1600px"
     >
       <el-table-column
@@ -181,6 +183,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="30"
+      layout="total, prev, pager, next, jumper"
+      :total="total"
+    >
+    </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
       {{ repairInfo }}
       <el-input v-model="addRepairText" />
@@ -402,6 +414,22 @@ export default class SearchAll extends Vue {
 
   public calibers: { value: string | null; label: string }[] = calibers;
 
+  handleSizeChange(val: number) {
+    this.pageSize = val;
+    console.log(`每页 ${val} 条`);
+  }
+  handleCurrentChange(val: number) {
+    this.currentPage = val;
+  }
+  public pageSize = 30;
+  public currentPage = 1;
+  public currentPage4 = 2;
+
+  // 计算属性获取displayRes的长度
+  get total(): number {
+    return this.displayRes.length;
+  }
+
   public searchFilled() {
     console.log(this.searchBy);
     this.displayRes = this.res.filter((item) => {
@@ -470,7 +498,8 @@ export default class SearchAll extends Vue {
     //   }
     // );
     // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 30);
+    this.displayRes = this.searchRes;
+    // .slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -616,13 +645,16 @@ export default class SearchAll extends Vue {
   .searchInput {
     background: transparent;
   }
+
   .searchSelects {
     margin-bottom: 15px;
     font-weight: bold;
+
     .searchSelect {
       margin-right: 20px;
     }
   }
+
   .waterMeterDialog {
     display: flex;
     flex-wrap: wrap;
@@ -630,6 +662,7 @@ export default class SearchAll extends Vue {
     align-items: center;
     margin-top: 40px;
   }
+
   .dialogInput {
     width: 20%;
     // margin: 10px;
