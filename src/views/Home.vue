@@ -9,7 +9,7 @@
         @logOut="logOut"
       ></side-bar>
       <router-view
-        style="padding: 2% 3%; width: 100%; height: 100%; margin-top: 0%"
+        style="padding: 1.5% 3%; width: 100%; height: 100%; margin-top: 0%"
       ></router-view>
     </div>
   </div>

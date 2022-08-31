@@ -11,13 +11,18 @@
         {{ card.title }}
       </div>
     </div>
+    <div>
+      <div style="width: 1600px; height: 450px" id="chart"></div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
+import * as echarts from "echarts";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
+import { bgPatternImg, piePatternImg } from "./image";
 @Component({
   components: {
     Title,
@@ -27,16 +32,84 @@ export default class homeIndex extends Vue {
   public async mounted() {
     const res = await this.axios.get("/Tygs/getWaterMeterCount");
     console.log(res);
+    this.setCharts(res.data);
   }
 
   // echarts 饼状图
-  
+  public setCharts(data: {
+    fireHydrant: number;
+    valueWellCount: number;
+    waterMeterRoomCount: number;
+    waterMeterWellCount: number;
+  }) {
+    const chartDom = document.getElementById("chart")!;
+    const chart1 = echarts.init(chartDom);
+
+    let option = {
+      backgroundColor: {
+       // 白色
+        type: "pattern",
+        image: bgPatternImg,
+        repeat: "repeat",
+                // image: bgPatternImg,
+        // repeat: "repeat",
+      },
+      title: {
+        text: "数据分析",
+        textStyle: {
+          color: "#235894",
+        },
+      },
+      tooltip: {},
+      series: [
+        {
+          name: "pie",
+          type: "pie",
+          selectedMode: "single",
+          selectedOffset: 40,
+          clockwise: true,
+          label: {
+           normal: {
+              show: true,
+              position: "outside",
+              formatter: "{b} {c} {d}%",
+              textStyle: {
+                color: "#235894",
+                fontSize: 14,
+              },
+            },
+          },
+          labelLine: {
+            lineStyle: {
+              color: "#235894",
+            },
+          },
+          data: [
+            { value: data.fireHydrant, name: "消防栓" },
+            { value: data.valueWellCount, name: "阀门井" },
+            { value: data.waterMeterRoomCount, name: "水表间" },
+            { value: data.waterMeterWellCount, name: "表井" },
+          ],
+          itemStyle: {
+            opacity: 1,
+            color: {
+              image: piePatternImg,
+              repeat: "repeat",
+            },
+            borderWidth: 2,
+            borderColor: "#235894",
+          },
+        },
+      ],
+    };
+    option && chart1.setOption(option as any);
+  }
 
   public cardArr: Record<string, string>[] = [
-    {
-      title: "查询全部",
-      path: "/searchAll",
-    },
+    // {
+    //   title: "查询全部",
+    //   path: "/searchAll",
+    // },
     {
       title: "表井",
       path: "/searchWaterMeterWell",

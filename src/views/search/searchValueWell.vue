@@ -1,8 +1,50 @@
 <template>
   <div class="page">
     <Title>查询 阀门井</Title>
-    <div>
-      <div>
+    <div class="searchArea">
+      <div class="searchSelects">
+        <span>户号: </span>
+        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>名称: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>地址: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>口径: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="searchInput">
         <el-select v-model="searchBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
@@ -31,40 +73,13 @@
           重置
         </el-button>
       </div>
-      <!-- <div>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div> -->
     </div>
     <el-table
-      :data="displayRes"
-      max-height="550px"
-      style="margin-top: 20px; width: 1600px"
+      :data="
+        displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
+      max-height="495px"
+      class="table"
     >
       <el-table-column
         align="center"
@@ -146,7 +161,7 @@
         label="定位坐标"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         align="center"
         prop="photosInTheWell"
         width="150px"
@@ -159,7 +174,7 @@
         width="150px"
         label="井外照片"
       >
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         align="center"
         prop="manufactor"
@@ -219,6 +234,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="30"
+      layout="total, prev, pager, next, jumper"
+      :total="total"
+      class="pagination"
+    >
+    </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
       {{ repairInfo }}
       <el-input v-model="addRepairText" />
@@ -318,6 +344,7 @@ import Component from "vue-class-component";
 import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
+import { calibers } from "./info";
 @Component({
   components: {
     Title,
@@ -326,6 +353,12 @@ import dayjs from "dayjs";
 export default class SearchValueWell extends Vue {
   public searchBy = "filledBy";
   public searchText = "";
+
+  public searchSelectBy = {
+    caliber: "",
+  };
+  public calibers: { value: string | null; label: string }[] = calibers;
+
   public searchRes: Record<string, string>[] = [];
 
   public formLabelWidth = "120px";
@@ -350,6 +383,22 @@ export default class SearchValueWell extends Vue {
   };
 
   public wallInfoDialog = false;
+  public wallInfoId = 0;
+
+  handleSizeChange(val: number) {
+    this.pageSize = val;
+    console.log(`每页 ${val} 条`);
+  }
+  handleCurrentChange(val: number) {
+    this.currentPage = val;
+  }
+  public pageSize = 30;
+  public currentPage = 1;
+
+  // 计算属性获取displayRes的长度
+  get total(): number {
+    return this.displayRes.length;
+  }
 
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
@@ -401,7 +450,8 @@ export default class SearchValueWell extends Vue {
     //   }
     // );
     // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 30);
+    this.displayRes = this.searchRes;
+    // .slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -544,13 +594,29 @@ export default class SearchValueWell extends Vue {
   .searchInput {
     background: transparent;
   }
+
   .searchSelects {
     margin-bottom: 15px;
     font-weight: bold;
+
     .searchSelect {
       margin-right: 20px;
     }
   }
+
+  .table {
+    margin-top: 20px;
+    width: 1600px;
+  }
+
+  .pagination {
+    // 居中
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+  }
+
   .waterMeterDialog {
     display: flex;
     flex-wrap: wrap;
@@ -558,6 +624,7 @@ export default class SearchValueWell extends Vue {
     align-items: center;
     margin-top: 40px;
   }
+
   .dialogInput {
     width: 20%;
     // margin: 10px;

@@ -73,11 +73,11 @@ export default class SideBar extends Vue {
       role: 1,
       path: "search",
       children: [
-        {
-          name: "全部",
-          path: "searchAll",
-          role: 1,
-        },
+        // {
+        //   name: "全部",
+        //   path: "searchAll",
+        //   role: 1,
+        // },
         {
           name: "表井(总表)",
           path: "searchWaterMeterWell",

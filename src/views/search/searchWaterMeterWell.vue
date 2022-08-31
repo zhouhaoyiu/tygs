@@ -3,7 +3,7 @@
     <Title>查询 表井</Title>
     <div class="searchArea">
       <div class="searchSelects">
-        <span>口径: </span>
+        <span>户号: </span>
         <el-select v-model="searchSelectBy.caliber" class="searchSelect">
           <el-option
             v-for="item in calibers"
@@ -13,7 +13,7 @@
           >
           </el-option>
         </el-select>
-        <span>类型: </span>
+        <span>名称: </span>
         <el-select class="searchSelect">
           <el-option
             v-for="item in calibers"
@@ -23,7 +23,17 @@
           >
           </el-option>
         </el-select>
-        <span>状态: </span>
+        <span>地址: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>口径: </span>
         <el-select class="searchSelect">
           <el-option
             v-for="item in calibers"
@@ -64,15 +74,12 @@
         </el-button>
       </div>
     </div>
-    <!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
-      {{ people.FilledBy }}
-    </div> -->
     <el-table
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
       max-height="495px"
-      style="margin-top: 20px; width: 1600px"
+      class="table"
     >
       <el-table-column
         align="center"
@@ -191,6 +198,7 @@
       :page-size="30"
       layout="total, prev, pager, next, jumper"
       :total="total"
+      class="pagination"
     >
     </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
@@ -374,6 +382,7 @@ export default class SearchAll extends Vue {
   public searchSelectBy = {
     caliber: "",
   };
+
   public searchRes: Record<string, string>[] = [];
 
   public formLabelWidth = "120px";
@@ -423,7 +432,7 @@ export default class SearchAll extends Vue {
   }
   public pageSize = 30;
   public currentPage = 1;
-  public currentPage4 = 2;
+
 
   // 计算属性获取displayRes的长度
   get total(): number {
@@ -653,6 +662,18 @@ export default class SearchAll extends Vue {
     .searchSelect {
       margin-right: 20px;
     }
+  }
+
+  .table {
+    margin-top: 20px;
+    width: 1600px;
+  }
+  .pagination {
+    // 居中
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
   }
 
   .waterMeterDialog {
