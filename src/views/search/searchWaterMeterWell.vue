@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <Title>查询 表井</Title>
-    <div class="searchArea">
+    <!-- <div class="searchArea">
       <div class="searchSelects">
         <span>户号: </span>
         <el-select v-model="searchSelectBy.caliber" class="searchSelect">
@@ -73,7 +73,7 @@
           重置
         </el-button>
       </div>
-    </div>
+    </div> -->
     <el-table
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -433,7 +433,6 @@ export default class SearchAll extends Vue {
   public pageSize = 30;
   public currentPage = 1;
 
-
   // 计算属性获取displayRes的长度
   get total(): number {
     return this.displayRes.length;
@@ -531,14 +530,18 @@ export default class SearchAll extends Vue {
 
   public async updateRepair(): Promise<void> {
     let repairInfo: string | Record<string, string>[] = this.repairInfo;
-    if (this.repairInfo === "") {
+    console.log(this.repairInfo);
+    if (
+      this.repairInfo === "" ||
+      this.repairInfo === null ||
+      this.repairInfo === undefined
+    ) {
       repairInfo = [];
       repairInfo.push({
         text: this.addRepairText,
         time: new Date().toLocaleString(),
       });
     } else {
-      // console.log(this.repairInfo);
       const repairInfoArr =
         (this.repairInfo as any) instanceof Array
           ? this.repairInfo
@@ -560,6 +563,7 @@ export default class SearchAll extends Vue {
     if (res.data.code === 0) {
       this.addRepairText = "";
     }
+    await this.getRepair(this.repairId);
   }
 
   public async openRepair(id: number): Promise<void> {
