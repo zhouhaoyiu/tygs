@@ -490,7 +490,7 @@ export default class SearchAll extends Vue {
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
     const res = await this["axios"].get(
-      `WaterMeterRoom/getWatermeterRoomWaterMeterInfoByWallId`,
+      `WaterMeterRoom/getWaterMeterRoomWaterMeterInfoByWallId`,
       {
         params: {
           wallId: wallId,

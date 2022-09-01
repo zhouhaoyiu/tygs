@@ -620,7 +620,7 @@ export default class SearchAll extends Vue {
   }): Promise<void> {
     // console.log(repairInfoArr);
     const res = await this["axios"].post(
-      `Watermeterwell/insertWatermeterwellWaterMeterInfo`,
+      `Watermeterwell/insertWaterMeterWellWaterMeterInfo`,
       {
         wallId: this.waterMeterDialogId,
         waterMeterId: nanoid(),
