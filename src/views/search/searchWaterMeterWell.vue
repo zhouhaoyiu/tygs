@@ -423,18 +423,18 @@ export default class SearchAll extends Vue {
 
   public calibers: { value: string | null; label: string }[] = calibers;
 
-  handleSizeChange(val: number) {
+  public handleSizeChange(val: number) {
     this.pageSize = val;
     console.log(`每页 ${val} 条`);
   }
-  handleCurrentChange(val: number) {
+  public handleCurrentChange(val: number) {
     this.currentPage = val;
   }
   public pageSize = 30;
   public currentPage = 1;
 
   // 计算属性获取displayRes的长度
-  get total(): number {
+  public get total(): number {
     return this.displayRes.length;
   }
 
@@ -561,6 +561,7 @@ export default class SearchAll extends Vue {
     );
     // console.log(res);
     if (res.data.code === 0) {
+      this.$message.success(res.data.msg);
       this.addRepairText = "";
     }
     await this.getRepair(this.repairId);

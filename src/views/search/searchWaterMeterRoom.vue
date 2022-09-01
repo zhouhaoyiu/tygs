@@ -1,8 +1,50 @@
 <template>
   <div class="page">
     <Title>查询 水表间(户表)</Title>
-    <div>
-      <div>
+    <!-- <div class="searchArea">
+      <div class="searchSelects">
+        <span>户号: </span>
+        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>名称: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>地址: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>口径: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="searchInput">
         <el-select v-model="searchBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
@@ -31,41 +73,11 @@
           重置
         </el-button>
       </div>
-      <!-- <div>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div> -->
-    </div>
-    <!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
-      {{ people.FilledBy }}
     </div> -->
     <el-table
-      :data="displayRes"
+      :data="
+        displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
       max-height="550px"
       style="margin-top: 20px; width: 1600px"
     >
@@ -114,7 +126,7 @@
       </el-table-column>
       <el-table-column
         align="center"
-        width="150px"
+        width="265px"
         prop="location"
         label="位置"
       >
@@ -184,20 +196,20 @@
         label="排查情况"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         align="center"
-        prop="WaterMeterRoomOutSide"
+        prop="wallOutSide"
         width="150px"
         label="表间外拍照"
       >
       </el-table-column>
       <el-table-column
         align="center"
-        prop="WaterMeterRoomInside"
+        prop="wallInside"
         width="150px"
         label="表间内拍照"
       >
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="操作" width="200px" fixed="right">
         <template v-slot="scope">
           <div
@@ -221,6 +233,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="30"
+      layout="total, prev, pager, next, jumper"
+      :total="total"
+      class="pagination"
+    >
+    </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
       {{ repairInfo }}
       <el-input v-model="addRepairText" />
@@ -326,21 +349,11 @@ import dayjs from "dayjs";
 export default class SearchAll extends Vue {
   public searchBy = "filledBy";
   public searchText = "";
-  public searchRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+  public searchRes: Record<string, string>[] = [];
 
   public formLabelWidth = "120px";
 
-  public displayRes: Record<string, string>[] = [
-    // {
-    //   AccountName: "",
-    //   FilledBy: "",
-    // },
-  ];
+  public displayRes: Record<string, string>[] = [];
 
   public res = [];
 
@@ -358,6 +371,24 @@ export default class SearchAll extends Vue {
     accountName: "", //户名
     status: "", //状态
   };
+
+  public wallInfoDialog = false;
+  public wallInfoId = 0;
+
+  public handleSizeChange(val: number) {
+    this.pageSize = val;
+    console.log(`每页 ${val} 条`);
+  }
+  public handleCurrentChange(val: number) {
+    this.currentPage = val;
+  }
+  public pageSize = 30;
+  public currentPage = 1;
+
+  // 计算属性获取displayRes的长度
+  get total(): number {
+    return this.displayRes.length;
+  }
 
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
@@ -402,15 +433,15 @@ export default class SearchAll extends Vue {
       "/WaterMeterRoom/getAllWaterMeterRoomInfo"
     );
     this.res = res.data;
-    // console.log(this.res)
-    // this.$store.commit(SET_INFO, res.data);
-    this.searchRes = res.data.sort(
-      (a: { filledBy: string }, b: { filledBy: string }) => {
-        return a.filledBy.localeCompare(b.filledBy);
-      }
-    );
-    // 结果前30条
-    this.displayRes = this.searchRes.slice(0, 30);
+    this.searchRes = res.data;
+    // .sort(
+    //   (a: { filledBy: string }, b: { filledBy: string }) => {
+    //     return a.filledBy.localeCompare(b.filledBy);
+    //   }
+    // );
+
+    this.displayRes = this.searchRes;
+    // .slice(0, 30);
   }
 
   public async clearRes(): Promise<void> {
@@ -430,14 +461,17 @@ export default class SearchAll extends Vue {
 
   public async updateRepair(): Promise<void> {
     let repairInfo: string | Record<string, string>[] = this.repairInfo;
-    if (this.repairInfo === "") {
+    if (
+      this.repairInfo === "" ||
+      this.repairInfo === null ||
+      this.repairInfo === undefined
+    ) {
       repairInfo = [];
       repairInfo.push({
         text: this.addRepairText,
         time: new Date().toLocaleString(),
       });
     } else {
-      // console.log(this.repairInfo);
       const repairInfoArr =
         (this.repairInfo as any) instanceof Array
           ? this.repairInfo
@@ -446,7 +480,6 @@ export default class SearchAll extends Vue {
         text: this.addRepairText,
         time: new Date().toLocaleString(),
       });
-      // console.log(repairInfoArr);
     }
     const res = await this["axios"].post(
       `WaterMeterRoom/updateWaterMeterRoomRepairInfoWithId`,
@@ -457,8 +490,10 @@ export default class SearchAll extends Vue {
     );
     // console.log(res);
     if (res.data.code === 0) {
+      this.$message.success(res.data.msg);
       this.addRepairText = "";
     }
+    await this.getRepair(this.repairId);
   }
 
   public async openRepair(id: number): Promise<void> {
@@ -550,6 +585,31 @@ export default class SearchAll extends Vue {
 
 <style lang="scss">
 .page {
+  .searchInput {
+    background: transparent;
+  }
+
+  .searchSelects {
+    margin-bottom: 15px;
+    font-weight: bold;
+
+    .searchSelect {
+      margin-right: 20px;
+    }
+  }
+
+  .table {
+    margin-top: 20px;
+    width: 1600px;
+  }
+
+  .pagination {
+    // 居中
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+  }
 
   .waterMeterDialog {
     display: flex;
@@ -558,6 +618,7 @@ export default class SearchAll extends Vue {
     align-items: center;
     margin-top: 40px;
   }
+
   .dialogInput {
     width: 20%;
     // margin: 10px;

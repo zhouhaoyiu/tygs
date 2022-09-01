@@ -1,8 +1,50 @@
 <template>
   <div class="page">
     <Title>查询 消防栓</Title>
-    <div>
-      <div>
+    <!-- <div class="searchArea">
+      <div class="searchSelects">
+        <span>户号: </span>
+        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>名称: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>地址: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <span>口径: </span>
+        <el-select class="searchSelect">
+          <el-option
+            v-for="item in calibers"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="searchInput">
         <el-select v-model="searchBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
@@ -31,41 +73,11 @@
           重置
         </el-button>
       </div>
-      <!-- <div>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-select>
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div> -->
-    </div>
-    <!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
-      {{ people.FilledBy }}
     </div> -->
     <el-table
-      :data="displayRes"
+      :data="
+        displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
       max-height="550px"
       style="margin-top: 20px; width: 1600px"
     >
@@ -149,7 +161,7 @@
         label="定位坐标"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         align="center"
         prop="photosInTheWell"
         width="150px"
@@ -161,8 +173,8 @@
         prop="photosOutsideTheWell"
         width="150px"
         label="井外照片"
-      >
-      </el-table-column>
+      > 
+      </el-table-column>-->
       <el-table-column
         align="center"
         prop="manufactor"
@@ -222,6 +234,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      background
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      :page-size="30"
+      layout="total, prev, pager, next, jumper"
+      :total="total"
+      class="pagination"
+    >
+    </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
       {{ repairInfo }}
       <el-input v-model="addRepairText" />
@@ -350,6 +373,21 @@ export default class SearchAll extends Vue {
     status: "", //状态
   };
 
+  public handleSizeChange(val: number) {
+    this.pageSize = val;
+    console.log(`每页 ${val} 条`);
+  }
+  public handleCurrentChange(val: number) {
+    this.currentPage = val;
+  }
+  public pageSize = 30;
+  public currentPage = 1;
+
+  // 计算属性获取displayRes的长度
+  public get total(): number {
+    return this.displayRes.length;
+  }
+
   public searchFilled() {
     this.displayRes = this.res.filter((item) => {
       if (item) {
@@ -418,7 +456,11 @@ export default class SearchAll extends Vue {
 
   public async updateRepair(): Promise<void> {
     let repairInfo: string | Record<string, string>[] = this.repairInfo;
-    if (this.repairInfo === "") {
+    if (
+      this.repairInfo === "" ||
+      this.repairInfo === null ||
+      this.repairInfo === undefined
+    ) {
       repairInfo = [];
       repairInfo.push({
         text: this.addRepairText,
@@ -442,8 +484,10 @@ export default class SearchAll extends Vue {
     });
     // console.log(res);
     if (res.data.code === 0) {
+      this.$message.success(res.data.msg);
       this.addRepairText = "";
     }
+    await this.getRepair(this.repairId);
   }
 
   public async openRepair(id: number): Promise<void> {
@@ -526,9 +570,31 @@ export default class SearchAll extends Vue {
 
 <style lang="scss">
 .page {
-  .name {
-    font-size: 48px;
+  .searchInput {
+    background: transparent;
   }
+
+  .searchSelects {
+    margin-bottom: 15px;
+    font-weight: bold;
+
+    .searchSelect {
+      margin-right: 20px;
+    }
+  }
+
+  .table {
+    margin-top: 20px;
+    width: 1600px;
+  }
+  .pagination {
+    // 居中
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+  }
+
   .waterMeterDialog {
     display: flex;
     flex-wrap: wrap;
@@ -536,6 +602,7 @@ export default class SearchAll extends Vue {
     align-items: center;
     margin-top: 40px;
   }
+
   .dialogInput {
     width: 20%;
     // margin: 10px;

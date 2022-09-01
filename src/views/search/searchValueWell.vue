@@ -385,11 +385,11 @@ export default class SearchValueWell extends Vue {
   public wallInfoDialog = false;
   public wallInfoId = 0;
 
-  handleSizeChange(val: number) {
+  public handleSizeChange(val: number) {
     this.pageSize = val;
     console.log(`每页 ${val} 条`);
   }
-  handleCurrentChange(val: number) {
+  public handleCurrentChange(val: number) {
     this.currentPage = val;
   }
   public pageSize = 30;
@@ -449,7 +449,7 @@ export default class SearchValueWell extends Vue {
     //     return a.filledBy.localeCompare(b.filledBy);
     //   }
     // );
-    // 结果前100条
+
     this.displayRes = this.searchRes;
     // .slice(0, 30);
   }
@@ -490,7 +490,6 @@ export default class SearchValueWell extends Vue {
         text: this.addRepairText,
         time: new Date().toLocaleString(),
       });
-      // console.log(repairInfoArr);
     }
     const res = await this["axios"].post(
       `ValueWell/updateValueWellRepairInfoWithId`,
@@ -501,6 +500,7 @@ export default class SearchValueWell extends Vue {
     );
     // console.log(res);
     if (res.data.code === 0) {
+      this.$message.success(res.data.msg);
       this.addRepairText = "";
     }
     await this.getRepair(this.repairId);
