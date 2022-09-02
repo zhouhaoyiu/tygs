@@ -549,7 +549,7 @@ export default class SearchValueWell extends Vue {
 
   // 更新水表信息
   public async insertWaterMeterInfo(): Promise<void> {
-    this.sendWaterMeterInfo(this.waterMeterForm);
+    await this.sendWaterMeterInfo(this.waterMeterForm);
   }
 
   public async sendWaterMeterInfo(waterMeterForm: {

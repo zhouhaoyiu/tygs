@@ -478,10 +478,13 @@ export default class SearchAll extends Vue {
       });
       // console.log(repairInfoArr);
     }
-    const res = await this["axios"].post(`FireHydrant/updateRepairInfo`, {
-      id: this.repairId,
-      repairInfo: JSON.stringify(repairInfo),
-    });
+    const res = await this["axios"].post(
+      `FireHydrant/updateFireHydrantRepairInfoWithId`,
+      {
+        id: this.repairId,
+        repairInfo: JSON.stringify(repairInfo),
+      }
+    );
     // console.log(res);
     if (res.data.code === 0) {
       this.$message.success(res.data.msg);
@@ -497,11 +500,14 @@ export default class SearchAll extends Vue {
   }
 
   public async getRepair(id: number): Promise<void> {
-    const res = await this["axios"].get(`FireHydrant/getRepairInfoById`, {
-      params: {
-        id: id,
-      },
-    });
+    const res = await this["axios"].get(
+      `FireHydrant/getFireHydrantRepairInfoById`,
+      {
+        params: {
+          id: id,
+        },
+      }
+    );
     this.$message.success(res.data.msg);
     this.repairInfo = res.data.data;
   }
@@ -515,7 +521,7 @@ export default class SearchAll extends Vue {
 
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
-    const res = await this["axios"].get(`FireHydrant/getWaterMeterByWallId`, {
+    const res = await this["axios"].get(`FireHydrant/getFireHydrantWaterMeterInfoByWallId`, {
       params: {
         wallId: wallId,
       },
@@ -527,7 +533,7 @@ export default class SearchAll extends Vue {
 
   // 更新水表信息
   public async insertWaterMeterInfo(): Promise<void> {
-    this.sendWaterMeterInfo(this.waterMeterForm);
+    await this.sendWaterMeterInfo(this.waterMeterForm);
   }
 
   public async sendWaterMeterInfo(waterMeterForm: {
@@ -537,7 +543,7 @@ export default class SearchAll extends Vue {
     status: string;
   }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`FireHydrant/insertWaterMeterInfo`, {
+    const res = await this["axios"].post(`FireHydrant/insertFireHydrantWaterMeterInfo`, {
       wallId: this.waterMeterDialogId,
       waterMeterId: nanoid(),
       updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
