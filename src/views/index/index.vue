@@ -12,7 +12,7 @@
       </div>
     </div>
     <div>
-      <div style="width: 1600px; height: 450px" id="chart"></div>
+      <div style="margin-top: 40px; width: 1600px; height: 450px" id="chart"></div>
     </div>
   </div>
 </template>

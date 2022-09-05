@@ -3,7 +3,9 @@
     <Title>查询 阀门井</Title>
     <!-- <div class="searchArea">
       <div class="searchSelects">
-        <span>户号: </span>
+        <span>街道名称: </span>
+        <el-input></el-input>
+        <span>口径: </span>
         <el-select v-model="searchSelectBy.caliber" class="searchSelect">
           <el-option
             v-for="item in calibers"
@@ -13,20 +15,10 @@
           >
           </el-option>
         </el-select>
-        <span>名称: </span>
+        <span>类型: </span>
         <el-select class="searchSelect">
           <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>地址: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
+            v-for="item in wellChamberTypes"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -34,18 +26,9 @@
           </el-option>
         </el-select>
         <span>口径: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
       </div>
       <div class="searchInput">
-        <el-select v-model="searchBy" style="margin-right: 15px">
+        <el-select v-model="searchTextBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -55,7 +38,7 @@
           </el-option>
         </el-select>
         <el-input
-          @keyup.enter.native="searchFilled()"
+          @keyup.enter.native="search()"
           style="width: 400px"
           v-model="searchText"
           clearable
@@ -63,7 +46,7 @@
         >
         </el-input>
         <el-button
-          @click="searchFilled()"
+          @click="search()"
           style="margin-left: 30px"
           type="primary"
         >
@@ -351,13 +334,21 @@ import { calibers } from "./info";
   },
 })
 export default class SearchValueWell extends Vue {
-  public searchBy = "filledBy";
+  public searchTextBy = "filledBy";
   public searchText = "";
 
   public searchSelectBy = {
-    caliber: "",
+    caliber: "", // 口径
+    wellChamberType: "", // 井室类型
+    streetName: "", // 街道
   };
   public calibers: { value: string | null; label: string }[] = calibers;
+  public wellChamberTypes: { value: string | null; label: string }[] = [
+    {
+      value: "1",
+      label: "1",
+    },
+  ];
 
   public searchRes: Record<string, string>[] = [];
 
@@ -400,14 +391,26 @@ export default class SearchValueWell extends Vue {
     return this.displayRes.length;
   }
 
-  public searchFilled() {
-    this.displayRes = this.res.filter((item) => {
-      if (item) {
-        // return item[this.searchBy] === this.searchText;
-        // 匹配搜索字段
-        return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
-      }
-    });
+  public search() {
+    // 四个选项，分别是街道名称(输入)，口径(选择)，类型（选择），自选（输入）
+    // 这四个选项都是可选的，如果都不选，那么就是查询所有的数据
+    // 如果只选了街道名称，那么就是查询街道名称中包含输入的字符串的数据
+    // 如果只选了口径，那么就是查询口径为选择的口径的数据
+    // 如果只选了类型，那么就是查询类型为选择的类型的数据
+    // 如果只选了自选，那么就是查询自选中包含输入的字符串的数据
+    // 如果选了街道名称和口径，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据
+    // 如果选了街道名称和类型，那么就是查询街道名称中包含输入的字符串的数据，并且类型为选择的类型的数据
+    // 如果选了街道名称和自选，那么就是查询街道名称中包含输入的字符串的数据，并且自选中包含输入的字符串的数据
+    // 如果选了口径和类型，那么就是查询口径为选择的口径的数据，并且类型为选择的类型的数据
+    // 如果选了口径和自选，那么就是查询口径为选择的口径的数据，并且自选中包含输入的字符串的数据
+    // 如果选了类型和自选，那么就是查询类型为选择的类型的数据，并且自选中包含输入的字符串的数据
+    // 如果选了街道名称、口径和类型，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且类型为选择的类型的数据
+    // 如果选了街道名称、口径和自选，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且自选中包含输入的字符串的数据
+    // 如果选了街道名称、类型和自选，那么就是查询街道名称中包含输入的字符串的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
+    // 如果选了口径、类型和自选，那么就是查询口径为选择的口径的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
+    // 如果选了街道名称、口径、类型和自选，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
+    // 如果没有选任何条件，那么就是查询所有数据
+    this.displayRes = this.res;
   }
 
   public options: Record<string, string>[] = [
