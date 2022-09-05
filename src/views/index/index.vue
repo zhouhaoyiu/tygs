@@ -12,7 +12,10 @@
       </div>
     </div>
     <div>
-      <div style="margin-top: 40px; width: 1600px; height: 450px" id="chart"></div>
+      <div
+        style="margin-top: 40px; width: 1600px; height: 450px"
+        id="chart"
+      ></div>
     </div>
   </div>
 </template>
@@ -46,14 +49,14 @@ export default class homeIndex extends Vue {
     const chart1 = echarts.init(chartDom);
 
     let option = {
-      backgroundColor: {
-       // 白色
-        type: "pattern",
-        image: bgPatternImg,
-        repeat: "repeat",
-                // image: bgPatternImg,
-        // repeat: "repeat",
-      },
+      // backgroundColor: {
+      //   // 白色
+      //   type: "pattern",
+      //   image: bgPatternImg,
+      //   repeat: "repeat",
+      //   // image: bgPatternImg,
+      //   // repeat: "repeat",
+      // },
       title: {
         text: "数据分析",
         textStyle: {
@@ -69,7 +72,7 @@ export default class homeIndex extends Vue {
           selectedOffset: 40,
           clockwise: true,
           label: {
-           normal: {
+            normal: {
               show: true,
               position: "outside",
               formatter: "{b} {c} {d}%",
@@ -136,13 +139,13 @@ export default class homeIndex extends Vue {
     },
   ];
 
-  public goPage(path: string) {
+  public goPage(path: string): void {
     this.$router.push("/home" + path);
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page {
   .name {
     font-size: 48px;
@@ -163,6 +166,7 @@ export default class homeIndex extends Vue {
       border-radius: 5px;
       cursor: pointer;
       background: var(--primary-color);
+      box-shadow: 0 0px 5px 1px #2B5CAB55;
       color: white;
     }
     .card:hover {

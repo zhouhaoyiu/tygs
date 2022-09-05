@@ -1,6 +1,8 @@
-const calibers = [
+import { elOption, elOptionArray } from "./types";
+
+const calibers: elOptionArray = [
   {
-    value: null,
+    value: "",
     label: "无",
   },
   {
@@ -45,4 +47,38 @@ const calibers = [
   },
 ];
 
-export { calibers };
+const wellChamberTypes: elOptionArray = [
+  {
+    value: "",
+    label: "无",
+  },
+  {
+    value: "主线阀门",
+    label: "主线阀门",
+  },
+  {
+    value: "用户阀门",
+    label: "用户阀门",
+  },
+  {
+    value: "排气",
+    label: "排气",
+  },
+  {
+    value: "泄水",
+    label: "泄水",
+  },
+  {
+    value: "甩头",
+    label: "甩头",
+  },
+  {
+    value: "空头",
+    label: "空头",
+  },
+  {
+    value: "连接",
+    label: "连接",
+  },
+];
+export { calibers, wellChamberTypes };

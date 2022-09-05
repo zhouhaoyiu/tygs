@@ -155,11 +155,11 @@ export default class SideBar extends Vue {
       .catch(() => {});
   }
 
-  get routePath(): string {
+  public get routePath(): string {
     return this.$route.path.split("/")[2] || "index";
   }
 
-  get calcButtonArr(): btn[] {
+  public get calcButtonArr(): btn[] {
     return this.buttonArr.filter((button: btn) => {
       return button.role >= this.$store.getters[GET_ADMIN_INFO].adminRole;
     });
@@ -245,7 +245,7 @@ export default class SideBar extends Vue {
       width: 100%;
       justify-content: space-between;
       margin-bottom: 10px;
-
+      box-shadow: 0 0px 1px 1px #aaa;
       .button-inside {
         position: relative;
         width: 100%;
@@ -272,9 +272,10 @@ export default class SideBar extends Vue {
         width: 80%;
         height: 35px;
         border: 1px solid var(--primary-color);
-        border-radius: 12px;
-        background-color: transparent;
+        border-radius: 8px;
+        box-shadow: 0 0px 1px 1px #2b5cab55;
         color: black;
+        background-color: transparent;
         font-size: 14px;
         cursor: pointer;
       }
@@ -300,7 +301,8 @@ export default class SideBar extends Vue {
       height: 40px;
       // background-color: blue;
       // border: none;
-      border-radius: 6px;
+      border-radius: 8px;
+      box-shadow: 0 0px 5px 1px #2b5cab55;
       // border-top: 1px solid brown;
       // color: #fff;
       // font-size: 14px;

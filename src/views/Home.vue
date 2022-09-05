@@ -37,17 +37,18 @@ export default class Home extends Vue {
     localStorage.setItem("page", page);
   }
 
-  get userName(): string {
-    return this.$store.getters[GET_ADMIN_INFO].userName;
+  public get userName(): string {
+    return this.$store.getters[GET_ADMIN_INFO]?.userName || "null";
   }
 
-  get identity(): string {
+  public get identity(): string {
     let identityArr = {
       0: "超级管理员",
       1: "管理员",
     };
     return identityArr[
-      this.$store.getters[GET_ADMIN_INFO].adminRole as keyof typeof identityArr
+      (this.$store.getters[GET_ADMIN_INFO]
+        .adminRole as keyof typeof identityArr) || 1
     ];
   }
 

@@ -327,7 +327,8 @@ import Component from "vue-class-component";
 import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
-import { calibers } from "./info";
+import { calibers, wellChamberTypes } from "./info";
+import { elOptionArray, objectArray } from "./types";
 @Component({
   components: {
     Title,
@@ -342,19 +343,13 @@ export default class SearchValueWell extends Vue {
     wellChamberType: "", // 井室类型
     streetName: "", // 街道
   };
-  public calibers: { value: string | null; label: string }[] = calibers;
-  public wellChamberTypes: { value: string | null; label: string }[] = [
-    {
-      value: "1",
-      label: "1",
-    },
-  ];
+  public calibers: elOptionArray = calibers;
+  public wellChamberTypes: elOptionArray = wellChamberTypes;
 
-  public searchRes: Record<string, string>[] = [];
+  public searchRes: objectArray = [];
+  public displayRes: objectArray = [];
 
-  public formLabelWidth = "120px";
-
-  public displayRes: Record<string, string>[] = [];
+  public static formLabelWidth = "120px";
 
   public res = [];
 
@@ -376,22 +371,35 @@ export default class SearchValueWell extends Vue {
   public wallInfoDialog = false;
   public wallInfoId = 0;
 
-  public handleSizeChange(val: number) {
+  public handleSizeChange(val: number): void {
     this.pageSize = val;
-    console.log(`每页 ${val} 条`);
+    // console.log(`每页 ${val} 条`);
   }
-  public handleCurrentChange(val: number) {
+  public handleCurrentChange(val: number): void {
     this.currentPage = val;
   }
   public pageSize = 30;
   public currentPage = 1;
 
   // 计算属性获取displayRes的长度
-  get total(): number {
+  public get total(): number {
     return this.displayRes.length;
   }
 
   public search() {
+    const searchText = {
+      [this.searchTextBy]: this.searchText,
+      caliber: this.searchSelectBy.caliber,
+      wellChamberType: this.searchSelectBy.wellChamberType,
+      streetName: this.searchSelectBy.streetName,
+    };
+
+    for (const key in searchText) {
+      if (searchText[key] === "") {
+        delete searchText[key];
+      }
+    }
+
     // 四个选项，分别是街道名称(输入)，口径(选择)，类型（选择），自选（输入）
     // 这四个选项都是可选的，如果都不选，那么就是查询所有的数据
     // 如果只选了街道名称，那么就是查询街道名称中包含输入的字符串的数据

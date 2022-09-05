@@ -1,23 +1,13 @@
 <template>
   <div>
     <Title>数据录入</Title>
-    <!-- <table border="1">
-      <tr>
-        <th>Month</th>
-        <th>Savings</th>
-      </tr>
-      <tr>
-        <td>January</td>
-        <td>$100</td>
-      </tr>
-    </table> -->
     <el-radio-group v-model="inputType">
       <el-radio-button label="表卡输入"></el-radio-button>
       <el-radio-button label="信息录入"></el-radio-button>
       <!-- <el-radio-button label="广州"></el-radio-button> -->
       <!-- <el-radio-button label="深圳"></el-radio-button> -->
     </el-radio-group>
-    <div style="margin-top: 15px;" v-show="inputType === '表卡输入'">
+    <div style="margin-top: 15px" v-show="inputType === '表卡输入'">
       <input
         type="file"
         ref="upload"
@@ -75,8 +65,7 @@ export default class InputInfor extends Vue {
     );
   }
 
-  readExcel(e: { target: { files: any } }) {
-    var that = this;
+  public readExcel(e: { target: { files: any } }) {
     const files = e.target.files;
     // 如果没有文件名
     if (files.length <= 0) {
@@ -128,7 +117,7 @@ export default class InputInfor extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .outputlist_upload {
   border: none;
 }
