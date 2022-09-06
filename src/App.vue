@@ -11,9 +11,9 @@ import Component from "vue-class-component";
   components: {},
 })
 export default class App extends Vue {
-  // mounted(): void {
-  //   this["$router"].push("/login");
-  // }
+  public mounted(): void {
+    console.log("%chomeIndex mounted", "color: red; font-size: 20px");
+  }
 }
 </script>
 

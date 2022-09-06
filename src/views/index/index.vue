@@ -166,7 +166,7 @@ export default class homeIndex extends Vue {
       border-radius: 5px;
       cursor: pointer;
       background: var(--primary-color);
-      box-shadow: 0 0px 5px 1px #2B5CAB55;
+      box-shadow: 0 0px 5px 1px #2b5cab55;
       color: white;
     }
     .card:hover {

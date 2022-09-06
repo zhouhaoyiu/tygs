@@ -1,12 +1,17 @@
 <template>
   <div class="page">
     <Title>查询 阀门井</Title>
-    <!-- <div class="searchArea">
+    <div class="searchArea">
       <div class="searchSelects">
         <span>街道名称: </span>
-        <el-input></el-input>
+        <el-input disabled style="width: 200px" class="searchSelect"></el-input>
         <span>口径: </span>
-        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
+        <el-select
+          multiple
+          disabled
+          v-model="searchSelectBy.caliber"
+          class="searchSelect"
+        >
           <el-option
             v-for="item in calibers"
             :key="item.value"
@@ -16,7 +21,12 @@
           </el-option>
         </el-select>
         <span>类型: </span>
-        <el-select class="searchSelect">
+        <el-select
+          disabled
+          v-model="searchSelectBy.wellChamberType"
+          multiple
+          class="searchSelect"
+        >
           <el-option
             v-for="item in wellChamberTypes"
             :key="item.value"
@@ -25,11 +35,11 @@
           >
           </el-option>
         </el-select>
-        <span>口径: </span>
       </div>
       <div class="searchInput">
         <el-select v-model="searchTextBy" style="margin-right: 15px">
           <el-option
+            disabled
             v-for="item in options"
             :key="item.value"
             :label="item.label"
@@ -38,6 +48,7 @@
           </el-option>
         </el-select>
         <el-input
+          disabled
           @keyup.enter.native="search()"
           style="width: 400px"
           v-model="searchText"
@@ -46,17 +57,18 @@
         >
         </el-input>
         <el-button
+          disabled
           @click="search()"
           style="margin-left: 30px"
           type="primary"
         >
           搜索
         </el-button>
-        <el-button @click="clearRes()" style="margin-left: 15px">
+        <el-button disabled @click="clearRes()" style="margin-left: 15px">
           重置
         </el-button>
       </div>
-    </div> -->
+    </div>
     <el-table
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -339,10 +351,11 @@ export default class SearchValueWell extends Vue {
   public searchText = "";
 
   public searchSelectBy = {
-    caliber: "", // 口径
-    wellChamberType: "", // 井室类型
-    streetName: "", // 街道
+    caliber: [] as string[], // 口径
+    wellChamberType: [] as string[], // 井室类型
+    streetName: "" as string, // 街道
   };
+  
   public calibers: elOptionArray = calibers;
   public wellChamberTypes: elOptionArray = wellChamberTypes;
 
@@ -386,19 +399,24 @@ export default class SearchValueWell extends Vue {
     return this.displayRes.length;
   }
 
-  public search() {
+  public search(): void {
     const searchText = {
       [this.searchTextBy]: this.searchText,
-      caliber: this.searchSelectBy.caliber,
-      wellChamberType: this.searchSelectBy.wellChamberType,
+      caliber: this.searchSelectBy.caliber as string[],
+      wellChamberType: this.searchSelectBy.wellChamberType as string[],
       streetName: this.searchSelectBy.streetName,
     };
 
     for (const key in searchText) {
-      if (searchText[key] === "") {
+      if (searchText[key] === "" || searchText[key].length === 0) {
         delete searchText[key];
       }
     }
+    console.log(searchText);
+
+    this.displayRes = this.searchRes.filter((item) => {
+      return true;
+    });
 
     // 四个选项，分别是街道名称(输入)，口径(选择)，类型（选择），自选（输入）
     // 这四个选项都是可选的，如果都不选，那么就是查询所有的数据
@@ -445,7 +463,6 @@ export default class SearchValueWell extends Vue {
   ];
 
   public async mounted(): Promise<void> {
-    console.log("homeIndex mounted");
     await this.getRes();
   }
 
@@ -468,6 +485,11 @@ export default class SearchValueWell extends Vue {
   public async clearRes(): Promise<void> {
     this.searchRes = [];
     this.searchText = "";
+    this.searchSelectBy = {
+      caliber: [],
+      wellChamberType: [],
+      streetName: "",
+    };
     await this.getRes();
   }
 

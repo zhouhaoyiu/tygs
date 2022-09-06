@@ -478,7 +478,6 @@ export default class SearchAll extends Vue {
   ];
 
   public async mounted(): Promise<void> {
-    console.log("homeIndex mounted");
     await this.getRes();
   }
 

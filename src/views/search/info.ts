@@ -2,10 +2,6 @@ import { elOption, elOptionArray } from "./types";
 
 const calibers: elOptionArray = [
   {
-    value: "",
-    label: "无",
-  },
-  {
     value: "DN15",
     label: "DN15",
   },
@@ -48,10 +44,6 @@ const calibers: elOptionArray = [
 ];
 
 const wellChamberTypes: elOptionArray = [
-  {
-    value: "",
-    label: "无",
-  },
   {
     value: "主线阀门",
     label: "主线阀门",
