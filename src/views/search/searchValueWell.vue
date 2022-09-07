@@ -4,11 +4,14 @@
     <div class="searchArea">
       <div class="searchSelects">
         <span>街道名称: </span>
-        <el-input disabled style="width: 200px" class="searchSelect"></el-input>
+        <el-input
+          v-model="searchSelectBy.streetName"
+          style="width: 200px"
+          class="searchSelect"
+        ></el-input>
         <span>口径: </span>
         <el-select
           multiple
-          disabled
           v-model="searchSelectBy.caliber"
           class="searchSelect"
         >
@@ -22,7 +25,6 @@
         </el-select>
         <span>类型: </span>
         <el-select
-          disabled
           v-model="searchSelectBy.wellChamberType"
           multiple
           class="searchSelect"
@@ -39,7 +41,6 @@
       <div class="searchInput">
         <el-select v-model="searchTextBy" style="margin-right: 15px">
           <el-option
-            disabled
             v-for="item in options"
             :key="item.value"
             :label="item.label"
@@ -48,7 +49,6 @@
           </el-option>
         </el-select>
         <el-input
-          disabled
           @keyup.enter.native="search()"
           style="width: 400px"
           v-model="searchText"
@@ -56,15 +56,10 @@
           placeholder="请输入搜索字段"
         >
         </el-input>
-        <el-button
-          disabled
-          @click="search()"
-          style="margin-left: 30px"
-          type="primary"
-        >
+        <el-button @click="search()" style="margin-left: 30px" type="primary">
           搜索
         </el-button>
-        <el-button disabled @click="clearRes()" style="margin-left: 15px">
+        <el-button @click="clearRes()" style="margin-left: 15px">
           重置
         </el-button>
       </div>
@@ -149,12 +144,16 @@
         width="150px"
       >
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="positioningCoordinates"
-        width="150px"
-        label="定位坐标"
-      >
+      <el-table-column align="center" width="150px" label="定位坐标">
+        <template v-slot="scope">
+          <el-tooltip
+            class="item"
+            :content="scope.row.positioningCoordinates"
+            placement="bottom"
+          >
+            <el-button type="text" style="color: #409eff"> 查看 </el-button>
+          </el-tooltip>
+        </template>
       </el-table-column>
       <!-- <el-table-column
         align="center"
@@ -355,7 +354,7 @@ export default class SearchValueWell extends Vue {
     wellChamberType: [] as string[], // 井室类型
     streetName: "" as string, // 街道
   };
-  
+
   public calibers: elOptionArray = calibers;
   public wellChamberTypes: elOptionArray = wellChamberTypes;
 
@@ -399,7 +398,7 @@ export default class SearchValueWell extends Vue {
     return this.displayRes.length;
   }
 
-  public search(): void {
+  public async search(): Promise<void> {
     const searchText = {
       [this.searchTextBy]: this.searchText,
       caliber: this.searchSelectBy.caliber as string[],
@@ -414,29 +413,31 @@ export default class SearchValueWell extends Vue {
     }
     console.log(searchText);
 
+    // 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
+    // searchText的属性值可以是数组，包含数组中的任意一个值就可以
     this.displayRes = this.searchRes.filter((item) => {
+      for (const key in searchText) {
+        if (Array.isArray(searchText[key])) {
+          if (!searchText[key].includes(item[key])) {
+            return false;
+          }
+        } else {
+          if (!String(item[key]).includes(searchText[key] as string)) {
+            return false;
+          }
+        }
+      }
       return true;
     });
 
-    // 四个选项，分别是街道名称(输入)，口径(选择)，类型（选择），自选（输入）
-    // 这四个选项都是可选的，如果都不选，那么就是查询所有的数据
-    // 如果只选了街道名称，那么就是查询街道名称中包含输入的字符串的数据
-    // 如果只选了口径，那么就是查询口径为选择的口径的数据
-    // 如果只选了类型，那么就是查询类型为选择的类型的数据
-    // 如果只选了自选，那么就是查询自选中包含输入的字符串的数据
-    // 如果选了街道名称和口径，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据
-    // 如果选了街道名称和类型，那么就是查询街道名称中包含输入的字符串的数据，并且类型为选择的类型的数据
-    // 如果选了街道名称和自选，那么就是查询街道名称中包含输入的字符串的数据，并且自选中包含输入的字符串的数据
-    // 如果选了口径和类型，那么就是查询口径为选择的口径的数据，并且类型为选择的类型的数据
-    // 如果选了口径和自选，那么就是查询口径为选择的口径的数据，并且自选中包含输入的字符串的数据
-    // 如果选了类型和自选，那么就是查询类型为选择的类型的数据，并且自选中包含输入的字符串的数据
-    // 如果选了街道名称、口径和类型，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且类型为选择的类型的数据
-    // 如果选了街道名称、口径和自选，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且自选中包含输入的字符串的数据
-    // 如果选了街道名称、类型和自选，那么就是查询街道名称中包含输入的字符串的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
-    // 如果选了口径、类型和自选，那么就是查询口径为选择的口径的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
-    // 如果选了街道名称、口径、类型和自选，那么就是查询街道名称中包含输入的字符串的数据，并且口径为选择的口径的数据，并且类型为选择的类型的数据，并且自选中包含输入的字符串的数据
-    // 如果没有选任何条件，那么就是查询所有数据
-    this.displayRes = this.res;
+    // 解决视图不更新的问题
+    await this.$nextTick();   
+
+    // this.displayRes = this.searchRes.filter((item) => {
+    //   return true;
+    // });
+
+    // this.displayRes = this.res;
   }
 
   public options: Record<string, string>[] = [
@@ -485,6 +486,7 @@ export default class SearchValueWell extends Vue {
   public async clearRes(): Promise<void> {
     this.searchRes = [];
     this.searchText = "";
+
     this.searchSelectBy = {
       caliber: [],
       wellChamberType: [],
@@ -626,7 +628,7 @@ export default class SearchValueWell extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page {
   .searchInput {
     background: transparent;
@@ -644,6 +646,7 @@ export default class SearchValueWell extends Vue {
   .table {
     margin-top: 20px;
     width: 1600px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   }
 
   .pagination {

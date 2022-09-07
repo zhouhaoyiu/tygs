@@ -41,6 +41,18 @@ const calibers: elOptionArray = [
     value: "DN300",
     label: "DN300",
   },
+  {
+    value: "DN400",
+    label: "DN400",
+  },
+  {
+    value: "DN800",
+    label: "DN800",
+  },
+  {
+    value: "DN900",
+    label: "DN900",
+  }
 ];
 
 const wellChamberTypes: elOptionArray = [
