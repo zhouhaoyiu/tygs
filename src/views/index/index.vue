@@ -11,11 +11,9 @@
         {{ card.title }}
       </div>
     </div>
-    <div>
-      <div
-        style="margin-top: 40px; width: 1600px; height: 450px"
-        id="chart"
-      ></div>
+    <div style="margin-top: 40px">
+      <div style="width: 800px; height: 450px" id="chart"></div>
+      <div style="width: 800px; height: 450px" id="chart2"></div>
     </div>
   </div>
 </template>
@@ -33,9 +31,13 @@ import { bgPatternImg, piePatternImg } from "./image";
 })
 export default class homeIndex extends Vue {
   public async mounted() {
-    const res = await this.axios.get("/Tygs/getWaterMeterCount");
-    console.log(res);
-    this.setCharts(res.data);
+    try {
+      const res = await this.axios.get("/Tygs/getWaterMeterCount");
+      console.log(res);
+      this.setCharts(res.data);
+    } catch (err) {
+      this.$message.error("获取数据失败");
+    }
   }
 
   // echarts 饼状图

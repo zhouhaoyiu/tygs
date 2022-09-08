@@ -1,7 +1,12 @@
 <template>
   <div class="top-bar">
     <div class="logo-box">
-      <img class="logo" :src="require('../assets/tygs.png')" alt="logo" />
+      <img
+        class="logo"
+        @click="goHome()"
+        :src="require('../assets/tygs.png')"
+        alt="logo"
+      />
     </div>
     <!-- <div class="banner-box"> -->
     <!-- <img class="banner" :src="require('../assets/banner.jpg')" alt=""> -->
@@ -14,7 +19,11 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 @Component({})
-export default class TopBar extends Vue {}
+export default class TopBar extends Vue {
+  public goHome(): void {
+    this.$router.push("/");
+  }
+}
 </script>
 
 <style lang="scss">
@@ -42,6 +51,7 @@ export default class TopBar extends Vue {}
       width: 110px;
       height: 110px;
       object-fit: cover;
+      cursor: pointer;
     }
   }
   .banner-box {
