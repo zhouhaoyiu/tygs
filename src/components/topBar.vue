@@ -29,7 +29,7 @@ export default class TopBar extends Vue {
 <style lang="scss">
 .top-bar {
   width: 100%;
-  height: 120px;
+  height: 110px;
   background-color: rgba(220, 220, 220, 0.705);
   padding: 0;
   margin: 0;
@@ -48,8 +48,8 @@ export default class TopBar extends Vue {
     height: 100%;
     // border-right: 1px solid #ccc;
     .logo {
-      width: 110px;
-      height: 110px;
+      width: 100px;
+      height: 100px;
       object-fit: cover;
       cursor: pointer;
     }

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Title>卡片</Title>
-    <div>
-      城北营销分公司供水附属设施登记卡
+    <Title>城北营销分公司供水附属设施登记卡</Title>
+    <!-- <div>
+      
       <div class="card">
         <div class="cardText">设施名称</div>
         <div class="cardText">阀门井</div>
@@ -20,7 +20,35 @@
         <div class="cardText"></div>
         <div class="cardText"></div>
       </div>
-    </div>
+    </div> -->
+    <el-descriptions
+      class="margin-top"
+      style="width: 700px"
+      :column="3"
+      size="small"
+      border
+    >
+      <el-descriptions-item>
+        <template slot="label">设施名称</template>
+        阀门井
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">使用状态</template>
+        正常
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">所属管线</template>
+        白龙庙街DN300球墨铸铁给水管线（北线）
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">井室编号</template>
+        13
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template slot="label">联系地址</template>
+        江苏省苏州市吴中区吴中大道 1188 号
+      </el-descriptions-item>
+    </el-descriptions>
   </div>
 </template>
 

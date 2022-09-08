@@ -74,15 +74,11 @@ export default class homeIndex extends Vue {
           selectedOffset: 40,
           clockwise: true,
           label: {
-            normal: {
-              show: true,
-              position: "outside",
-              formatter: "{b} {c} {d}%",
-              textStyle: {
-                color: "#235894",
-                fontSize: 14,
-              },
-            },
+            show: true,
+            position: "outside",
+            formatter: "{b} {c} {d}%",
+            color: "#235894",
+            fontSize: 14,
           },
           labelLine: {
             lineStyle: {

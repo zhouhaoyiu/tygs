@@ -63,6 +63,6 @@ export default class Home extends Vue {
 .home {
   display: flex;
   width: 100%;
-  height: calc(100% - 120px);
+  height: calc(100% - 110px);
 }
 </style>

@@ -22,6 +22,7 @@ export default class Title extends Vue {
   font-size: 44px;
   font-weight: bold;
   color: #9e9e9e;
+  user-select: none; 
   // padding-bottom: 10px;
 }
 </style>

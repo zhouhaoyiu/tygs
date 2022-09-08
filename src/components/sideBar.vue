@@ -3,7 +3,8 @@
     <div class="info">
       <div class="info-title">欢迎您</div>
       <div class="info-name">{{ userName }}</div>
-      <div class="info-name">{{ identity }}</div>
+      <!-- <div class="info-name">{{ identity }}</div> -->
+      <div class="info-time">{{ timeNow }}</div>
     </div>
     <div class="buttons">
       <div
@@ -46,6 +47,7 @@
 
 <script lang="ts">
 import { GET_ADMIN_INFO } from "@/store/type/getter-type";
+import dayjs from "dayjs";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { btn } from "./type";
@@ -61,6 +63,19 @@ export default class SideBar extends Vue {
 
   public index = 0;
   public childrenIndex = 0;
+  public timeNow = dayjs().format("YYYY-MM-DD HH:mm:ss");
+  public timeInterval: any = null;
+
+  public mounted(): void {
+    this.timeInterval = setInterval(() => {
+      this.timeNow = dayjs().format("YYYY-MM-DD HH:mm:ss");
+    }, 1000);
+  }
+
+  // 销毁组件时清除定时器
+  public beforeDestroy(): void {
+    clearInterval(this.timeInterval);
+  }
 
   public buttonArr: btn[] = [
     {
@@ -219,17 +234,20 @@ export default class SideBar extends Vue {
     justify-content: center;
     align-items: center;
     padding: 15px 0;
-    height: 120px;
+    height: 140px;
 
     .info-title {
-      margin-bottom: 10px;
+      margin-top: 12px;
       font-size: 20px;
       font-weight: bold;
     }
 
     .info-name {
-      margin-bottom: 10px;
-      font-size: 16px;
+      margin-top: 12px;
+    }
+    .info-time{
+      margin-top: 12px;
+      margin-bottom: 12px;
     }
   }
 
@@ -273,7 +291,7 @@ export default class SideBar extends Vue {
         height: 35px;
         border: 1px solid var(--primary-color);
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
         color: black;
         background-color: transparent;
         font-size: 14px;
