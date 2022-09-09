@@ -56,15 +56,28 @@
           placeholder="请输入搜索字段"
         >
         </el-input>
-        <el-button @click="search()" style="margin-left: 30px" type="primary">
+        <el-button
+          :loading="searchLoading"
+          @click="search()"
+          style="margin-left: 30px"
+          type="primary"
+        >
           搜索
         </el-button>
         <el-button @click="clearRes()" style="margin-left: 15px">
           重置
         </el-button>
+        <el-button
+          type="success"
+          round
+          @click="exportExcel()"
+          :loading="exportLoading"
+          >导出<i class="el-icon-download el-icon--right"></i
+        ></el-button>
       </div>
     </div>
     <el-table
+      v-loading="tableLoading"
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
@@ -93,13 +106,13 @@
         label="填写时间"
       >
       </el-table-column>
-      <el-table-column
+      <!-- <el-table-column
         align="center"
         prop="customerType"
         width="150px"
         label="用户类型"
-      >
-      </el-table-column>
+      > 
+      </el-table-column>-->
       <el-table-column
         align="center"
         prop="accountIdentifier"
@@ -340,14 +353,15 @@ import { nanoid } from "nanoid";
 import dayjs from "dayjs";
 import { calibers, wellChamberTypes } from "./info";
 import { elOptionArray, objectArray } from "./types";
+import { utils, writeFileXLSX } from "xlsx";
 @Component({
   components: {
     Title,
   },
 })
 export default class SearchValueWell extends Vue {
-  public searchTextBy = "filledBy";
-  public searchText = "";
+  public searchTextBy: string = "filledBy";
+  public searchText: string = "";
 
   public searchSelectBy = {
     caliber: [] as string[], // 口径
@@ -363,7 +377,10 @@ export default class SearchValueWell extends Vue {
 
   public static formLabelWidth = "120px";
 
-  public res = [];
+  // public res = [];
+  public exportLoading = false;
+  public searchLoading = false;
+  public tableLoading = false;
 
   public repairDialog = false;
   public repairId = 0;
@@ -399,6 +416,8 @@ export default class SearchValueWell extends Vue {
   }
 
   public async search(): Promise<void> {
+    this.searchLoading = true;
+    this.tableLoading = true;
     const searchText = {
       [this.searchTextBy]: this.searchText,
       caliber: this.searchSelectBy.caliber as string[],
@@ -411,27 +430,31 @@ export default class SearchValueWell extends Vue {
         delete searchText[key];
       }
     }
-    console.log(searchText);
-
     // 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
     // searchText的属性值可以是数组，包含数组中的任意一个值就可以
-    this.displayRes = this.searchRes.filter((item) => {
-      for (const key in searchText) {
-        if (Array.isArray(searchText[key])) {
-          if (!searchText[key].includes(item[key])) {
-            return false;
-          }
-        } else {
-          if (!String(item[key]).includes(searchText[key] as string)) {
-            return false;
+    const promise = new Promise<void>((resolve, _) => {
+      this.displayRes = this.searchRes.filter((item) => {
+        for (const key in searchText) {
+          if (Array.isArray(searchText[key])) {
+            if (!searchText[key].includes(item[key])) {
+              return false;
+            }
+          } else {
+            if (!String(item[key]).includes(searchText[key] as string)) {
+              return false;
+            }
           }
         }
-      }
-      return true;
+        return true;
+      });
+      resolve();
     });
+    await promise;
+    this.searchLoading = false;
+    this.tableLoading = false;
 
     // 解决视图不更新的问题
-    await this.$nextTick();   
+    await this.$nextTick();
 
     // this.displayRes = this.searchRes.filter((item) => {
     //   return true;
@@ -467,20 +490,41 @@ export default class SearchValueWell extends Vue {
     await this.getRes();
   }
 
+  // 导出displayRes为excel表格，表头为displayRes的属性名
+  // 使用xlsx库
+  public exportExcel() {
+    this.exportLoading = true;
+    // 等待生成完成使用promise
+    const promise = new Promise<void>((resolve, _) => {
+      const data = this.displayRes;
+      const ws = utils.json_to_sheet(data);
+      const wb = utils.book_new();
+      utils.book_append_sheet(wb, ws, "SheetJS");
+      writeFileXLSX(wb, "SheetJS.xlsx");
+      resolve();
+    });
+    promise.then(() => {
+      this.exportLoading = false;
+    });
+  }
+
   public async getRes(): Promise<void> {
+    this.tableLoading = true;
     const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
-    this.res = res.data;
-    // console.log(this.res);
+
     // this.$store.commit(SET_INFO, res.data);
     this.searchRes = res.data;
+
     // .sort(
     //   (a: { filledBy: string }, b: { filledBy: string }) => {
     //     return a.filledBy.localeCompare(b.filledBy);
     //   }
     // );
-
     this.displayRes = this.searchRes;
+    // this.displayRes = _.cloneDeep(this.searchRes);
     // .slice(0, 30);
+
+    this.tableLoading = false;
   }
 
   public async clearRes(): Promise<void> {
@@ -495,8 +539,8 @@ export default class SearchValueWell extends Vue {
     await this.getRes();
   }
 
-  public modify(FilledBy: any): void {
-    console.log(FilledBy);
+  public modify(id: number): void {
+    console.log(id);
   }
 
   public seeDetail(FilledBy: any): void {
@@ -604,7 +648,7 @@ export default class SearchValueWell extends Vue {
       }
     );
 
-    console.log(res);
+    // console.log(res);
     if (res.data.code === 0) {
       this.waterMeterForm = {
         paymentNumber: "", //缴费号

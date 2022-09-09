@@ -4,6 +4,11 @@ import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return (originalPush as any).call(this, location).catch((err: any) => err);
+};
+
 const routes: Array<RouteConfig> = [
   {
     path: "/",
