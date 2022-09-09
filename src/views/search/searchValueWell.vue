@@ -25,8 +25,8 @@
         </el-select>
         <span>类型: </span>
         <el-select
-          v-model="searchSelectBy.wellChamberType"
           multiple
+          v-model="searchSelectBy.wellChamberType"
           class="searchSelect"
         >
           <el-option
@@ -418,6 +418,7 @@ export default class SearchValueWell extends Vue {
   public async search(): Promise<void> {
     this.searchLoading = true;
     this.tableLoading = true;
+
     const searchText = {
       [this.searchTextBy]: this.searchText,
       caliber: this.searchSelectBy.caliber as string[],
@@ -450,17 +451,12 @@ export default class SearchValueWell extends Vue {
       resolve();
     });
     await promise;
+
     this.searchLoading = false;
     this.tableLoading = false;
 
     // 解决视图不更新的问题
     await this.$nextTick();
-
-    // this.displayRes = this.searchRes.filter((item) => {
-    //   return true;
-    // });
-
-    // this.displayRes = this.res;
   }
 
   public options: Record<string, string>[] = [
@@ -477,10 +473,6 @@ export default class SearchValueWell extends Vue {
     //   label: "编号",
     // },
     // {
-    //   value: "caliber",
-    //   label: "口径",
-    // },
-    // {
     //   value: "waterNature",
     //   label: "用水性质",
     // },
@@ -490,11 +482,9 @@ export default class SearchValueWell extends Vue {
     await this.getRes();
   }
 
-  // 导出displayRes为excel表格，表头为displayRes的属性名
-  // 使用xlsx库
   public exportExcel() {
     this.exportLoading = true;
-    // 等待生成完成使用promise
+
     const promise = new Promise<void>((resolve, _) => {
       const data = this.displayRes;
       const ws = utils.json_to_sheet(data);
@@ -510,16 +500,16 @@ export default class SearchValueWell extends Vue {
 
   public async getRes(): Promise<void> {
     this.tableLoading = true;
-    const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
 
+    const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
     // this.$store.commit(SET_INFO, res.data);
     this.searchRes = res.data;
-
     // .sort(
     //   (a: { filledBy: string }, b: { filledBy: string }) => {
     //     return a.filledBy.localeCompare(b.filledBy);
     //   }
     // );
+    
     this.displayRes = this.searchRes;
     // this.displayRes = _.cloneDeep(this.searchRes);
     // .slice(0, 30);
