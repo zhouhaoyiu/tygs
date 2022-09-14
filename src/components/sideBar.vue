@@ -32,6 +32,11 @@
             class="button-child-inside"
             :disabled="childrenBtn.disable ? true : false"
             :class="getChildActive(childrenBtn.path) ? 'active' : ''"
+            :style="
+              childrenBtn.disable
+                ? 'color: #eee;background:#aaa;border-color:#aaa;cursor: not-allowed;'
+                : ''
+            "
             v-for="(childrenBtn, childrenBtnIndex) in button.children"
             :key="childrenBtnIndex"
           >
