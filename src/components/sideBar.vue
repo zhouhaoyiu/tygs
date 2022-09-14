@@ -30,6 +30,7 @@
           <button
             @click="emitGoChildPage(childrenBtn.path, childrenBtnIndex)"
             class="button-child-inside"
+            :disabled="childrenBtn.disable ? true : false"
             :class="getChildActive(childrenBtn.path) ? 'active' : ''"
             v-for="(childrenBtn, childrenBtnIndex) in button.children"
             :key="childrenBtnIndex"
@@ -112,6 +113,12 @@ export default class SideBar extends Vue {
           name: "消火栓",
           path: "searchFireHydrant",
           role: 1,
+        },
+        {
+          name: "水表信息",
+          path: "searchWell",
+          role: 1,
+          disable: true,
         },
       ],
     },
@@ -245,7 +252,7 @@ export default class SideBar extends Vue {
     .info-name {
       margin-top: 12px;
     }
-    .info-time{
+    .info-time {
       margin-top: 12px;
       margin-bottom: 12px;
     }

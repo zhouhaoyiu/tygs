@@ -5,4 +5,5 @@ export type btn = {
   strict?: boolean;
   role: number;
   icon?: string;
+  disable?: boolean;
 };

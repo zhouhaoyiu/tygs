@@ -68,6 +68,7 @@
           重置
         </el-button>
         <el-button
+          disabled
           type="success"
           round
           @click="exportExcel()"
@@ -354,6 +355,7 @@ import dayjs from "dayjs";
 import { calibers, wellChamberTypes } from "./info";
 import { elOptionArray, objectArray } from "./types";
 import { utils, writeFileXLSX } from "xlsx";
+import { Watch } from "vue-property-decorator";
 @Component({
   components: {
     Title,
@@ -482,6 +484,11 @@ export default class SearchValueWell extends Vue {
     await this.getRes();
   }
 
+  // @Watch("exportLoading")
+  // public watchExportLoading(): void {
+  //   console.log("exportLoading", this.exportLoading);
+  // }
+
   public exportExcel() {
     this.exportLoading = true;
 
@@ -489,11 +496,29 @@ export default class SearchValueWell extends Vue {
       const data = this.displayRes;
       const ws = utils.json_to_sheet(data);
       const wb = utils.book_new();
+
+      // 根据搜索条件+时间生成文件名
+      const searchText = this.searchText ? this.searchText : "空";
+      const searchTextBy = this.searchTextBy === "filledBy" ? "填写人" : "";
+      const caliber = this.searchSelectBy.caliber
+        ? this.searchSelectBy.caliber.join(",")
+        : "";
+      const wellChamberType = this.searchSelectBy.wellChamberType
+        ? this.searchSelectBy.wellChamberType.join(",")
+        : "";
+      const streetName = this.searchSelectBy.streetName
+        ? this.searchSelectBy.streetName
+        : "";
+      // 详细到时分秒
+      const time = "+" + dayjs().format("YYYY-MM-DD HH:mm:ss");
+      const fileName = `${searchTextBy}+${searchText}+${caliber}+${wellChamberType}+${streetName}+${time}`;
+
       utils.book_append_sheet(wb, ws, "SheetJS");
-      writeFileXLSX(wb, "SheetJS.xlsx");
+      writeFileXLSX(wb, fileName);
       resolve();
     });
     promise.then(() => {
+      console.log("导出成功");
       this.exportLoading = false;
     });
   }
@@ -509,7 +534,7 @@ export default class SearchValueWell extends Vue {
     //     return a.filledBy.localeCompare(b.filledBy);
     //   }
     // );
-    
+
     this.displayRes = this.searchRes;
     // this.displayRes = _.cloneDeep(this.searchRes);
     // .slice(0, 30);

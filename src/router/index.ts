@@ -68,6 +68,14 @@ const routes: Array<RouteConfig> = [
           ),
       },
       {
+        path: "searchWell",
+        name: "searchWell",
+        component: () =>
+          import(
+            /* webpackChunkName: "searchWell" */ "../views/search/searchWell.vue"
+          ),
+      },
+      {
         path: "card",
         name: "card",
         component: () =>
