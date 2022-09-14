@@ -14,7 +14,7 @@
     "core-js": "^3.25.1",
     "dayjs": "^1.11.1",
     "echarts": "^5.3.3",
-    "element-ui": "^2.15.6",
+    "element-ui": "^2.15.10",
     "jsencrypt": "^3.2.1",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.0",
