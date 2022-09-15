@@ -123,7 +123,7 @@ export default class SideBar extends Vue {
           name: "水表信息",
           path: "searchWell",
           role: 1,
-          disable: true,
+          disable: false,
         },
       ],
     },
@@ -140,10 +140,9 @@ export default class SideBar extends Vue {
   ];
 
   public emitGoPage(path: string, index: number): void {
-    if (!this.buttonArr[index].children) {
+    if (!this.buttonArr[index]?.children) {
       this.$emit("goPage", path);
-      this.index = index;
-      console.log(this.index);
+      this.index = index ? index : 0;
     } else {
       if (this.index !== index) {
         if (this.buttonArr[index].children!.length > 0) {
@@ -162,6 +161,7 @@ export default class SideBar extends Vue {
   public setIndex(index: number): void {
     this.index = index;
   }
+
   public setChildrenIndex(index: number): void {
     this.childrenIndex = index;
   }

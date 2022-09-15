@@ -11,7 +11,7 @@
         {{ card.title }}
       </div>
     </div>
-    <div style="margin-top: 40px">
+    <div style="margin-top: 40px; display: flex">
       <div style="width: 800px; height: 450px" id="chart"></div>
       <div style="width: 800px; height: 450px" id="chart2"></div>
     </div>
