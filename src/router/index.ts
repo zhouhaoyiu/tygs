@@ -6,7 +6,7 @@ Vue.use(VueRouter);
 
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location) {
-  return (originalPush as any).call(this, location).catch((err: any) => err);
+  return (originalPush as Function).call(this, location).catch((err: Error) => err);
 };
 
 const routes: Array<RouteConfig> = [
@@ -94,27 +94,18 @@ const routes: Array<RouteConfig> = [
   // {
   //   path: '/about',
   //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
   //   component: () =>
   //     import(/* webpackChunkName: "about" */ '../views/About.vue')
   // },
   {
     path: "/login",
     name: "Login",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "Login" */ "../views/Login.vue"),
   },
   {
     path: "/regis",
     name: "Regis",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "Regis" */ "../views/Regis.vue"),
   },

@@ -20,8 +20,11 @@ Vue.prototype.$axios.defaults.baseURL = "http://localhost:8090/";
 Vue.use(VueAxios, axios);
 Vue.use(Vuex);
 
-new Vue({
+const app = new Vue({
   router,
   store,
   render: (h) => h(App),
-}).$mount("#app");
+});
+(window as any).vueTest = app;
+console.log(app);
+app.$mount("#app");

@@ -50,7 +50,7 @@ export default class homeIndex extends Vue {
     const chartDom = document.getElementById("chart")!;
     const chart1 = echarts.init(chartDom);
 
-    let option = {
+    let option: echarts.EChartsOption = {
       // backgroundColor: {
       //   // 白色
       //   type: "pattern",
@@ -65,7 +65,6 @@ export default class homeIndex extends Vue {
           color: "#235894",
         },
       },
-      tooltip: {},
       series: [
         {
           name: "pie",
@@ -103,7 +102,7 @@ export default class homeIndex extends Vue {
         },
       ],
     };
-    option && chart1.setOption(option as any);
+    option && chart1.setOption(option);
   }
 
   public cardArr: Record<string, string>[] = [
