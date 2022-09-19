@@ -1,6 +1,10 @@
 <template>
   <div class="page">
     <Title>查询 表井</Title>
+    <!-- <div>编号</div>
+    <div>户号</div>
+    <div>缴费号</div>
+    <div>街道地址</div> -->
     <!-- <div class="searchArea">
       <div class="searchSelects">
         <span>户号: </span>

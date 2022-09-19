@@ -100,13 +100,13 @@
       >
       </el-table-column>
 
-      <el-table-column
+      <!-- <el-table-column
         align="center"
         prop="fillingTime"
         width="150px"
         label="填写时间"
       >
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column
         align="center"
         prop="customerType"
@@ -188,34 +188,6 @@
         prop="manufactor"
         width="150px"
         label="厂家"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="personLiable"
-        width="150px"
-        label="责任人"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="troubleshootingTime"
-        width="150px"
-        label="排查时间"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="runTime"
-        width="150px"
-        label="运行时间"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="repairTime"
-        width="150px"
-        label="修复时间"
       >
       </el-table-column>
 
