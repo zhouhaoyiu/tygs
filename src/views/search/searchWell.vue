@@ -37,7 +37,7 @@
       ></el-table-column>
       <el-table-column prop="sbkj" label="水表口径"></el-table-column>
       <el-table-column prop="sbh" label="水表号"></el-table-column>
-      <el-table-column prop="ycbh" label="远传标号"></el-table-column>
+      <el-table-column prop="ycbh" label="远传表号"></el-table-column>
       <el-table-column prop="cjsj" label="创建时间"></el-table-column>
       <el-table-column prop="lxr" label="联系人"></el-table-column>
       <el-table-column prop="lxdh" label="联系电话"></el-table-column>
@@ -69,33 +69,20 @@ export default class SearchWell extends Vue {
   public searchBy = "mc";
   public currentPage = 1;
   public displayRes = [];
-  public pageSize = 30;
-  public listLength = 0;
+  public pageSize = 30; // 每页显示的条数
+  public listLength = 0; //
 
   public options = [
     { value: "mc", label: "名称" },
     { value: "jfh", label: "缴费号" },
     { value: "hh", label: "户号" },
-    { value: "dz", label: "地址" },
+    { value: "xxdz", label: "地址" },
   ];
 
   public async searchInfoBySearch(): Promise<void> {
     this.currentPage = 1;
-    // await getInfoBySearch();
-    switch (this.searchBy) {
-      case "mc":
-        await this.getInfoBy("Name", "mc");
-        break;
-      case "jfh":
-        await this.getInfoBy("Jfh", "jfh");
-        break;
-      case "hh":
-        await this.getInfoBy("Hh", "hh");
-        break;
-      case "dz":
-        await this.getInfoBy("Dz", "dz");
-        break;
-    }
+
+    await this.getInfoBySearchBy();
   }
 
   public async getInfoBy(By: string, Param: string): Promise<void> {
@@ -139,6 +126,10 @@ export default class SearchWell extends Vue {
       return;
     }
 
+    await this.getInfoBySearchBy();
+  }
+
+  public async getInfoBySearchBy(): Promise<void> {
     switch (this.searchBy) {
       case "mc":
         await this.getInfoBy("Name", "mc");
@@ -149,11 +140,8 @@ export default class SearchWell extends Vue {
       case "hh":
         await this.getInfoBy("Hh", "hh");
         break;
-      case "dz":
-        await this.getInfoBy("Dz", "dz");
-        break;
-      default:
-        await this.getInfo();
+      case "xxdz":
+        await this.getInfoBy("Xxdz", "xxdz");
         break;
     }
   }
