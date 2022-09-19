@@ -590,7 +590,7 @@ export default class SearchAll extends Vue {
   .searchSelects {
     margin-bottom: 15px;
     font-weight: bold;
-        .searchSelect {
+    .searchSelect {
       margin-right: 20px;
     }
   }
