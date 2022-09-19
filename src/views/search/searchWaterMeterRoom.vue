@@ -582,26 +582,22 @@ export default class SearchAll extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .page {
   .searchInput {
     background: transparent;
   }
-
   .searchSelects {
     margin-bottom: 15px;
     font-weight: bold;
-
-    .searchSelect {
+        .searchSelect {
       margin-right: 20px;
     }
   }
-
   .table {
     margin-top: 20px;
     width: 1600px;
   }
-
   .pagination {
     // 居中
     display: flex;
@@ -609,7 +605,6 @@ export default class SearchAll extends Vue {
     align-items: center;
     margin-top: 15px;
   }
-
   .waterMeterDialog {
     display: flex;
     flex-wrap: wrap;
@@ -617,7 +612,6 @@ export default class SearchAll extends Vue {
     align-items: center;
     margin-top: 40px;
   }
-
   .dialogInput {
     width: 20%;
     // margin: 10px;

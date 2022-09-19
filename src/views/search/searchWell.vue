@@ -36,15 +36,15 @@
         width="300"
       ></el-table-column>
       <el-table-column prop="sbkj" label="水表口径"></el-table-column>
-      <el-table-column prop="sbh" label="sbh"></el-table-column>
-      <el-table-column prop="ycbh" label="ycbh"></el-table-column>
+      <el-table-column prop="sbh" label="水表号"></el-table-column>
+      <el-table-column prop="ycbh" label="远传标号"></el-table-column>
       <el-table-column prop="cjsj" label="创建时间"></el-table-column>
       <el-table-column prop="lxr" label="联系人"></el-table-column>
       <el-table-column prop="lxdh" label="联系电话"></el-table-column>
     </el-table>
     <el-pagination
       background
-      layout="prev, pager, next"
+      layout="prev, pager, next,total"
       :total="listLength"
       :page-size="pageSize"
       :current-page="currentPage"
