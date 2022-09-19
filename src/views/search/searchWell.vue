@@ -66,7 +66,7 @@ import Component from "vue-class-component";
 })
 export default class SearchWell extends Vue {
   public searchText = "";
-  public searchBy = "名称";
+  public searchBy = "mc";
   public currentPage = 1;
   public displayRes = [];
   public pageSize = 30;
