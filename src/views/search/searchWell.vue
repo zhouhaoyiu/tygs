@@ -1,14 +1,14 @@
 <template>
   <div>
-    <Title>水表信息</Title>
+    <Title>水表信息(户表)</Title>
     <div class="searchArea">
       <div class="searchClass">
         <el-select width="240px" v-model="searchBy" style="margin-right: 20px">
           <el-option
             v-for="item in options"
-            :key="item"
+            :key="item.value"
             :label="item.label"
-            :value="item"
+            :value="item.value"
           ></el-option>
         </el-select>
         <el-input
@@ -18,8 +18,8 @@
           @keyup.enter.native="searchInfoBySearch"
         />
       </div>
-      <el-button type="success" @click="searchInfoBySearch()">search</el-button>
-      <el-button @click="resetInfo()"> reset </el-button>
+      <el-button type="success" @click="searchInfoBySearch()">搜索</el-button>
+      <el-button @click="resetInfo()"> 重置 </el-button>
     </div>
     <el-table
       border
@@ -27,15 +27,20 @@
       :data="displayRes"
       style="width: 100%; height: 575px"
     >
-      <el-table-column prop="jfh" label="jfh"> </el-table-column>
-      <el-table-column prop="mc" label="mc"></el-table-column>
-      <el-table-column prop="dz" label="dz" width="300"></el-table-column>
-      <el-table-column prop="sbkj" label="sbkj"></el-table-column>
+      <el-table-column prop="jfh" label="缴费号"> </el-table-column>
+      <el-table-column prop="hh" label="户号"> </el-table-column>
+      <el-table-column prop="mc" label="名称"></el-table-column>
+      <el-table-column
+        prop="xxdz"
+        label="详细地址"
+        width="300"
+      ></el-table-column>
+      <el-table-column prop="sbkj" label="水表口径"></el-table-column>
       <el-table-column prop="sbh" label="sbh"></el-table-column>
       <el-table-column prop="ycbh" label="ycbh"></el-table-column>
-      <el-table-column prop="cjsj" label="cjsj"></el-table-column>
-      <el-table-column prop="lxr" label="lxr"></el-table-column>
-      <el-table-column prop="lxdh" label="lxdh"></el-table-column>
+      <el-table-column prop="cjsj" label="创建时间"></el-table-column>
+      <el-table-column prop="lxr" label="联系人"></el-table-column>
+      <el-table-column prop="lxdh" label="联系电话"></el-table-column>
     </el-table>
     <el-pagination
       background
@@ -61,7 +66,7 @@ import Component from "vue-class-component";
 })
 export default class SearchWell extends Vue {
   public searchText = "";
-  public searchBy = "mc";
+  public searchBy = "名称";
   public currentPage = 1;
   public displayRes = [];
   public pageSize = 30;
@@ -70,6 +75,7 @@ export default class SearchWell extends Vue {
   public options = [
     { value: "mc", label: "名称" },
     { value: "jfh", label: "缴费号" },
+    { value: "hh", label: "户号" },
     { value: "dz", label: "地址" },
   ];
 
@@ -82,6 +88,9 @@ export default class SearchWell extends Vue {
         break;
       case "jfh":
         await this.getInfoBy("Jfh", "jfh");
+        break;
+      case "hh":
+        await this.getInfoBy("Hh", "hh");
         break;
       case "dz":
         await this.getInfoBy("Dz", "dz");
@@ -136,6 +145,9 @@ export default class SearchWell extends Vue {
         break;
       case "jfh":
         await this.getInfoBy("Jfh", "jfh");
+        break;
+      case "hh":
+        await this.getInfoBy("Hh", "hh");
         break;
       case "dz":
         await this.getInfoBy("Dz", "dz");

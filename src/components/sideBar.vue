@@ -120,7 +120,7 @@ export default class SideBar extends Vue {
           role: 1,
         },
         {
-          name: "水表信息",
+          name: "水表信息(户表)",
           path: "searchWell",
           role: 1,
           disable: false,
