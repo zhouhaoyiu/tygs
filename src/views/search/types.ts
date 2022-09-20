@@ -9,4 +9,11 @@ type objectArray = {
   [key: string]: string;
 }[];
 
-export { elOption, elOptionArray, objectArray };
+type repairInfoArray = {
+  text: string;
+  repairTime: string;
+  remarks: string;
+  time: string;
+}[];
+
+export { elOption, elOptionArray, objectArray, repairInfoArray };

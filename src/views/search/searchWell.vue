@@ -18,7 +18,7 @@
           @keyup.enter.native="searchInfoBySearch"
         />
       </div>
-      <el-button type="success" @click="searchInfoBySearch()">搜索</el-button>
+      <el-button type="primary" @click="searchInfoBySearch()">搜索</el-button>
       <el-button @click="resetInfo()"> 重置 </el-button>
     </div>
     <el-table
@@ -27,20 +27,46 @@
       :data="displayRes"
       style="width: 100%; height: 575px"
     >
-      <el-table-column prop="jfh" label="缴费号"> </el-table-column>
-      <el-table-column prop="hh" label="户号"> </el-table-column>
-      <el-table-column prop="mc" label="名称"></el-table-column>
+      <el-table-column align="center" prop="jfh" label="缴费号">
+      </el-table-column>
+      <el-table-column align="center" prop="hh" label="户号"> </el-table-column>
+      <el-table-column align="center" prop="mc" label="名称"></el-table-column>
       <el-table-column
+        align="center"
         prop="xxdz"
         label="详细地址"
         width="300"
       ></el-table-column>
-      <el-table-column prop="sbkj" label="水表口径"></el-table-column>
-      <el-table-column prop="sbh" label="水表号"></el-table-column>
-      <el-table-column prop="ycbh" label="远传表号"></el-table-column>
-      <el-table-column prop="cjsj" label="创建时间"></el-table-column>
-      <el-table-column prop="lxr" label="联系人"></el-table-column>
-      <el-table-column prop="lxdh" label="联系电话"></el-table-column>
+      <el-table-column
+        align="center"
+        prop="sbkj"
+        label="水表口径"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="sbh"
+        label="水表号"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="ycbh"
+        label="远传表号"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="cjsj"
+        label="创建时间"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="lxr"
+        label="联系人"
+      ></el-table-column>
+      <el-table-column
+        align="center"
+        prop="lxdh"
+        label="联系电话"
+      ></el-table-column>
     </el-table>
     <el-pagination
       background

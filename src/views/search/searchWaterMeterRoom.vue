@@ -75,6 +75,9 @@
       </div>
     </div> -->
     <el-table
+      border
+      stripe
+      v-loading="tableLoading"
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
@@ -244,10 +247,45 @@
       class="pagination"
     >
     </el-pagination>
-    <el-dialog title="维修记录" :visible.sync="repairDialog">
-      {{ repairInfo }}
-      <el-input v-model="addRepairText" />
-      <el-button @click="updateRepair()">添加</el-button>
+    <el-dialog
+      title="维修记录"
+      :visible.sync="repairDialog"
+      :close-on-click-modal="false"
+    >
+      <div style="height: 400px">
+        <div
+          v-for="repairInfoSingle in repairInfo"
+          :key="repairInfoSingle.time + Math.random()"
+        >
+          {{ repairInfoSingle }}
+        </div>
+      </div>
+      <el-input
+        style="width: 240px; margin-right: 24px"
+        v-model="addRepairText"
+        placeholder="请输入维修记录"
+      />
+      <el-date-picker
+        v-model="addRepairTime"
+        type="date"
+        placeholder="选择日期"
+        :picker-options="pickerOptions"
+        style="width: 240px; margin-right: 12px"
+      />
+      <el-input
+        v-model="addRepairRemarks"
+        type="textarea"
+        style="margin-top: 12px"
+        placeholder="请输入维修备注"
+      />
+
+      <el-button
+        :disabled="updateRepairDisabled"
+        style="margin-top: 12px"
+        @click="updateRepair()"
+      >
+        添加
+      </el-button>
     </el-dialog>
     <el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
       <!-- {{ waterMeterInfo }}  -->
@@ -334,33 +372,45 @@
 </template>
 
 <script lang="ts">
-import { SET_INFO } from "@/store/type/mutation-type";
 import _ from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
+import { objectArray, repairInfoArray } from "./types";
 @Component({
   components: {
     Title,
   },
 })
 export default class SearchAll extends Vue {
-  public searchBy = "filledBy";
-  public searchText = "";
-  public searchRes: Record<string, string>[] = [];
+  public pickerOptions = {};
 
-  public formLabelWidth = "120px";
+  public searchBy: string = "filledBy";
+  public searchText: string = "";
 
-  public displayRes: Record<string, string>[] = [];
+  public searchSelectBy = {
+    caliber: [] as string[], // 口径
+    wellChamberType: [] as string[], // 井室类型
+    streetName: "" as string, // 街道
+  };
 
-  public res = [];
+  public displayRes: objectArray = [];
+  public searchRes: objectArray = [];
+
+  public static formLabelWidth = "120px";
+
+  public exportLoading = false;
+  public searchLoading = false;
+  public tableLoading = false;
 
   public repairDialog = false;
   public repairId = 0;
-  public repairInfo = "";
+  public repairInfo: repairInfoArray = [];
   public addRepairText = ""; // 新增的维修记录
+  public addRepairTime = ""; // 新增的维修时间
+  public addRepairRemarks = ""; // 新增的维修备注
 
   public waterMeterDialog = false;
   public waterMeterDialogId = 0;
@@ -377,7 +427,6 @@ export default class SearchAll extends Vue {
 
   public handleSizeChange(val: number) {
     this.pageSize = val;
-    console.log(`每页 ${val} 条`);
   }
   public handleCurrentChange(val: number) {
     this.currentPage = val;
@@ -386,52 +435,69 @@ export default class SearchAll extends Vue {
   public currentPage = 1;
 
   // 计算属性获取displayRes的长度
-  get total(): number {
+  public get total(): number {
     return this.displayRes.length;
   }
 
-  public searchFilled() {
-    this.displayRes = this.res.filter((item) => {
-      if (item) {
-        // return item[this.searchBy] === this.searchText;
-        // 匹配搜索字段
-        return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
-      }
-    });
+  public get updateRepairDisabled(): boolean {
+    return this.addRepairText === "" || this.addRepairTime === "";
   }
 
-  public options: Record<string, string>[] = [
+  public searchFilled() {
+    // this.displayRes = this.res.filter((item) => {
+    //   if (item) {
+    //     // return item[this.searchBy] === this.searchText;
+    //     // 匹配搜索字段
+    //     return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
+    //   }
+    // });
+  }
+
+  public options: objectArray = [
     {
       value: "filledBy",
       label: "填写人",
     },
-    {
-      value: "department",
-      label: "所在部门",
-    },
-    {
-      value: "accountIdentifier",
-      label: "编号",
-    },
-    {
-      value: "caliber",
-      label: "口径",
-    },
-    {
-      value: "waterNature",
-      label: "用水性质",
-    },
   ];
 
   public async mounted(): Promise<void> {
+    this.pickerOptions = {
+      disabledDate(time: { getTime: () => number }) {
+        return time.getTime() > Date.now();
+      },
+      shortcuts: [
+        {
+          text: "今天",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            picker.$emit("pick", new Date());
+          },
+        },
+        {
+          text: "昨天",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24);
+            picker.$emit("pick", date);
+          },
+        },
+        {
+          text: "一周前",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit("pick", date);
+          },
+        },
+      ],
+    };
     await this.getRes();
   }
 
   public async getRes(): Promise<void> {
+    this.tableLoading = true;
     const res = await this["axios"].get(
       "/WaterMeterRoom/getAllWaterMeterRoomInfo"
     );
-    this.res = res.data;
     this.searchRes = res.data;
     // .sort(
     //   (a: { filledBy: string }, b: { filledBy: string }) => {
@@ -441,6 +507,7 @@ export default class SearchAll extends Vue {
 
     this.displayRes = this.searchRes;
     // .slice(0, 30);
+    this.tableLoading = false;
   }
 
   public async clearRes(): Promise<void> {
@@ -449,34 +516,27 @@ export default class SearchAll extends Vue {
     await this.getRes();
   }
 
-  public modify(FilledBy: any): void {
-    console.log(FilledBy);
-  }
-
-  public seeDetail(FilledBy: any): void {
-    console.log(1);
-    console.log(2);
-  }
-
   public async updateRepair(): Promise<void> {
-    let repairInfo: string | Record<string, string>[] = this.repairInfo;
+    let repairInfo: string | repairInfoArray = this.repairInfo;
     if (
-      this.repairInfo === "" ||
+      this.repairInfo.length === 0 ||
       this.repairInfo === null ||
       this.repairInfo === undefined
     ) {
-      repairInfo = [];
-      repairInfo.push({
-        text: this.addRepairText,
-        time: new Date().toLocaleString(),
-      });
+      repairInfo = [
+        {
+          text: this.addRepairText,
+          repairTime: this.addRepairTime,
+          remarks: this.addRepairRemarks,
+          time: new Date().toLocaleString(),
+        },
+      ];
     } else {
-      const repairInfoArr =
-        (this.repairInfo as any) instanceof Array
-          ? this.repairInfo
-          : JSON.parse(this.repairInfo);
+      const repairInfoArr = this.repairInfo;
       repairInfoArr.push({
         text: this.addRepairText,
+        repairTime: this.addRepairTime,
+        remarks: this.addRepairRemarks,
         time: new Date().toLocaleString(),
       });
     }
@@ -491,6 +551,8 @@ export default class SearchAll extends Vue {
     if (res.data.code === 0) {
       this.$message.success(res.data.msg);
       this.addRepairText = "";
+      this.addRepairTime = "";
+      this.addRepairRemarks = "";
     }
     await this.getRepair(this.repairId);
   }
@@ -511,7 +573,15 @@ export default class SearchAll extends Vue {
       }
     );
     this.$message.success(res.data.msg);
-    this.repairInfo = res.data.data;
+    if (
+      res.data.data === null ||
+      res.data.data === undefined ||
+      res.data.data === ""
+    ) {
+      this.repairInfo = [];
+    } else {
+      this.repairInfo = res.data.data;
+    }
   }
 
   // 打开水表信息编辑弹窗
@@ -531,7 +601,7 @@ export default class SearchAll extends Vue {
         },
       }
     );
-    console.log(res);
+
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
   }
@@ -558,7 +628,6 @@ export default class SearchAll extends Vue {
       }
     );
 
-    console.log(res);
     if (res.data.code === 0) {
       this.waterMeterForm = {
         paymentNumber: "", //缴费号

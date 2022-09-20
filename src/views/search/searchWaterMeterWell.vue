@@ -79,6 +79,8 @@
       </div>
     </div> -->
     <el-table
+      border
+      stripe
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
@@ -90,13 +92,6 @@
         prop="filledBy"
         width="120px"
         label="填写人"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="department"
-        width="150px"
-        label="所在部门"
       >
       </el-table-column>
       <el-table-column
@@ -366,7 +361,6 @@
 </template>
 
 <script lang="ts">
-import { SET_INFO } from "@/store/type/mutation-type";
 import _ from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";

@@ -78,6 +78,8 @@
       </div>
     </div>
     <el-table
+      border
+      stripe
       v-loading="tableLoading"
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -88,36 +90,14 @@
       <el-table-column
         align="center"
         prop="filledBy"
-        width="120px"
+        width="100px"
         label="填写人"
       >
       </el-table-column>
       <el-table-column
         align="center"
-        prop="department"
-        width="150px"
-        label="所在部门"
-      >
-      </el-table-column>
-
-      <!-- <el-table-column
-        align="center"
-        prop="fillingTime"
-        width="150px"
-        label="填写时间"
-      >
-      </el-table-column> -->
-      <!-- <el-table-column
-        align="center"
-        prop="customerType"
-        width="150px"
-        label="用户类型"
-      > 
-      </el-table-column>-->
-      <el-table-column
-        align="center"
         prop="accountIdentifier"
-        width="250px"
+        width="150px"
         label="编号"
       >
       </el-table-column>
@@ -186,7 +166,6 @@
       <el-table-column
         align="center"
         prop="manufactor"
-        width="150px"
         label="厂家"
       >
       </el-table-column>
@@ -225,7 +204,11 @@
       class="pagination"
     >
     </el-pagination>
-    <el-dialog title="维修记录" :visible.sync="repairDialog">
+    <el-dialog
+      title="维修记录"
+      :visible.sync="repairDialog"
+      :close-on-click-modal="false"
+    >
       <div style="height: 400px">
         <div
           v-for="repairInfoSingle in repairInfo"
@@ -253,7 +236,11 @@
         placeholder="请输入维修备注"
       />
 
-      <el-button style="margin-top: 12px" @click="updateRepair()">
+      <el-button
+        :disabled="updateRepairDisabled"
+        style="margin-top: 12px"
+        @click="updateRepair()"
+      >
         添加
       </el-button>
     </el-dialog>
@@ -351,7 +338,7 @@ import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
 import { calibers, wellChamberTypes } from "./info";
-import { elOptionArray, objectArray } from "./types";
+import { elOptionArray, objectArray, repairInfoArray } from "./types";
 import { utils, writeFileXLSX } from "xlsx";
 @Component({
   components: {
@@ -384,7 +371,7 @@ export default class SearchValueWell extends Vue {
 
   public repairDialog = false;
   public repairId = 0;
-  public repairInfo: string | objectArray = "";
+  public repairInfo: repairInfoArray = [];
   public addRepairText = ""; // 新增的维修记录
   public addRepairTime = ""; // 新增的维修时间
   public addRepairRemarks = ""; // 新增的维修备注
@@ -414,6 +401,9 @@ export default class SearchValueWell extends Vue {
   // 计算属性获取displayRes的长度
   public get total(): number {
     return this.displayRes.length;
+  }
+  public get updateRepairDisabled(): boolean {
+    return this.addRepairText === "" || this.addRepairTime === "";
   }
 
   public async search(): Promise<void> {
@@ -460,23 +450,11 @@ export default class SearchValueWell extends Vue {
     await this.$nextTick();
   }
 
-  public options: Record<string, string>[] = [
+  public options: objectArray = [
     {
       value: "filledBy",
       label: "填写人",
     },
-    // {
-    //   value: "department",
-    //   label: "所在部门",
-    // },
-    // {
-    //   value: "accountIdentifier",
-    //   label: "编号",
-    // },
-    // {
-    //   value: "waterNature",
-    //   label: "用水性质",
-    // },
   ];
 
   public async mounted(): Promise<void> {
@@ -565,7 +543,6 @@ export default class SearchValueWell extends Vue {
     // );
 
     this.displayRes = this.searchRes;
-    // this.displayRes = _.cloneDeep(this.searchRes);
     // .slice(0, 30);
 
     this.tableLoading = false;
@@ -574,34 +551,26 @@ export default class SearchValueWell extends Vue {
   public async clearRes(): Promise<void> {
     this.searchRes = [];
     this.searchText = "";
-
-    this.searchSelectBy = {
-      caliber: [],
-      wellChamberType: [],
-      streetName: "",
-    };
     await this.getRes();
   }
 
   public async updateRepair(): Promise<void> {
-    let repairInfo: string | objectArray = this.repairInfo;
+    let repairInfo: string | repairInfoArray = this.repairInfo;
     if (
-      this.repairInfo === "" ||
+      this.repairInfo.length === 0 ||
       this.repairInfo === null ||
       this.repairInfo === undefined
     ) {
-      repairInfo = [];
-      repairInfo.push({
-        text: this.addRepairText,
-        repairTime: this.addRepairTime,
-        remarks: this.addRepairRemarks,
-        time: new Date().toLocaleString(),
-      });
+      repairInfo = [
+        {
+          text: this.addRepairText,
+          repairTime: this.addRepairTime,
+          remarks: this.addRepairRemarks,
+          time: new Date().toLocaleString(),
+        },
+      ];
     } else {
-      const repairInfoArr =
-        (this.repairInfo as any) instanceof Array
-          ? this.repairInfo
-          : JSON.parse(this.repairInfo as string);
+      const repairInfoArr = this.repairInfo;
       repairInfoArr.push({
         text: this.addRepairText,
         repairTime: this.addRepairTime,
@@ -621,6 +590,8 @@ export default class SearchValueWell extends Vue {
     if (res.data.code === 0) {
       this.$message.success(res.data.msg);
       this.addRepairText = "";
+      this.addRepairTime = "";
+      this.addRepairRemarks = "";
     }
     await this.getRepair(this.repairId);
   }
@@ -641,7 +612,15 @@ export default class SearchValueWell extends Vue {
       }
     );
     this.$message.success(res.data.msg);
-    this.repairInfo = res.data.data;
+    if (
+      res.data.data === null ||
+      res.data.data === undefined ||
+      res.data.data === ""
+    ) {
+      this.repairInfo = [];
+    } else {
+      this.repairInfo = res.data.data;
+    }
   }
 
   // 打开水表信息编辑弹窗

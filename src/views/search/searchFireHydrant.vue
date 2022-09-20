@@ -75,6 +75,9 @@
       </div>
     </div> -->
     <el-table
+      border
+      stripe
+      v-loading="tableLoading"
       :data="
         displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
@@ -84,36 +87,15 @@
       <el-table-column
         align="center"
         prop="filledBy"
-        width="120px"
+        width="100px"
         label="填写人"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="department"
-        width="150px"
-        label="所在部门"
       >
       </el-table-column>
 
       <el-table-column
         align="center"
-        prop="fillingTime"
-        width="150px"
-        label="填写时间"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
-        prop="customerType"
-        width="150px"
-        label="用户类型"
-      >
-      </el-table-column>
-      <el-table-column
-        align="center"
         prop="accountIdentifier"
-        width="250px"
+        width="150px"
         label="编号"
       >
       </el-table-column>
@@ -136,7 +118,7 @@
       <el-table-column
         align="center"
         prop="runningState"
-        width="150px"
+        width="120px"
         label="运行状态"
       >
       </el-table-column>
@@ -154,12 +136,16 @@
         width="150px"
       >
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="positioningCoordinates"
-        width="150px"
-        label="定位坐标"
-      >
+      <el-table-column align="center" width="150px" label="定位坐标">
+        <template v-slot="scope">
+          <el-tooltip
+            class="item"
+            :content="scope.row.positioningCoordinates"
+            placement="bottom"
+          >
+            <el-button type="text" style="color: #409eff"> 查看 </el-button>
+          </el-tooltip>
+        </template>
       </el-table-column>
       <!-- <el-table-column
         align="center"
@@ -551,7 +537,7 @@ export default class SearchAll extends Vue {
       }
     );
 
-    console.log(res);
+    // console.log(res);
     if (res.data.code === 0) {
       this.waterMeterForm = {
         paymentNumber: "", //缴费号
