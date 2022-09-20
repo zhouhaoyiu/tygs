@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+  <title>浏览器环境检测</title>
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=c58e505bf432a2eacadec27b90c3f5fa"></script>
+
+  <!--以下 JS、CSS 仅为在示例展示结果使用，JSAPI本身不依赖以下资源，正式开发请删除-->
+  <script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/jsonTree/jsonTree.js'></script>
+  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+  <!--以上 JS、CSS 仅为在示例中展示结果使用，JSAPI本身不依赖以上资源，正式开发请删除-->
+</head>
+
+<body>
+  <div class="info code">
+    <h4>浏览器环境检测结果:</h4>
+    <div id="result" class="result" style='top:3rem;'></div>
+  </div>
+
+  <script type="text/javascript">
+
+    var wrapper = document.getElementById("result");
+    var env = {
+      '是否移动设备': AMap.Browser.mobile,
+      '是否触摸设备': AMap.Browser.touch,
+      '是否高清屏': AMap.Browser.retina,
+      '是否安卓设备': AMap.Browser.android,
+      '是否 iOS 设备': AMap.Browser.ios,
+      '是否 Windows 系统': AMap.Browser.windows,
+      '是否 iMac 系统': AMap.Browser.mac,
+      '是否 IE678': AMap.Browser.ielt9,
+      '是否支持 Canvas': AMap.Browser.isCanvas,
+      '是否支持 WebGL': AMap.Browser.isWebGL,
+      '是否支持 SVG': AMap.Browser.isSvg,
+      '是否支持 WebWorker': AMap.Browser.isWorker,
+      '是否支持 WebSocket': AMap.Browser.isWebsocket,
+      'User-Agent': AMap.Browser.ua,
+    }
+    var tree = jsonTree.create(env, wrapper)
+    tree.expand();
+    console.log(AMap);
+  </script>
+
+</body>
+
+</html>

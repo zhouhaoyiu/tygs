@@ -335,13 +335,13 @@
 </template>
 
 <script lang="ts">
-import { SET_INFO } from "@/store/type/mutation-type";
 import _ from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
+import { objectArray } from "./types";
 @Component({
   components: {
     Title,
@@ -350,13 +350,15 @@ import dayjs from "dayjs";
 export default class SearchAll extends Vue {
   public searchBy = "filledBy";
   public searchText = "";
-  public searchRes: Record<string, string>[] = [];
+  public searchRes: objectArray = [];
 
   public formLabelWidth = "120px";
 
-  public displayRes: Record<string, string>[] = [];
+  public displayRes: objectArray = [];
 
   public res = [];
+
+  public tableLoading = false;
 
   public repairDialog = false;
   public repairId = 0;
@@ -375,11 +377,12 @@ export default class SearchAll extends Vue {
 
   public handleSizeChange(val: number) {
     this.pageSize = val;
-    console.log(`每页 ${val} 条`);
   }
+
   public handleCurrentChange(val: number) {
     this.currentPage = val;
   }
+
   public pageSize = 30;
   public currentPage = 1;
 
@@ -389,7 +392,7 @@ export default class SearchAll extends Vue {
   }
 
   public searchFilled() {
-    this.displayRes = this.res.filter((item) => {
+    this.displayRes = this.searchRes.filter((item) => {
       if (item) {
         // return item[this.searchBy] === this.searchText;
         // 匹配搜索字段
@@ -426,31 +429,24 @@ export default class SearchAll extends Vue {
   }
 
   public async getRes(): Promise<void> {
+    this.tableLoading = true;
     const res = await this["axios"].get("/FireHydrant/getAllFireHydrantInfo");
-    this.res = res.data;
-    this.$store.commit(SET_INFO, res.data);
-    this.searchRes = res.data.sort(
-      (a: { filledBy: string }, b: { filledBy: string }) => {
-        return a.filledBy.localeCompare(b.filledBy);
-      }
-    );
+    this.searchRes = res.data;
+    // .sort(
+    //   (a: { filledBy: string }, b: { filledBy: string }) => {
+    //     return a.filledBy.localeCompare(b.filledBy);
+    //   }
+    // );
     // 结果前100条
-    this.displayRes = this.searchRes.slice(0, 100);
+    this.displayRes = this.searchRes;
+    // .slice(0, 100);
+    this.tableLoading = false;
   }
 
   public async clearRes(): Promise<void> {
     this.searchRes = [];
     this.searchText = "";
     await this.getRes();
-  }
-
-  public modify(FilledBy: any): void {
-    console.log(FilledBy);
-  }
-
-  public seeDetail(FilledBy: any): void {
-    console.log(1);
-    console.log(2);
   }
 
   public async updateRepair(): Promise<void> {
@@ -520,11 +516,14 @@ export default class SearchAll extends Vue {
 
   // 根据id获取水表信息
   public async getWaterMeterInfoById(wallId: number): Promise<void> {
-    const res = await this["axios"].get(`FireHydrant/getFireHydrantWaterMeterInfoByWallId`, {
-      params: {
-        wallId: wallId,
-      },
-    });
+    const res = await this["axios"].get(
+      `FireHydrant/getFireHydrantWaterMeterInfoByWallId`,
+      {
+        params: {
+          wallId: wallId,
+        },
+      }
+    );
     console.log(res);
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
@@ -542,12 +541,15 @@ export default class SearchAll extends Vue {
     status: string;
   }): Promise<void> {
     // console.log(repairInfoArr);
-    const res = await this["axios"].post(`FireHydrant/insertFireHydrantWaterMeterInfo`, {
-      wallId: this.waterMeterDialogId,
-      waterMeterId: nanoid(),
-      updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-      ...waterMeterForm,
-    });
+    const res = await this["axios"].post(
+      `FireHydrant/insertFireHydrantWaterMeterInfo`,
+      {
+        wallId: this.waterMeterDialogId,
+        waterMeterId: nanoid(),
+        updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        ...waterMeterForm,
+      }
+    );
 
     console.log(res);
     if (res.data.code === 0) {

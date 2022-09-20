@@ -1,7 +1,7 @@
 <template>
   <div class="sideBar">
     <div class="info">
-      <div class="info-title">欢迎您</div>
+      <div class="info-title" @click="$router.push('/home/map')">欢迎您</div>
       <div class="info-name">{{ userName }}</div>
       <!-- <div class="info-name">{{ identity }}</div> -->
       <div class="info-time">{{ timeNow }}</div>

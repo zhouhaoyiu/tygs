@@ -226,9 +226,36 @@
     >
     </el-pagination>
     <el-dialog title="维修记录" :visible.sync="repairDialog">
-      {{ repairInfo }}
-      <el-input v-model="addRepairText" />
-      <el-button @click="updateRepair()">添加</el-button>
+      <div style="height: 400px">
+        <div
+          v-for="repairInfoSingle in repairInfo"
+          :key="repairInfoSingle.time + Math.random()"
+        >
+          {{ repairInfoSingle }}
+        </div>
+      </div>
+      <el-input
+        style="width: 240px; margin-right: 24px"
+        v-model="addRepairText"
+        placeholder="请输入维修记录"
+      />
+      <el-date-picker
+        v-model="addRepairTime"
+        type="date"
+        placeholder="选择日期"
+        :picker-options="pickerOptions"
+        style="width: 240px; margin-right: 12px"
+      />
+      <el-input
+        v-model="addRepairRemarks"
+        type="textarea"
+        style="margin-top: 12px"
+        placeholder="请输入维修备注"
+      />
+
+      <el-button style="margin-top: 12px" @click="updateRepair()">
+        添加
+      </el-button>
     </el-dialog>
     <el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
       <!-- {{ waterMeterInfo }}  -->
@@ -317,7 +344,6 @@
 </template>
 
 <script lang="ts">
-import { SET_INFO } from "@/store/type/mutation-type";
 import _ from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -327,13 +353,14 @@ import dayjs from "dayjs";
 import { calibers, wellChamberTypes } from "./info";
 import { elOptionArray, objectArray } from "./types";
 import { utils, writeFileXLSX } from "xlsx";
-import { Watch } from "vue-property-decorator";
 @Component({
   components: {
     Title,
   },
 })
 export default class SearchValueWell extends Vue {
+  public pickerOptions = {};
+
   public searchTextBy: string = "filledBy";
   public searchText: string = "";
 
@@ -351,15 +378,16 @@ export default class SearchValueWell extends Vue {
 
   public static formLabelWidth = "120px";
 
-  // public res = [];
   public exportLoading = false;
   public searchLoading = false;
   public tableLoading = false;
 
   public repairDialog = false;
   public repairId = 0;
-  public repairInfo = "";
+  public repairInfo: string | objectArray = "";
   public addRepairText = ""; // 新增的维修记录
+  public addRepairTime = ""; // 新增的维修时间
+  public addRepairRemarks = ""; // 新增的维修备注
 
   public waterMeterDialog = false;
   public waterMeterDialogId = 0;
@@ -376,7 +404,6 @@ export default class SearchValueWell extends Vue {
 
   public handleSizeChange(val: number): void {
     this.pageSize = val;
-    // console.log(`每页 ${val} 条`);
   }
   public handleCurrentChange(val: number): void {
     this.currentPage = val;
@@ -453,6 +480,35 @@ export default class SearchValueWell extends Vue {
   ];
 
   public async mounted(): Promise<void> {
+    this.pickerOptions = {
+      disabledDate(time: { getTime: () => number }) {
+        return time.getTime() > Date.now();
+      },
+      shortcuts: [
+        {
+          text: "今天",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            picker.$emit("pick", new Date());
+          },
+        },
+        {
+          text: "昨天",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24);
+            picker.$emit("pick", date);
+          },
+        },
+        {
+          text: "一周前",
+          onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
+            const date = new Date();
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit("pick", date);
+          },
+        },
+      ],
+    };
     await this.getRes();
   }
 
@@ -461,7 +517,7 @@ export default class SearchValueWell extends Vue {
   //   console.log("exportLoading", this.exportLoading);
   // }
 
-  public exportExcel() {
+  public exportExcel(): void {
     this.exportLoading = true;
 
     const promise = new Promise<void>((resolve, _) => {
@@ -490,16 +546,17 @@ export default class SearchValueWell extends Vue {
       resolve();
     });
     promise.then(() => {
-      console.log("导出成功");
+      this.$message({
+        message: "导出成功",
+        type: "success",
+      });
       this.exportLoading = false;
     });
   }
 
   public async getRes(): Promise<void> {
     this.tableLoading = true;
-
     const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
-    // this.$store.commit(SET_INFO, res.data);
     this.searchRes = res.data;
     // .sort(
     //   (a: { filledBy: string }, b: { filledBy: string }) => {
@@ -526,17 +583,8 @@ export default class SearchValueWell extends Vue {
     await this.getRes();
   }
 
-  public modify(id: number): void {
-    console.log(id);
-  }
-
-  public seeDetail(FilledBy: any): void {
-    console.log(1);
-    console.log(2);
-  }
-
   public async updateRepair(): Promise<void> {
-    let repairInfo: string | Record<string, string>[] = this.repairInfo;
+    let repairInfo: string | objectArray = this.repairInfo;
     if (
       this.repairInfo === "" ||
       this.repairInfo === null ||
@@ -545,18 +593,23 @@ export default class SearchValueWell extends Vue {
       repairInfo = [];
       repairInfo.push({
         text: this.addRepairText,
+        repairTime: this.addRepairTime,
+        remarks: this.addRepairRemarks,
         time: new Date().toLocaleString(),
       });
     } else {
       const repairInfoArr =
         (this.repairInfo as any) instanceof Array
           ? this.repairInfo
-          : JSON.parse(this.repairInfo);
+          : JSON.parse(this.repairInfo as string);
       repairInfoArr.push({
         text: this.addRepairText,
+        repairTime: this.addRepairTime,
+        remarks: this.addRepairRemarks,
         time: new Date().toLocaleString(),
       });
     }
+
     const res = await this["axios"].post(
       `ValueWell/updateValueWellRepairInfoWithId`,
       {
@@ -608,7 +661,7 @@ export default class SearchValueWell extends Vue {
         },
       }
     );
-    console.log(res);
+
     this.$message.success(res.data.msg);
     this.waterMeterInfoArr = res.data.data;
   }
@@ -635,7 +688,6 @@ export default class SearchValueWell extends Vue {
       }
     );
 
-    // console.log(res);
     if (res.data.code === 0) {
       this.waterMeterForm = {
         paymentNumber: "", //缴费号

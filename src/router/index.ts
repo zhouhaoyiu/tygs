@@ -1,12 +1,14 @@
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
+import VueRouter, { RawLocation, RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
 
 const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location) {
-  return (originalPush as Function).call(this, location).catch((err: Error) => err);
+VueRouter.prototype.push = function push(location: RawLocation) {
+  return (originalPush as Function)
+    .call(this, location)
+    .catch((err: Error) => err);
 };
 
 const routes: Array<RouteConfig> = [
@@ -88,6 +90,12 @@ const routes: Array<RouteConfig> = [
           import(
             /* webpackChunkName: "InputInfor" */ "../views/inputInfor/index.vue"
           ),
+      },
+      {
+        path: "map",
+        name: "map",
+        component: () =>
+          import(/* webpackChunkName: "map" */ "../views/map/index.vue"),
       },
     ],
   },
