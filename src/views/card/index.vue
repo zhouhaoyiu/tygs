@@ -21,13 +21,7 @@
         <div class="cardText"></div>
       </div>
     </div> -->
-    <el-descriptions
-      class="margin-top"
-      style="width: 700px"
-      :column="3"
-      size="small"
-      border
-    >
+    <el-descriptions class="margin-top" style="width: 700px" :column="3" size="small" border>
       <el-descriptions-item>
         <template slot="label">设施名称</template>
         阀门井
@@ -53,35 +47,35 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import Title from "../../components/title.vue";
+  import Vue from "vue";
+  import Component from "vue-class-component";
+  import Title from "../../components/title.vue";
 
-@Component({
-  components: {
-    Title,
-  },
-})
-export default class Card extends Vue {}
+  @Component({
+    components: {
+      Title,
+    },
+  })
+  export default class Card extends Vue {}
 </script>
 
 <style lang="scss">
-.card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid black;
-  border-right: 0px;
-  width: max-content;
-  height: 100px;
-  text-align: center;
-  .cardText {
+  .card {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-right: 1px solid black;
-    width: 100px;
-    height: 100%;
+    border: 1px solid black;
+    border-right: 0px;
+    width: max-content;
+    height: 100px;
+    text-align: center;
+    .cardText {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid black;
+      width: 100px;
+      height: 100%;
+    }
   }
-}
 </style>
