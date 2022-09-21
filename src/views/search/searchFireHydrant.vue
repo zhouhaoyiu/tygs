@@ -132,14 +132,13 @@
       <el-table-column align="center" label="操作" width="200px" fixed="right">
         <template v-slot="scope">
           <div style="display: flex; justify-content: center; align-items: center">
-            <!-- <el-button size="small" @click="modify(scope.row)" type="primary">
-              修改信息
-            </el-button> -->
             <el-button size="small" @click="openWaterMeter(scope.row.id)"> 水表信息 </el-button>
-            <el-button size="small" @click="openRepair(scope.row.id)" type="primary">
+            <!-- <el-button size="small" @click="openRepair(scope.row.id)" type="primary">
               维修记录
+            </el-button> -->
+            <el-button size="small" type="primary" @click="modifyWell(scope.row)">
+              修改信息
             </el-button>
-            <!-- <el-button @click="seeDetail(scope.row)" type=""> 查看 </el-button> -->
           </div>
         </template>
       </el-table-column>
@@ -324,6 +323,10 @@
         ],
       };
       await this.getRes();
+    }
+
+    public modifyWell(info: any) {
+      console.log(info);
     }
 
     public async getRes(): Promise<void> {
