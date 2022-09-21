@@ -4,7 +4,7 @@
       <div class="info-title" @click="$router.push('/home/map')">欢迎您</div>
       <div class="info-name">{{ userName }}</div>
       <!-- <div class="info-name">{{ identity }}</div> -->
-      <div class="info-time">{{ timeNow }}</div>
+      <!-- <div class="info-time">{{ timeNow }}</div> -->
     </div>
     <div class="buttons">
       <div class="button" v-for="(button, buttonIndex) in calcButtonArr" :key="button.name">
@@ -183,11 +183,10 @@
     }
     // 根据当前url来判断是否需要高亮显示按钮
     public getActive(path: string, children: btn[] | undefined) {
-      // console.log(path);
-      // console.log(this.routePath);
       return (
         this.routePath === path ||
-        (children && children.some((child) => child.path === this.routePath))
+        (children && children.some((child) => child.path === this.routePath)) ||
+        false
       );
     }
 

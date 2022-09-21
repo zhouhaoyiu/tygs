@@ -42,6 +42,12 @@
       waterMeterRoomCount: number;
       waterMeterWellCount: number;
     }) {
+      const NameToData: Record<string, string> = {
+        消防栓: "FireHydrant",
+        阀门井: "ValueWell",
+        水表间: "WaterMeterRoom",
+        表井: "WaterMeterWell",
+      };
       const chartDom = document.getElementById("chart")!;
       const chart1 = echarts.init(chartDom);
 
@@ -97,6 +103,10 @@
           },
         ],
       };
+      chart1.on("click", (params: any) => {
+        console.log(params);
+        this.goPage("/search" + NameToData[params.name]);
+      });
       option && chart1.setOption(option);
     }
 

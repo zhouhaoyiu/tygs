@@ -1,54 +1,9 @@
 <template>
   <div class="page">
-    <Title>查询 表井</Title>
-    <!-- <div>编号</div>
-    <div>户号</div>
-    <div>街道地址</div> -->
-    <!-- <div class="searchArea">
-      <div class="searchSelects">
-        <span>户号: </span>
-        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>名称: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>地址: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>口径: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div>
+    <Title>查询 表井(总表)</Title>
+    <div class="searchArea">
       <div class="searchInput">
-        <el-select v-model="searchBy" style="margin-right: 15px">
+        <el-select v-model="searchTextBy" style="margin-right: 15px">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -58,7 +13,7 @@
           </el-option>
         </el-select>
         <el-input
-          @keyup.enter.native="searchFilled()"
+          @keyup.enter.native="search()"
           style="width: 400px"
           v-model="searchText"
           clearable
@@ -66,23 +21,26 @@
         >
         </el-input>
         <el-button
-          @click="searchFilled()"
+          :loading="searchLoading"
+          @click="search()"
           style="margin-left: 30px"
           type="primary"
         >
           搜索
         </el-button>
-        <el-button @click="clearRes()" style="margin-left: 15px">
-          重置
-        </el-button>
+        <el-button @click="clearRes()" style="margin-left: 15px"> 重置 </el-button>
+        <!-- <el-button disabled type="success" round @click="exportExcel()" :loading="exportLoading">
+          导出
+          <i class="el-icon-download el-icon--right"></i>
+        </el-button> -->
       </div>
-    </div> -->
+    </div>
     <el-table
       border
       stripe
       v-loading="tableLoading"
       :data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-      max-height="495px"
+      max-height="560px"
       class="table"
     >
       <el-table-column align="center" prop="filledBy" width="100px" label="填写人">
@@ -91,23 +49,30 @@
       </el-table-column>
       <el-table-column align="center" prop="accountNumber" width="150px" label="户号">
       </el-table-column>
-      <el-table-column align="center" prop="coordinates" width="250px" label="坐标">
+      <el-table-column align="center" prop="address" width="150px" label="地址  ">
       </el-table-column>
-      <el-table-column align="center" prop="caliber" width="100px" label="口径"> </el-table-column>
+      <el-table-column align="center" width="100px" label="坐标">
+        <template v-slot="scope">
+          <el-tooltip class="item" :content="scope.row.coordinates" placement="bottom">
+            <el-button type="text" style="color: #409eff"> 查看 </el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="caliber" width="110px" label="口径"> </el-table-column>
       <el-table-column align="center" width="150px" prop="operatingStatus" label="运行状态">
       </el-table-column>
-      <el-table-column align="center" width="150px" prop="waterNature" label="用水性质">
+      <el-table-column align="center" width="140px" prop="waterNature" label="用水性质">
       </el-table-column>
-      <el-table-column align="center" prop="wellDepth" width="150px" label="井深">
+      <el-table-column align="center" prop="wellDepth" width="100px" label="井深">
       </el-table-column>
-      <el-table-column align="center" prop="includedFacilities" width="150px" label="内含设施">
+      <el-table-column align="center" prop="includedFacilities" width="100px" label="内含设施">
       </el-table-column>
-      <el-table-column align="center" prop="waterMeterManufacturer" label="水表厂家" width="150px">
+      <el-table-column align="center" prop="waterMeterManufacturer" label="水表厂家" width="120px">
       </el-table-column>
-      <el-table-column align="center" prop="accountIdentifier" width="150px" label="编号">
+      <el-table-column align="center" prop="accountIdentifier" width="120px" label="编号">
       </el-table-column>
-      <el-table-column align="center" prop="writtingTime" width="150px" label="填写时间">
-      </el-table-column>
+      <!-- <el-table-column align="center" prop="writtingTime" width="150px" label="填写时间">
+      </el-table-column> -->
       <el-table-column align="center" label="操作" width="200px" fixed="right">
         <template v-slot="scope">
           <div style="display: flex; justify-content: center; align-items: center">
@@ -268,7 +233,7 @@
   export default class SearchAll extends Vue {
     public pickerOptions = {};
 
-    public searchTextBy: string = "filledBy";
+    public searchTextBy: string = "accountNumber";
     public searchText: string = "";
 
     public searchSelectBy = {
@@ -276,6 +241,12 @@
       accountNumber: [] as string[], // 户号
       address: "" as string, // 地址
     };
+
+    public options = [
+      { value: "accountIdentifier", label: "编号" },
+      { value: "accountNumber", label: "户号" },
+      { value: "address", label: " 地址" },
+    ];
 
     public searchRes: objectArray = [];
     public displayRes: objectArray = [];
@@ -341,19 +312,26 @@
     public async search(): Promise<void> {
       this.searchLoading = true;
       this.tableLoading = true;
+      this.displayRes = this.searchRes.filter((item) => {
+        if (item) {
+          if (typeof item[this.searchTextBy] === "string") {
+            return (
+              (item[this.searchTextBy] as string)
+                .toLowerCase()
+                .indexOf(this.searchText.trim().toLowerCase()) > -1
+            );
+          } else if (typeof item[this.searchTextBy] === "number") {
+            return (item[this.searchTextBy] as unknown as number) === Number(this.searchText);
+          } else {
+            throw new Error("搜索字段类型错误");
+          }
+        }
+      });
       this.searchLoading = false;
       this.tableLoading = false;
 
-      // 解决视图不更新的问题
       await this.$nextTick();
     }
-
-    public options: objectArray = [
-      {
-        value: "id",
-        label: "id",
-      },
-    ];
 
     public async mounted(): Promise<void> {
       this.pickerOptions = {
