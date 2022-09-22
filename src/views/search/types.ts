@@ -5,11 +5,15 @@ type elOption = {
 
 type elOptionArray = elOption[];
 
-type ObjectType = {
+type objectType = {
   [key: string]: string;
 };
 
-type objectArray = ObjectType[];
+type anyObject = {
+  [key: string]: any;
+};
+
+type objectArray = objectType[];
 
 type repairInfoArray = {
   text: string;
@@ -18,4 +22,4 @@ type repairInfoArray = {
   time: string;
 }[];
 
-export { elOption, elOptionArray, ObjectType, objectArray, repairInfoArray };
+export { elOption, anyObject, elOptionArray, objectType, objectArray, repairInfoArray };
