@@ -12,7 +12,7 @@
 					></el-option>
 				</el-select>
 				<el-input
-					style="width: 200px; margin-right: 20px"
+					style="width: 400px; margin-right: 20px"
 					v-model="searchText"
 					placeholder="请输入用户名"
 					@keyup.enter.native="searchInfoBySearch"

@@ -1,6 +1,18 @@
-$--color-primary: #2B5CAB;
+$--color-primary: #2b5cab;
+.el-dialog {
+	border-radius: 10px !important;
+	box-shadow: 0 1px 3px #2b5cab !important;
+
+	.el-dialog__header {
+		// padding-top: 10px !important;
+	}
+	.el-dialog__body {
+		padding-top: 10px !important;
+		padding-bottom: 20px !important;
+	}
+}
 
 /* 改变 icon 字体路径变量，必需 */
-$--font-path: '~element-ui/lib/theme-chalk/fonts';
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 @import "~element-ui/packages/theme-chalk/src/index";

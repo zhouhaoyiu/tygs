@@ -152,7 +152,13 @@
 			class="pagination"
 		>
 		</el-pagination>
-		<el-dialog title="维修记录" :visible.sync="repairDialog" :close-on-click-modal="false">
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			center
+			title="维修记录"
+			:visible.sync="repairDialog"
+		>
 			<div style="height: 400px">
 				<div
 					v-for="repairInfoSingle in repairInfo"
@@ -188,7 +194,13 @@
 				添加
 			</el-button>
 		</el-dialog>
-		<el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			center
+			title="水表信息"
+			:visible.sync="waterMeterDialog"
+		>
 			<div style="display: flex; margin: auto; width: 100%; justify-content: center">
 				<el-select v-model="waterMeterInfoSearchBy" style="margin-right: 20px">
 					<el-option
@@ -268,7 +280,14 @@
 				</el-button>
 			</div>
 		</el-dialog>
-		<el-dialog center title="表井信息" :visible.sync="wallInfoDialog"> </el-dialog>
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			center
+			title="表井信息"
+			:visible.sync="wallInfoDialog"
+		>
+		</el-dialog>
 	</div>
 </template>
 
@@ -300,6 +319,13 @@ export default class SearchValueWell extends Vue {
 		wellChamberType: [] as string[], // 井室类型
 		streetName: "" as string, // 街道
 	};
+
+	public options: objectArray = [
+		{
+			value: "filledBy",
+			label: "填写人",
+		},
+	];
 
 	public waterMeterInfoSearchOptions: elOptionArray = [
 		{ value: "paymentNumber", label: "缴费号" },
@@ -429,13 +455,6 @@ export default class SearchValueWell extends Vue {
 			}
 		});
 	}
-
-	public options: objectArray = [
-		{
-			value: "filledBy",
-			label: "填写人",
-		},
-	];
 
 	public async mounted(): Promise<void> {
 		this.pickerOptions = {

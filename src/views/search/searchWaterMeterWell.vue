@@ -116,7 +116,13 @@
 			class="pagination"
 		>
 		</el-pagination>
-		<el-dialog title="维修记录" :visible.sync="repairDialog" :close-on-click-modal="false">
+		<el-dialog
+			center
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			title="维修记录"
+			:visible.sync="repairDialog"
+		>
 			<div style="height: 400px">
 				<div
 					v-for="repairInfoSingle in repairInfo"
@@ -152,7 +158,13 @@
 				添加
 			</el-button>
 		</el-dialog>
-		<el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			center
+			title="水表信息"
+			:visible.sync="waterMeterDialog"
+		>
 			<div style="display: flex; margin: auto; width: 100%; justify-content: center">
 				<el-select v-model="waterMeterInfoSearchBy" style="margin-right: 20px">
 					<el-option
@@ -232,7 +244,13 @@
 				</el-button>
 			</div>
 		</el-dialog>
-		<el-dialog title="表井信息" :visible.sync="wallInfoDialog">
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			title="表井信息"
+			center
+			:visible.sync="wallInfoDialog"
+		>
 			<el-form :model="wallInfoForm" label-width="100px" class="demo-ruleForm">
 				<el-form-item label="户名" prop="accountName">
 					<el-input v-model="wallInfoForm.accountName" placeholder="户名"></el-input>
@@ -407,7 +425,7 @@ export default class SearchAll extends Vue {
 						(item[this.searchTextBy] as unknown as number) === Number(this.searchText)
 					);
 				} else {
-					throw new Error("搜索字段类型错误");
+					return false;
 				}
 			}
 		});
@@ -668,6 +686,10 @@ export default class SearchAll extends Vue {
 	.dialogInput {
 		width: 20%;
 		// margin: 10px;
+	}
+
+	.repairDialog {
+		border-radius: 10px;
 	}
 }
 </style>

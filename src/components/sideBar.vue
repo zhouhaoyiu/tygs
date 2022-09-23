@@ -12,6 +12,12 @@
 					:class="getActive(button.path, button.children) ? 'active' : ''"
 					@click="emitGoPage(button.path, buttonIndex)"
 					class="button-inside"
+					:disabled="button.disable ? true : false"
+					:style="
+						button.disable
+							? 'color: #eee;background:#aaa;border-color:#aaa;cursor: not-allowed;'
+							: ''
+					"
 				>
 					{{ button.name }}
 					<i v-if="button.children" class="button-inside-svg fas fa-caret-down"></i>
@@ -129,6 +135,39 @@ export default class SideBar extends Vue {
 			name: "录入",
 			path: "InputInfor",
 			role: 1,
+		},
+		{
+			name: "新增",
+			path: "add",
+			role: 1,
+			disable: true,
+			children: [
+				{
+					name: "表井(总表)",
+					path: "addWaterMeterWell",
+					role: 1,
+				},
+				{
+					name: "阀门井",
+					path: "addValueWell",
+					role: 1,
+				},
+				{
+					name: "水表间(户表)",
+					path: "addWaterMeterRoom",
+					role: 1,
+				},
+				{
+					name: "消火栓",
+					path: "addFireHydrant",
+					role: 1,
+				},
+				{
+					name: "水表信息(户表)",
+					path: "addWaterMeter",
+					role: 1,
+				},
+			],
 		},
 	];
 

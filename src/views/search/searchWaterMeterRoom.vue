@@ -1,79 +1,40 @@
 <template>
 	<div class="page">
 		<Title>查询 水表间(户表)</Title>
-		<!-- <div class="searchArea">
-      <div class="searchSelects">
-        <span>户号: </span>
-        <el-select v-model="searchSelectBy.caliber" class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>名称: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>地址: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <span>口径: </span>
-        <el-select class="searchSelect">
-          <el-option
-            v-for="item in calibers"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-      </div>
-      <div class="searchInput">
-        <el-select v-model="searchBy" style="margin-right: 15px">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
-        <el-input
-          @keyup.enter.native="searchFilled()"
-          style="width: 400px"
-          v-model="searchText"
-          clearable
-          placeholder="请输入搜索字段"
-        >
-        </el-input>
-        <el-button
-          @click="searchFilled()"
-          style="margin-left: 30px"
-          type="primary"
-        >
-          搜索
-        </el-button>
-        <el-button @click="clearRes()" style="margin-left: 15px">
-          重置
-        </el-button>
-      </div>
-    </div> -->
+		<div class="searchArea">
+			<div class="searchInput">
+				<el-select v-model="searchTextBy" style="margin-right: 15px">
+					<el-option
+						v-for="item in options"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"
+					>
+					</el-option>
+				</el-select>
+				<el-input
+					@keyup.enter.native="search()"
+					style="width: 400px"
+					v-model="searchText"
+					clearable
+					placeholder="请输入搜索字段"
+				>
+				</el-input>
+				<el-button
+					:loading="searchLoading"
+					@click="search()"
+					style="margin-left: 30px"
+					type="primary"
+				>
+					搜索
+				</el-button>
+				<el-button @click="clearRes()" style="margin-left: 15px"> 重置 </el-button>
+				<!-- <el-button disabled type="success" round @click="exportExcel()" :loading="exportLoading">
+          导出
+          <i class="el-icon-download el-icon--right"></i>
+        </el-button> -->
+			</div>
+		</div>
 		<el-table
 			border
 			stripe
@@ -186,7 +147,13 @@
 			class="pagination"
 		>
 		</el-pagination>
-		<el-dialog title="维修记录" :visible.sync="repairDialog" :close-on-click-modal="false">
+		<el-dialog
+			center
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			title="维修记录"
+			:visible.sync="repairDialog"
+		>
 			<div style="height: 400px">
 				<div
 					v-for="repairInfoSingle in repairInfo"
@@ -222,7 +189,13 @@
 				添加
 			</el-button>
 		</el-dialog>
-		<el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
+		<el-dialog
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
+			center
+			title="水表信息"
+			:visible.sync="waterMeterDialog"
+		>
 			<div style="display: flex; margin: auto; width: 100%; justify-content: center">
 				<el-select v-model="waterMeterInfoSearchBy" style="margin-right: 20px">
 					<el-option
@@ -313,7 +286,6 @@ import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
-import { info } from "@/store/state";
 @Component({
 	components: {
 		Title,
@@ -322,7 +294,7 @@ import { info } from "@/store/state";
 export default class SearchAll extends Vue {
 	public pickerOptions = {};
 
-	public searchBy: string = "filledBy";
+	public searchTextBy: string = "accountIdentifier";
 	public searchText: string = "";
 	public waterMeterInfoSearchBy: string = "accountNumber";
 	public waterMeterInfoSearchText: string = "";
@@ -332,6 +304,12 @@ export default class SearchAll extends Vue {
 		wellChamberType: [] as string[], // 井室类型
 		streetName: "" as string, // 街道
 	};
+
+	public options: elOptionArray = [
+		{ value: "accountIdentifier", label: "编号" },
+		{ value: "communityName", label: "小区名称" },
+		{ value: "detailedAddress", label: "详细地址" },
+	];
 
 	public waterMeterInfoSearchOptions: elOptionArray = [
 		{ value: "paymentNumber", label: "缴费号" },
@@ -395,14 +373,30 @@ export default class SearchAll extends Vue {
 		);
 	}
 
-	public searchFilled() {
-		// this.displayRes = this.res.filter((item) => {
-		//   if (item) {
-		//     // return item[this.searchBy] === this.searchText;
-		//     // 匹配搜索字段
-		//     return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
-		//   }
-		// });
+	public async search(): Promise<void> {
+		this.searchLoading = true;
+		this.tableLoading = true;
+		this.displayRes = this.searchRes.filter((item) => {
+			if (item) {
+				if (typeof item[this.searchTextBy] === "string") {
+					return (
+						(item[this.searchTextBy] as string)
+							.toLowerCase()
+							.indexOf(this.searchText.trim().toLowerCase()) > -1
+					);
+				} else if (typeof item[this.searchTextBy] === "number") {
+					return (
+						(item[this.searchTextBy] as unknown as number) === Number(this.searchText)
+					);
+				} else {
+					return false;
+				}
+			}
+		});
+		this.searchLoading = false;
+		this.tableLoading = false;
+
+		await this.$nextTick();
 	}
 
 	public waterMeterSearch() {
@@ -420,18 +414,11 @@ export default class SearchAll extends Vue {
 						Number(this.waterMeterInfoSearchText)
 					);
 				} else {
-					throw new Error("搜索字段类型错误");
+					return false;
 				}
 			}
 		});
 	}
-
-	public options: objectArray = [
-		{
-			value: "filledBy",
-			label: "填写人",
-		},
-	];
 
 	public async mounted(): Promise<void> {
 		this.pickerOptions = {
@@ -522,7 +509,7 @@ export default class SearchAll extends Vue {
 				repairInfo: JSON.stringify(repairInfo),
 			},
 		);
-		// console.log(res);
+
 		if (res.data.code === 0) {
 			this.$message.success(res.data.msg);
 			this.addRepairText = "";
@@ -585,7 +572,6 @@ export default class SearchAll extends Vue {
 		accountName: string; //户名
 		nature: string;
 	}): Promise<void> {
-		// console.log(repairInfoArr);
 		const res = await this["axios"].post(`WaterMeterRoom/insertWaterMeterRoomWaterMeterInfo`, {
 			wallId: this.waterMeterDialogId,
 			waterMeterId: nanoid(),
