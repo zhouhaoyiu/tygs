@@ -1,48 +1,77 @@
 <template>
 	<div>
-		<Title>城北营销分公司供水附属设施登记卡</Title>
-		<!-- <div>
-      
-      <div class="card">
-        <div class="cardText">设施名称</div>
-        <div class="cardText">阀门井</div>
-        <div class="cardText">使用状态</div>
-        <div class="cardText">正常</div>
-        <div class="cardText">所属管线</div>
-        <div class="cardText">白龙庙街DN300球墨铸铁给水管线（北线）</div>
-        <div class="cardText">井室编号</div>
-        <div class="cardText">13</div>
-      </div>
-      <div class="card">
-        <div class="cardText">规格型号</div>
-        <div class="cardText">DN100</div>
-        <div class="cardText">井室类型</div>
-        <div class="cardText"></div>
-        <div class="cardText"></div>
-      </div>
-    </div> -->
-		<el-descriptions class="margin-top" style="width: 700px" :column="3" size="small" border>
-			<el-descriptions-item>
-				<template slot="label">设施名称</template>
-				阀门井
-			</el-descriptions-item>
-			<el-descriptions-item>
-				<template slot="label">使用状态</template>
-				正常
-			</el-descriptions-item>
-			<el-descriptions-item>
-				<template slot="label">所属管线</template>
-				白龙庙街DN300球墨铸铁给水管线（北线）
-			</el-descriptions-item>
-			<el-descriptions-item>
-				<template slot="label">井室编号</template>
-				13
-			</el-descriptions-item>
-			<el-descriptions-item>
-				<template slot="label">联系地址</template>
-				江苏省苏州市吴中区吴中大道 1188 号
-			</el-descriptions-item>
-		</el-descriptions>
+		<Title><!-- 城北营销分公司 -->供水附属设施登记卡</Title>
+		<div>
+			<el-descriptions
+				class="margin-top"
+				style="width: 850px"
+				contentStyle="text-align: center;"
+				:column="4"
+				size="small"
+				border
+			>
+				<el-descriptions-item>
+					<template slot="label">设施名称</template>
+					阀门井
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">使用状态</template>
+					正常
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">所属管线</template>
+					白龙庙街DN300球墨铸铁给水管线（北线）
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">井室编号</template>
+					13
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">规格型号</template>
+					DN300
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">井室类型 </template>
+					闸阀
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">井室坐标 </template>
+					X:63700.72 Y:21394.07 Z:
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">运行状态 </template>
+					正常
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">井室情况 </template>
+					正口
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">开关方向 </template>
+					正门
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">相对位置 </template>
+					老徐烧烤
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">井 深 </template>
+					1.5m
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">生产厂家 </template>
+					x:66631.223 y:19267.643 z:
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">安装时间 </template>
+					2016-8-1
+				</el-descriptions-item>
+				<el-descriptions-item>
+					<template slot="label">备 注 </template>
+					无
+				</el-descriptions-item>
+			</el-descriptions>
+		</div>
 	</div>
 </template>
 
