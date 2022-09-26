@@ -290,15 +290,6 @@ export default class SearchAll extends Vue {
 		await this.getRes();
 	}
 
-	public modify(FilledBy: any): void {
-		console.log(FilledBy);
-	}
-
-	public seeDetail(FilledBy: any): void {
-		console.log(1);
-		console.log(2);
-	}
-
 	public async updateRepair(): Promise<void> {
 		let repairInfo: string | Record<string, string>[] = this.repairInfo;
 		if (this.repairInfo === "") {
@@ -308,7 +299,6 @@ export default class SearchAll extends Vue {
 				time: new Date().toLocaleString(),
 			});
 		} else {
-			// console.log(this.repairInfo);
 			const repairInfoArr =
 				(this.repairInfo as any) instanceof Array
 					? this.repairInfo
@@ -317,13 +307,12 @@ export default class SearchAll extends Vue {
 				text: this.addRepairText,
 				time: new Date().toLocaleString(),
 			});
-			// console.log(repairInfoArr);
 		}
 		const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
 			id: this.repairId,
 			repairInfo: JSON.stringify(repairInfo),
 		});
-		// console.log(res);
+
 		if (res.data.code === 0) {
 			this.addRepairText = "";
 		}
@@ -359,7 +348,7 @@ export default class SearchAll extends Vue {
 				wallId: wallId,
 			},
 		});
-		console.log(res);
+
 		this.$message.success(res.data.msg);
 		this.waterMeterInfoArr = res.data.data;
 	}
@@ -375,7 +364,6 @@ export default class SearchAll extends Vue {
 		accountName: string; //户名
 		status: string;
 	}): Promise<void> {
-		// console.log(repairInfoArr);
 		const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
 			wallId: this.waterMeterDialogId,
 			waterMeterId: nanoid(),
@@ -383,7 +371,6 @@ export default class SearchAll extends Vue {
 			...waterMeterForm,
 		});
 
-		console.log(res);
 		if (res.data.code === 0) {
 			this.waterMeterForm = {
 				paymentNumber: "", //缴费号
@@ -396,7 +383,6 @@ export default class SearchAll extends Vue {
 	}
 
 	public async deleteWaterMeter(waterMeterId: string): Promise<void> {
-		// console.log(this.waterMeterInfo);
 		// 从this.waterMeterInfoArr中删除waterMeterId对应的数据
 		this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item: { id: string }) => {
 			return item.id !== waterMeterId;

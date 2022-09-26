@@ -156,7 +156,6 @@ export default class Regis extends Vue {
 	}
 	public async adminRegis() {
 		const res = await this["axios"].post("admin/adminRegis", this.sendFormData);
-		console.log(res);
 		if (res.data["code"] === "0") {
 			this["$message"]({
 				message: "注册成功",

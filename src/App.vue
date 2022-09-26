@@ -12,7 +12,7 @@ import Component from "vue-class-component";
 })
 export default class App extends Vue {
 	public mounted(): void {
-		console.log("%chomeIndex mounted", "color: red; font-size: 20px");
+		console.log("%chomeIndex mounted", "color: red; font-size: 20px;font-weight:bold");
 	}
 }
 </script>

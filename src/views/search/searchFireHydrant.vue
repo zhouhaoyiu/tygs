@@ -2,24 +2,29 @@
 	<div class="page">
 		<Title>查询 消防栓</Title>
 		<div class="searchArea">
-			<div class="searchInput">
-				<el-select v-model="searchTextBy" style="margin-right: 15px">
+			<div class="searchSelects">
+				<span>街道名称: </span>
+				<el-input
+					v-model="searchSelectBy.streetName"
+					style="width: 200px"
+					class="searchSelect"
+				></el-input>
+				<span>厂家: </span>
+				<el-input
+					v-model="searchSelectBy.manufactor"
+					style="width: 200px"
+					class="searchSelect"
+				></el-input>
+				<span>口径: </span>
+				<el-select multiple v-model="searchSelectBy.caliber" class="searchSelect">
 					<el-option
-						v-for="item in options"
+						v-for="item in calibers"
 						:key="item.value"
 						:label="item.label"
 						:value="item.value"
 					>
 					</el-option>
 				</el-select>
-				<el-input
-					@keyup.enter.native="search()"
-					style="width: 400px"
-					v-model="searchText"
-					clearable
-					placeholder="请输入搜索字段"
-				>
-				</el-input>
 				<el-button
 					:loading="searchLoading"
 					@click="search()"
@@ -28,12 +33,8 @@
 				>
 					搜索
 				</el-button>
-				<el-button @click="clearRes()" style="margin-left: 15px"> 重置 </el-button>
-				<!-- <el-button disabled type="success" round @click="exportExcel()" :loading="exportLoading">
-          导出
-          <i class="el-icon-download el-icon--right"></i>
-        </el-button> -->
 			</div>
+			<div></div>
 		</div>
 		<el-table
 			border
@@ -104,11 +105,19 @@
 			<el-table-column align="center" label="操作" width="200px" fixed="right">
 				<template v-slot="scope">
 					<div style="display: flex; justify-content: center; align-items: center">
-						<el-button size="small" @click="openWaterMeter(scope.row.id)">
+						<!-- <el-button size="small" @click="openWaterMeter(scope.row.id)">
 							水表信息
-						</el-button>
+						</el-button> -->
 						<el-button size="small" @click="modify(scope.row)" type="primary">
 							修改信息
+						</el-button>
+						<el-button
+							size="small"
+							disabled
+							@click="deleteWell(scope.row)"
+							type="danger"
+						>
+							删除
 						</el-button>
 						<!-- <el-button size="small" @click="openRepair(scope.row.id)" type="primary">
               维修记录
@@ -236,6 +245,7 @@ import Title from "../../components/title.vue";
 import { nanoid } from "nanoid";
 import dayjs from "dayjs";
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
+import { calibers } from "./info";
 @Component({
 	components: {
 		Title,
@@ -246,6 +256,13 @@ export default class SearchAll extends Vue {
 
 	public searchTextBy = "streetName";
 	public searchText = "";
+
+	public searchSelectBy = {
+		streetName: "" as string, // 街道名称
+		manufactor: "" as string, // 水表厂家
+		caliber: [] as string[], // 口径
+	};
+
 	public waterMeterInfoSearchBy: string = "accountNumber";
 	public waterMeterInfoSearchText: string = "";
 
@@ -260,6 +277,8 @@ export default class SearchAll extends Vue {
 		{ value: "accountNumber", label: "户号" },
 		{ value: "accountName", label: "户名" },
 	];
+
+	public calibers: elOptionArray = calibers;
 
 	public searchRes: objectArray = [];
 	public displayRes: objectArray = [];
@@ -320,23 +339,39 @@ export default class SearchAll extends Vue {
 	public async search(): Promise<void> {
 		this.searchLoading = true;
 		this.tableLoading = true;
-		this.displayRes = this.searchRes.filter((item) => {
-			if (item) {
-				if (typeof item[this.searchTextBy] === "string") {
-					return (
-						(item[this.searchTextBy] as string)
-							.toLowerCase()
-							.indexOf(this.searchText.trim().toLowerCase()) > -1
-					);
-				} else if (typeof item[this.searchTextBy] === "number") {
-					return (
-						(item[this.searchTextBy] as unknown as number) === Number(this.searchText)
-					);
-				} else {
-					return false;
-				}
+
+		const searchText: Record<string, any> = {
+			caliber: this.searchSelectBy.caliber as string[],
+			manufactor: this.searchSelectBy.manufactor,
+			streetName: this.searchSelectBy.streetName,
+		};
+
+		for (const key in searchText) {
+			if (searchText[key] === "" || searchText[key].length === 0) {
+				delete searchText[key];
 			}
+		}
+		// 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
+		// searchText的属性值可以是数组，包含数组中的任意一个值就可以
+		const promise = new Promise<void>((resolve, _) => {
+			this.displayRes = this.searchRes.filter((item) => {
+				for (const key in searchText) {
+					if (Array.isArray(searchText[key])) {
+						if (!searchText[key].includes(item[key])) {
+							return false;
+						}
+					} else {
+						if (!String(item[key]).includes(searchText[key] as string)) {
+							return false;
+						}
+					}
+				}
+				return true;
+			});
+			resolve();
 		});
+		await promise;
+
 		this.searchLoading = false;
 		this.tableLoading = false;
 
@@ -484,6 +519,10 @@ export default class SearchAll extends Vue {
 		this.waterMeterDialog = true;
 		this.waterMeterDialogId = id;
 		await this.getWaterMeterInfoById(id);
+	}
+
+	public deleteWell(id: number): void {
+		void id;
 	}
 
 	// 根据id获取水表信息

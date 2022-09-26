@@ -43,8 +43,7 @@ export default class InputInfor extends Vue {
 	public inputType: string = "表卡输入";
 
 	public mounted() {
-		console.log(123);
-		(this.$refs!.upload! as HTMLElement).addEventListener("change", (e: any) => {
+		(this.$refs!.upload! as HTMLElement).addEventListener("change", (e: { target: any }) => {
 			//绑定监听表格导入事件
 			this.readExcel(e);
 		});
@@ -72,7 +71,7 @@ export default class InputInfor extends Vue {
 				const wsname = workbook.SheetNames[0];
 				// 切换为新的调用方式 生成json表格内容
 				const ws = utils.sheet_to_json(workbook.Sheets[wsname]);
-				console.log(ws);
+
 				ws.forEach((item: any) => {
 					// console.log(item);
 					if (item["__EMPTY"] === "设施名称") {
@@ -93,7 +92,7 @@ export default class InputInfor extends Vue {
 					});
 				}
 				// 后续为自己对ws数据的处理
-			} catch (e) {
+			} catch (e: any) {
 				return false;
 			}
 		};

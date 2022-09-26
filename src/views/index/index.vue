@@ -28,7 +28,6 @@ export default class homeIndex extends Vue {
 	public async mounted() {
 		try {
 			const res = await this.axios.get("/Tygs/getWaterMeterCount");
-			console.log(res);
 			this.setCharts(res.data);
 		} catch (err) {
 			this.$message.error("获取数据失败");
@@ -104,7 +103,6 @@ export default class homeIndex extends Vue {
 			],
 		};
 		chart1.on("click", (params: any) => {
-			console.log(params);
 			this.goPage("/search" + NameToData[params.name]);
 		});
 		option && chart1.setOption(option);
