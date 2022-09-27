@@ -292,8 +292,10 @@
 			style="
 				color: rgba(0, 0, 0, 0.85);
 				font-size: 24px;
-				line-height: 43px;
+				line-height: 48px;
 				text-align: center;
+				font-weight: bold;
+				margin-top: 16px;
 			"
 		>
 			404
@@ -301,15 +303,16 @@
 		<div
 			style="
 				color: rgba(0, 0, 0, 0.45);
-				font-size: 14px;
-				line-height: 22px;
+				font-size: 24px;
+				line-height: 36px;
 				text-align: center;
 			"
 		>
-			Sorry, the page you visited does not exist.
+			页面暂时不存在, <strong>{{ time }}</strong> 秒内返回上一页
 		</div>
 		<div style="margin-top: 24px">
-			<el-button type="primary" @click="goHome"> 返回首页 </el-button>
+			<!-- <el-button type="primary" @click="goHome"> 返回首页 </el-button> -->
+			<el-button type="primary" @click="goBack"> 返回上一页 </el-button>
 		</div>
 	</div>
 </template>
@@ -322,9 +325,26 @@ import Component from "vue-class-component";
 	name: "NotFound",
 })
 export default class NotFound extends Vue {
-	public goHome() {
+	public time = "5";
+
+	public mounted(): void {
+		this.time = "5";
+		let timer = setInterval(() => {
+			this.time = (Number(this.time) - 1).toString();
+			if (Number(this.time) === 0) {
+				clearInterval(timer);
+				this.goBack();
+			}
+		}, 1000);
+	}
+
+	public goHome(): void {
 		this.$router.push("/");
 		localStorage.removeItem("page ");
+	}
+
+	public goBack(): void {
+		this.$router.go(-1);
 	}
 }
 </script>

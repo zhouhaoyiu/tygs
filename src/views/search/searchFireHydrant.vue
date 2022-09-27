@@ -1,6 +1,6 @@
 <template>
 	<div class="page">
-		<Title>查询 消防栓</Title>
+		<Title>查询 消火栓</Title>
 		<div class="searchArea">
 			<div class="searchSelects">
 				<span>街道名称: </span>
@@ -238,14 +238,16 @@
 </template>
 
 <script lang="ts">
-import _ from "lodash";
+interface FireHydrant {
+
+}
+import dayjs from "dayjs";
+import { nanoid } from "nanoid";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
-import { nanoid } from "nanoid";
-import dayjs from "dayjs";
-import { elOptionArray, objectArray, repairInfoArray } from "./types";
 import { calibers } from "./info";
+import { elOptionArray, objectArray, repairInfoArray } from "./types";
 @Component({
 	components: {
 		Title,

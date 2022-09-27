@@ -140,7 +140,7 @@ export default class SideBar extends Vue {
 			name: "新增",
 			path: "add",
 			role: 1,
-			disable: true,
+			disable: false,
 			children: [
 				{
 					name: "表井(总表)",
@@ -164,7 +164,7 @@ export default class SideBar extends Vue {
 				},
 				{
 					name: "水表信息(户表)",
-					path: "addWaterMeter",
+					path: "addWell",
 					role: 1,
 				},
 			],

@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<Title>新增 表井(总表)</Title>
+	<div class="page">
+		<Title>新增 水表间(户表)</Title>
 		<Buliding>Building...</Buliding>
 	</div>
 </template>
@@ -11,15 +11,8 @@ import Title from "@/components/title.vue";
 import Vue from "vue";
 import Component from "vue-class-component";
 
-@Component({
-	components: { Title, Buliding },
-})
-export default class AddWaterMeterWell extends Vue {
-	public imgSrc = require("../../assets/tygs.png");
-	public mounted(): void {
-		console.log("addWaterMeterWell");
-	}
-}
+@Component({ components: { Title, Buliding } })
+export default class AddWaterMeterRoom extends Vue {}
 </script>
 
 <style lang="scss" scoped></style>

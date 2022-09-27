@@ -78,39 +78,34 @@ const routes: Array<RouteConfig> = [
 						/* webpackChunkName: "addWaterMeterWell" */ "../views/add/addWaterMeterWell.vue"
 					),
 			},
-			// {
-			//   path: "addValueWell",
-			//   name: "addValueWell",
-			//   component: () =>
-			//     import(
-			//       /* webpackChunkName: "addValueWell" */ "../views/add/addValueWell.vue"
-			//     ),
-			// },
-			// {
-			//   path: "addFireHydrant",
-			//   name: "addFireHydrant",
-			//   component: () =>
-			//     import(
-			//       /* webpackChunkName: "addFireHydrant" */ "../views/add/addFireHydrant.vue"
-			//     ),
-			// },
-			// {
-			//   path: "addWaterMeterRoom",
-			//   name: "addWaterMeterRoom",
-			//   component: () =>
-			//     import(
-			//       /* webpackChunkName: "addWaterMeterRoom" */ "../views/add/addWaterMeterRoom.vue"
-			//     ),
-			// },
-			// {
-			//   path: "addWell",
-			//   name: "addWell",
-			//   component: () =>
-			//     import(
-			//       /* webpackChunkName: "addWell" */ "../views/add/addWell.vue"
-			//     ),
-			// },
-
+			{
+				path: "addValueWell",
+				name: "addValueWell",
+				component: () =>
+					import(/* webpackChunkName: "addValueWell" */ "../views/add/addValueWell.vue"),
+			},
+			{
+				path: "addFireHydrant",
+				name: "addFireHydrant",
+				component: () =>
+					import(
+						/* webpackChunkName: "addFireHydrant" */ "../views/add/addFireHydrant.vue"
+					),
+			},
+			{
+				path: "addWaterMeterRoom",
+				name: "addWaterMeterRoom",
+				component: () =>
+					import(
+						/* webpackChunkName: "addWaterMeterRoom" */ "../views/add/addWaterMeterRoom.vue"
+					),
+			},
+			{
+				path: "addWell",
+				name: "addWell",
+				component: () =>
+					import(/* webpackChunkName: "addWell" */ "../views/add/addWell.vue"),
+			},
 			{
 				path: "card",
 				name: "card",
@@ -148,11 +143,11 @@ const routes: Array<RouteConfig> = [
 	{
 		path: "/404",
 		name: "404",
-		redirect: "/home",
+		component: () => import(/* webpackChunkName: "404" */ "../views/404.vue"),
 	},
 	{
 		path: "*",
-		redirect: "/home",
+		redirect: "/404",
 	},
 ];
 

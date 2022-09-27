@@ -441,12 +441,13 @@ export default class SearchValueWell extends Vue {
 				if (typeof item[this.waterMeterInfoSearchBy] === "string") {
 					return (
 						(item[this.waterMeterInfoSearchBy] as string)
+							.trim()
 							.toLowerCase()
 							.indexOf(this.waterMeterInfoSearchText.trim().toLowerCase()) > -1
 					);
 				} else if (typeof item[this.waterMeterInfoSearchBy] === "number") {
 					return (
-						(item[this.waterMeterInfoSearchBy] as unknown as number) ===
+						(item[this.waterMeterInfoSearchBy] as unknown as Number) ===
 						Number(this.waterMeterInfoSearchText)
 					);
 				} else {

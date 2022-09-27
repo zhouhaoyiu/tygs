@@ -1,6 +1,6 @@
 <template>
-	<div>
-		<Title>水表信息(户表)</Title>
+	<div class="page">
+		<Title>查询 水表信息(户表)</Title>
 		<div class="searchArea">
 			<div class="searchClass">
 				<el-select width="240px" v-model="searchBy" style="margin-right: 20px">
