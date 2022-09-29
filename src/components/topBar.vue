@@ -6,7 +6,7 @@
 		<!-- <div class="banner-box"> -->
 		<!-- <img class="banner" :src="require('../assets/banner.jpg')" alt=""> -->
 		<!-- </div> -->
-		<div class="sitename-box">城北<!-- 营销分公司 表井 -->信息数据库</div>
+		<div @click="screenSaver()" class="sitename-box">城北<!-- 营销分公司 表井 -->信息数据库</div>
 	</div>
 </template>
 
@@ -17,6 +17,10 @@ import Component from "vue-class-component";
 export default class TopBar extends Vue {
 	public goHome(): void {
 		this.$router.push("/");
+	}
+
+	public screenSaver(): void {
+		this.$router.push("/screenSaver");
 	}
 }
 </script>

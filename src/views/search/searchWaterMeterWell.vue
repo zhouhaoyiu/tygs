@@ -43,8 +43,8 @@
 			max-height="560px"
 			class="table"
 		>
-			<el-table-column align="center" prop="filledBy" width="100px" label="填写人">
-			</el-table-column>
+			<!-- <el-table-column align="center" prop="filledBy" width="100px" label="填写人">
+			</el-table-column> -->
 			<el-table-column align="center" prop="accountName" width="150px" label="户名">
 			</el-table-column>
 			<el-table-column align="center" prop="accountNumber" width="150px" label="户号">
@@ -300,12 +300,12 @@
 </template>
 
 <script lang="ts">
+import dayjs from "dayjs";
 import _ from "lodash";
+import { nanoid } from "nanoid";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
-import { nanoid } from "nanoid";
-import dayjs from "dayjs";
 import { calibers } from "./info";
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
 @Component({
@@ -328,7 +328,7 @@ export default class SearchAll extends Vue {
 	};
 
 	public options: elOptionArray = [
-		{ value: "accountIdentifier", label: "编号" },
+		{ value: "accountName", label: "户名" },
 		{ value: "accountNumber", label: "户号" },
 		{ value: "address", label: " 地址" },
 	];

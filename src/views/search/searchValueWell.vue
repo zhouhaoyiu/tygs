@@ -29,6 +29,16 @@
 					>
 					</el-option>
 				</el-select>
+				<span>厂家: </span>
+				<el-select multiple v-model="searchSelectBy.manufactor" class="searchSelect">
+					<el-option
+						v-for="item in wellChamberTypes"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"
+					>
+					</el-option>
+				</el-select>
 			</div>
 			<div class="searchInput">
 				<el-select v-model="searchTextBy" style="margin-right: 15px">
@@ -292,15 +302,14 @@
 </template>
 
 <script lang="ts">
-import _ from "lodash";
+import dayjs from "dayjs";
+import { nanoid } from "nanoid";
 import Vue from "vue";
 import Component from "vue-class-component";
+import { utils, writeFileXLSX } from "xlsx";
 import Title from "../../components/title.vue";
-import { nanoid } from "nanoid";
-import dayjs from "dayjs";
 import { calibers, wellChamberTypes } from "./info";
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
-import { utils, writeFileXLSX } from "xlsx";
 @Component({
 	components: {
 		Title,
@@ -317,13 +326,18 @@ export default class SearchValueWell extends Vue {
 	public searchSelectBy = {
 		caliber: [] as string[], // 口径
 		wellChamberType: [] as string[], // 井室类型
-		streetName: "" as string, // 街道
+		streetName: "" as string, // 街道，
+		manufactor: [] as string[], // 厂家
 	};
 
 	public options: objectArray = [
 		{
 			value: "filledBy",
 			label: "填写人",
+		},
+		{
+			value: "accountIdentifier",
+			label: "编号",
 		},
 	];
 

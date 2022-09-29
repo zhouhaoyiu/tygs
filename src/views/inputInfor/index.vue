@@ -25,8 +25,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import Title from "../../components/title.vue";
 import { read, utils } from "xlsx";
+import Title from "../../components/title.vue";
 @Component({
 	components: {
 		Title,
@@ -50,6 +50,7 @@ export default class InputInfor extends Vue {
 	}
 
 	public readExcel(e: { target: { files: any } }) {
+		this.ExcelInfo = [];
 		const files = e.target.files;
 		// 如果没有文件名
 		if (files.length <= 0) {
@@ -73,7 +74,7 @@ export default class InputInfor extends Vue {
 				const ws = utils.sheet_to_json(workbook.Sheets[wsname]);
 
 				ws.forEach((item: any) => {
-					// console.log(item);
+					console.log(item);
 					if (item["__EMPTY"] === "设施名称") {
 						this.ssmc.push(item["__EMPTY_1"]);
 					}

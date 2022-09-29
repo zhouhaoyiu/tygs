@@ -16,6 +16,11 @@ const routes: Array<RouteConfig> = [
 		redirect: "/home",
 	},
 	{
+		path: "/screenSaver",
+		name: "screenSaver",
+		component: () => import(/* webpackChunkName: "index" */ "../components/screenSaver.vue"),
+	},
+	{
 		path: "/home",
 		name: "Home",
 		redirect: "/home/index",
