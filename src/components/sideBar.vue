@@ -262,7 +262,7 @@ export default class SideBar extends Vue {
 	background-color: transparent;
 	color: #021146;
 	height: 100%;
-	width: 208px;
+	width: 200px;
 	z-index: 100;
 	box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
 	top: 0;
@@ -351,7 +351,7 @@ export default class SideBar extends Vue {
 	.sideBar-foot {
 		display: flex;
 		width: 100%;
-		height: calc(30% - 160px);
+		margin-bottom: 30px;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;

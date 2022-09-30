@@ -12,6 +12,12 @@
   <script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/demo-center/jsonTree/jsonTree.js'></script>
   <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
   <!--以上 JS、CSS 仅为在示例中展示结果使用，JSAPI本身不依赖以上资源，正式开发请删除-->
+  <style>
+    html{
+      padding-left: 2%;
+      font-size: 24px;
+    }
+  </style>
 </head>
 
 <body>
@@ -21,7 +27,7 @@
   </div>
 
   <script type="text/javascript">
-
+    let arr = []
     var wrapper = document.getElementById("result");
     var env = {
       '是否移动设备': AMap.Browser.mobile,
@@ -41,7 +47,14 @@
     }
     var tree = jsonTree.create(env, wrapper)
     tree.expand();
-    console.log(AMap);
+    // 将对象的属性和值转换为字符串
+    Object.entries(AMap.Browser).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`);
+      arr.push(`${key}: ${value}`)
+    });
+    // document 清空内容
+    document.body.innerHTML = ''
+    document.write(arr.join('<br>'))
   </script>
 
 </body>

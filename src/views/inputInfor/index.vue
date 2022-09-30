@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="page">
 		<Title>数据录入</Title>
 		<el-radio-group v-model="inputType">
 			<el-radio-button label="表卡输入"></el-radio-button>
@@ -7,17 +7,21 @@
 			<!-- <el-radio-button label="广州"></el-radio-button> -->
 			<!-- <el-radio-button label="深圳"></el-radio-button> -->
 		</el-radio-group>
-		<div style="margin-top: 15px" v-show="inputType === '表卡输入'">
+		<div class="inputCard" v-show="inputType === '表卡输入'">
 			<input type="file" ref="upload" accept=".xls,.xlsx" class="outputlist_upload" />
 			<div>
 				<el-table :data="ExcelInfo" max-height="500px" style="margin-top: 20px; width: 97%">
 					<el-table-column align="center" prop="ssmc" label="设施名称"> </el-table-column>
 					<el-table-column align="center" prop="ggxh" label="规格型号"> </el-table-column>
 					<el-table-column align="center" prop="syzt" label="使用状态"> </el-table-column>
+					<el-table-column align="center" prop="ssgx" label="所属管线"> </el-table-column>
 				</el-table>
 				<!-- {{ ExcelInfo }} -->
 				<!-- {{ ggxh }} -->
 			</div>
+		</div>
+		<div class="submit">
+			<el-button type="primary">提交</el-button>
 		</div>
 	</div>
 </template>
@@ -38,6 +42,17 @@ export default class InputInfor extends Vue {
 	public ssmc: string[] = [];
 	public ggxh: string[] = [];
 	public syzt: string[] = [];
+	public ssgx: string[] = [];
+	public jsbh: string[] = [];
+	public jslx: string[] = [];
+	public jszb: string[] = [];
+	public yxzt: string[] = [];
+	public jsqk: string[] = [];
+	public kgfx: string[] = [];
+	public xdwz: string[] = [];
+	public js: string[] = [];
+	public sccj: string[] = [];
+	public azsj: string[] = [];
 
 	public ExcelInfo: any[] = [];
 	public inputType: string = "表卡输入";
@@ -78,11 +93,44 @@ export default class InputInfor extends Vue {
 					if (item["__EMPTY"] === "设施名称") {
 						this.ssmc.push(item["__EMPTY_1"]);
 					}
+					if (item["__EMPTY"] === "井室情况") {
+						this.jsqk.push(item["__EMPTY_1"]);
+					}
 					if (item["__EMPTY"] === "规格型号") {
 						this.ggxh.push(item["__EMPTY_1"]);
 					}
+					if (item["__EMPTY"] === "生产厂家") {
+						this.sccj.push(item["__EMPTY_1"]);
+					}
 					if (item["__EMPTY_2"] === "使用状态") {
 						this.syzt.push(item["__EMPTY_3"]);
+					}
+					if (item["__EMPTY_2"] === "井室类型") {
+						this.jslx.push(item["__EMPTY_3"]);
+					}
+					if (item["__EMPTY_2"] === "开关方向") {
+						this.kgfx.push(item["__EMPTY_3"]);
+					}
+					if (item["__EMPTY_2"] === "安装时间") {
+						this.azsj.push(item["__EMPTY_3"]);
+					}
+					if (item["__EMPTY_4"] === "所属管线") {
+						this.ssgx.push(item["__EMPTY_5"]);
+					}
+					if (item["__EMPTY_4"] === "井室坐标") {
+						this.jszb.push(item["__EMPTY_5"]);
+					}
+					if (item["__EMPTY_4"] === "相对位置") {
+						this.xdwz.push(item["__EMPTY_5"]);
+					}
+					if (item["__EMPTY_9"] === "井室编号") {
+						this.jsbh.push(item["__EMPTY_10"]);
+					}
+					if (item["__EMPTY_9"] === "运行状态") {
+						this.yxzt.push(item["__EMPTY_10"]);
+					}
+					if (item["__EMPTY_9"] === "井  深") {
+						this.js.push(item["__EMPTY_10"]);
 					}
 				});
 				for (let i = 0; i < this.ssmc.length; i++) {
@@ -103,10 +151,18 @@ export default class InputInfor extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.outputlist_upload {
-	border: none;
-}
-input[type="button"] {
-	background: red;
+.page {
+	.outputlist_upload {
+		border: none;
+	}
+	input[type="button"] {
+		background: red;
+	}
+	.submit {
+		margin-top: 20px;
+	}
+	.inputCard {
+		margin-top: 15px;
+	}
 }
 </style>

@@ -28,11 +28,12 @@
 				<el-button
 					:loading="searchLoading"
 					@click="search()"
-					style="margin-left: 30px"
+					style="margin-left: 20px"
 					type="primary"
 				>
 					搜索
 				</el-button>
+				<el-button @click="clearRes()" style="margin-left: 15px"> 重置 </el-button>
 			</div>
 			<div></div>
 		</div>
@@ -41,7 +42,7 @@
 			stripe
 			v-loading="tableLoading"
 			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-			max-height="550px"
+			max-height="580px"
 			class="table"
 		>
 			<el-table-column align="center" prop="filledBy" width="100px" label="填写人">
@@ -238,9 +239,7 @@
 </template>
 
 <script lang="ts">
-interface FireHydrant {
-
-}
+interface FireHydrant {}
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import Vue from "vue";
@@ -612,7 +611,7 @@ export default class SearchAll extends Vue {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-top: 15px;
+		margin-top: 0.5%;
 	}
 
 	.waterMeterDialog {

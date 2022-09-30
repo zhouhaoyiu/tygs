@@ -25,8 +25,9 @@
 			v-loading="tableLoading"
 			border
 			stripe
+			max-height="595px"
 			:data="displayRes"
-			style="width: 100%; height: 575px; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)"
+			style="width: 100%; box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)"
 		>
 			<el-table-column align="center" prop="jfh" label="缴费号"> </el-table-column>
 			<el-table-column align="center" prop="hh" label="户号"> </el-table-column>
@@ -116,6 +117,7 @@ export default class SearchWell extends Vue {
 
 		this.displayRes = res.data;
 		this.listLength = length.data;
+		console.log(this.displayRes);
 	}
 
 	public async changePage(page: number): Promise<void> {
@@ -174,6 +176,6 @@ export default class SearchWell extends Vue {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin-top: 15px;
+	margin-top: 0.6%;
 }
 </style>

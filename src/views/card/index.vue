@@ -5,7 +5,7 @@
 			<el-descriptions
 				class="margin-top"
 				style="width: 850px"
-				contentStyle="text-align: center;"
+				contentStyle="{text-align: center}"
 				:column="4"
 				size="small"
 				border
@@ -20,7 +20,7 @@
 				</el-descriptions-item>
 				<el-descriptions-item>
 					<template slot="label">所属管线</template>
-					白龙庙街DN300球墨铸铁给水管线（北线）
+					白龙庙街DN300球墨铸铁给水管线(北线)
 				</el-descriptions-item>
 				<el-descriptions-item>
 					<template slot="label">井室编号</template>

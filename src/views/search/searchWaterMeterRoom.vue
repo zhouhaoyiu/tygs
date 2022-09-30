@@ -40,7 +40,7 @@
 			stripe
 			v-loading="tableLoading"
 			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-			max-height="550px"
+			max-height="575px"
 			class="table"
 		>
 			<el-table-column align="center" prop="filledBy" width="120px" label="填写人">
@@ -279,12 +279,11 @@
 </template>
 
 <script lang="ts">
-import _ from "lodash";
+import dayjs from "dayjs";
+import { nanoid } from "nanoid";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
-import { nanoid } from "nanoid";
-import dayjs from "dayjs";
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
 @Component({
 	components: {

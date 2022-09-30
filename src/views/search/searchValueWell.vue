@@ -84,7 +84,7 @@
 			stripe
 			v-loading="tableLoading"
 			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-			max-height="495px"
+			max-height="530px"
 			class="table"
 		>
 			<el-table-column align="center" prop="filledBy" width="100px" label="填写人">

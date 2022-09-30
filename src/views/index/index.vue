@@ -7,8 +7,8 @@
 			</div>
 		</div>
 		<div style="margin-top: 40px; display: flex">
-			<div style="width: 800px; height: 450px" id="chart"></div>
-			<div style="width: 800px; height: 450px" id="chart2"></div>
+			<div style="width: 80%; height: 450px" id="chart"></div>
+			<!-- <div style="width: 800px; height: 450px" id="chart2"></div> -->
 		</div>
 	</div>
 </template>
@@ -18,7 +18,7 @@ import * as echarts from "echarts";
 import Vue from "vue";
 import Component from "vue-class-component";
 import Title from "../../components/title.vue";
-import { bgPatternImg, piePatternImg } from "./image";
+import { piePatternImg } from "./image";
 @Component({
 	components: {
 		Title,
@@ -157,7 +157,7 @@ export default class homeIndex extends Vue {
 		align-items: center;
 		.card {
 			height: 55px;
-			width: 30%;
+			width: 15%;
 			margin: 7px;
 			display: flex;
 			justify-content: center;
