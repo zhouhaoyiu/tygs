@@ -10,18 +10,29 @@
 		<div class="inputCard" v-show="inputType === '表卡输入'">
 			<input type="file" ref="upload" accept=".xls,.xlsx" class="outputlist_upload" />
 			<div>
-				<el-table :data="ExcelInfo" max-height="500px" style="margin-top: 20px; width: 97%">
+				<el-table border stripe :data="ExcelInfo" max-height="500px" style="margin-top: 20px; width: 97%">
 					<el-table-column align="center" prop="ssmc" label="设施名称"> </el-table-column>
 					<el-table-column align="center" prop="ggxh" label="规格型号"> </el-table-column>
 					<el-table-column align="center" prop="syzt" label="使用状态"> </el-table-column>
 					<el-table-column align="center" prop="ssgx" label="所属管线"> </el-table-column>
+					<el-table-column align="center" prop="jsbh" label="井室编号"> </el-table-column>
+					<el-table-column align="center" prop="jslx" label="井室类型"> </el-table-column>
+					<el-table-column align="center" prop="jszb" label="井室坐标"> </el-table-column>
+					<el-table-column align="center" prop="yxzt" label="运行状态"> </el-table-column>
+					<el-table-column align="center" prop="jsqk" label="井室情况"> </el-table-column>
+					<el-table-column align="center" prop="kgfx" label="开关方向"> </el-table-column>
+					<el-table-column align="center" prop="xdwz" label="相对位置"> </el-table-column>
+					<el-table-column align="center" prop="js" label="井  深"> </el-table-column>
+					<el-table-column align="center" prop="sccj" label="生产厂家"> </el-table-column
+					><el-table-column align="center" prop="azsj" label="安装时间">
+					</el-table-column>
 				</el-table>
 				<!-- {{ ExcelInfo }} -->
 				<!-- {{ ggxh }} -->
 			</div>
-		</div>
-		<div class="submit">
-			<el-button type="primary">提交</el-button>
+			<div class="submit">
+				<el-button type="primary">提交</el-button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -57,7 +68,7 @@ export default class InputInfor extends Vue {
 	public ExcelInfo: any[] = [];
 	public inputType: string = "表卡输入";
 
-	public mounted() {
+	public mounted(): void {
 		(this.$refs!.upload! as HTMLElement).addEventListener("change", (e: { target: any }) => {
 			//绑定监听表格导入事件
 			this.readExcel(e);
@@ -71,7 +82,7 @@ export default class InputInfor extends Vue {
 		if (files.length <= 0) {
 			return false;
 		} else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
-			this.$message.error("上传格式不正确，请上传xls或者xlsx格式");
+			this.$message.error("上传格式不正确,请上传xls或者xlsx格式");
 			return false;
 		}
 
@@ -138,6 +149,18 @@ export default class InputInfor extends Vue {
 						ssmc: this.ssmc[i],
 						ggxh: this.ggxh[i],
 						syzt: this.syzt[i],
+						ssgx: this.ssgx[i],
+						jsbh: this.jsbh[i],
+						jslx: this.jslx[i],
+						jszb: this.jszb[i],
+						yxzt: this.yxzt[i],
+						jsqk: this.jsqk[i],
+						kgfx: this.kgfx[i],
+						xdwz: this.xdwz[i],
+						js: this.js[i],
+						sccj: this.sccj[i],
+						// excel的时间格式是数字，需要转换 例如：41183转化为2012-10-1
+						azsj: this.azsj[i] ? this.excelDateToJSDate(this.azsj[i]) : "",
 					});
 				}
 				// 后续为自己对ws数据的处理
@@ -146,6 +169,20 @@ export default class InputInfor extends Vue {
 			}
 		};
 		fileReader.readAsBinaryString(files[0]);
+	}
+
+	// excel的时间格式是数字，需要转换 例如：41183转化为2012-10-1
+	public excelDateToJSDate(serial: any) {
+		const utc_days = Math.floor(serial - 25569);
+		const utc_value = utc_days * 86400;
+		const date_info = new Date(utc_value * 1000);
+		return (
+			date_info.getFullYear() +
+			"-" +
+			("0" + (date_info.getMonth() + 1)).slice(-2) +
+			"-" +
+			("0" + date_info.getDate()).slice(-2)
+		);
 	}
 }
 </script>
