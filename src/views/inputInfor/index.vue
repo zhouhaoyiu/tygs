@@ -8,9 +8,16 @@
 			<!-- <el-radio-button label="深圳"></el-radio-button> -->
 		</el-radio-group>
 		<div class="inputCard" v-show="inputType === '表卡输入'">
-			<input type="file" ref="upload" accept=".xls,.xlsx" class="outputlist_upload" />
+			<label class="input-file-button" for="upload">请选择卡片文件</label>
+			<input type="file" id="upload" ref="upload" accept=".xls,.xlsx" class="upButton" />
 			<div>
-				<el-table border stripe :data="ExcelInfo" max-height="500px" style="margin-top: 20px; width: 97%">
+				<el-table
+					border
+					stripe
+					:data="ExcelInfo"
+					max-height="500px"
+					style="margin-top: 20px; width: 97%"
+				>
 					<el-table-column align="center" prop="ssmc" label="设施名称"> </el-table-column>
 					<el-table-column align="center" prop="ggxh" label="规格型号"> </el-table-column>
 					<el-table-column align="center" prop="syzt" label="使用状态"> </el-table-column>
@@ -189,11 +196,20 @@ export default class InputInfor extends Vue {
 
 <style lang="scss" scoped>
 .page {
-	.outputlist_upload {
-		border: none;
+	.upButton {
+		display: none;
 	}
-	input[type="button"] {
-		background: red;
+	.input-file-button {
+		padding: 6px 15px;
+		background: #2b5cab;
+		border-radius: 24px;
+		color: white;
+		cursor: pointer;
+		font-size: 12px;
+		box-shadow: 0 0 2px #2b5cab;
+	}
+	.input-file-button:hover {
+		font-size: 8px;
 	}
 	.submit {
 		margin-top: 20px;
