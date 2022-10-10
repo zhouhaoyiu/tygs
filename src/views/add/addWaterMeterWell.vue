@@ -45,7 +45,15 @@
 					<el-form-item label="编号">
 						<el-input v-model="form.accountIdentifier"></el-input>
 					</el-form-item>
+					<!-- <el-form-item label="井外照片">
+						<el-input v-model="form.waterMeterType"></el-input>
+					</el-form-item>
+					<el-form-item label="井内照片">
+						<el-input v-model="form.waterMeterCaliber"></el-input>
+					</el-form-item> -->
 				</el-form>
+				<el-button @click="reset()" style="margin-left: auto" size="mini">重置</el-button>
+				<el-button size="mini" type="primary">提交</el-button>
 			</el-tab-pane>
 		</el-tabs>
 	</div>
@@ -73,11 +81,41 @@ type WaterMeterWellForm = {
 	accountIdentifier: string; // 编号
 };
 
+enum WaterMeterWellFormKey {
+	filledBy = "填写人",
+	accountName = "户名",
+	accountNumber = "户号",
+	address = "地址",
+	coordinates = "坐标",
+	caliber = "口径",
+	operatingStatus = "运行状态",
+	waterNature = "用水性质",
+	wellDepth = "井深",
+	includedFacilities = "包含设施",
+	waterMeterManufacturer = "水表厂家",
+	accountIdentifier = "编号",
+}
+
 @Component({
 	components: { Title, Buliding },
 })
 export default class AddWaterMeterWell extends Vue {
 	public activeName = "first";
+
+	public excelArrs = {
+		filledBy: [], // 填写人
+		accountName: [],
+		accountNunmr: [],
+		address: [],
+		coordinates: [],
+		caliber: [],
+		operatingStatus: [],
+		waterNature: [],
+		wellDepth: [],
+		includedFacilities: [],
+		waterMeterManufacturer: [],
+		accountIdentifier: [],
+	};
 
 	public form: WaterMeterWellForm = {
 		filledBy: "",
@@ -93,11 +131,42 @@ export default class AddWaterMeterWell extends Vue {
 		waterMeterManufacturer: "",
 		accountIdentifier: "",
 	};
+
 	public handleClick(tab: VueComponent, event: PointerEvent): void {
 		console.log(tab, event);
 	}
+
 	public mounted(): void {
 		console.log("addWaterMeterWell");
+	}
+
+	public readExcel(): void {}
+
+	public async sendAddWaterMeterWell(): Promise<void> {
+		let res = await this.axios.post(
+			"/WaterMeterWell/addWaterMeterWell",
+			//向this.form中添加数据writtingTime
+			{ ...this.form, writtingTime: new Date().toLocaleString() },
+		);
+
+		console.log(res);
+	}
+
+	public reset(): void {
+		this.form = {
+			filledBy: "",
+			accountName: "",
+			accountNumber: "",
+			address: "",
+			coordinates: "",
+			caliber: "",
+			operatingStatus: "",
+			waterNature: "",
+			wellDepth: "",
+			includedFacilities: "",
+			waterMeterManufacturer: "",
+			accountIdentifier: "",
+		};
 	}
 }
 </script>
@@ -110,10 +179,11 @@ export default class AddWaterMeterWell extends Vue {
 	.input-file-button {
 		padding: 6px 15px;
 		background: #2b5cab;
-		border-radius: 8px;
+		border-radius: 24px;
 		color: white;
 		cursor: pointer;
 		font-size: 12px;
+		box-shadow: 0 0 2px #2b5cab;
 	}
 }
 </style>

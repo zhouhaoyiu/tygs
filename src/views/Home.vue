@@ -9,7 +9,8 @@
 				@logOut="logOut"
 			></side-bar>
 			<router-view
-				style="padding: 1% 1.8%; width: calc(100% - 200px); height: 100%; margin-top: 0%"
+				style="padding: 1% 1.8%; width: calc(100% - 200px); height: 100%; margin-top: 0%;
+				overflow-y: scroll;"
 			></router-view>
 		</div>
 	</div>

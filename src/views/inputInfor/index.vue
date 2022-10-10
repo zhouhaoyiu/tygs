@@ -41,6 +41,14 @@
 				<el-button type="primary">提交</el-button>
 			</div>
 		</div>
+		<div v-show="inputType === '信息录入'">
+			<el-form size="small" ref="form" :model="form" label-width="80px">
+				<!-- <el-form-item label="填写人">
+					<el-input v-model="form.filledBy"></el-input>
+				</el-form-item> -->
+				<Buiding>正在建设中</Buiding>
+			</el-form>
+		</div>
 	</div>
 </template>
 
@@ -48,14 +56,20 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { read, utils } from "xlsx";
+import Buiding from "../../components/Buiding.vue";
 import Title from "../../components/title.vue";
 @Component({
 	components: {
 		Title,
+		Buiding
 	},
 })
 export default class InputInfor extends Vue {
 	public outputs = [];
+
+	public form = {
+		filledBy: "",
+	};
 
 	public ssmc: string[] = [];
 	public ggxh: string[] = [];
