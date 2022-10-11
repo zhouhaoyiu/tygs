@@ -65,6 +65,7 @@ import Title from "@/components/title.vue";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Component as VueComponent } from "vue/types/umd";
+import { read, utils } from "xlsx";
 
 type WaterMeterWellForm = {
 	filledBy: string; // 填写人
@@ -101,6 +102,7 @@ enum WaterMeterWellFormKey {
 })
 export default class AddWaterMeterWell extends Vue {
 	public activeName = "first";
+	public ExcelInfo: any[] = [];
 
 	public excelArrs = {
 		filledBy: [], // 填写人
@@ -140,7 +142,35 @@ export default class AddWaterMeterWell extends Vue {
 		console.log("addWaterMeterWell");
 	}
 
-	public readExcel(): void {}
+	public readExcel(e: { target: { files: any } }): void | boolean {
+		this.ExcelInfo = [];
+		const files = e.target.files;
+		if (files.length <= 0) {
+			return false;
+		} else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
+			this.$message.error("上传格式不正确,请上传xls或者xlsx格式");
+			return false;
+		}
+
+		const fileReader = new FileReader();
+		fileReader.onload = (ev: ProgressEvent<EventTarget>) => {
+			try {
+				const data = (ev.target as FileReader).result;
+				const workbook = read(data, {
+					type: "binary",
+				});
+				const wsname = workbook.SheetNames[0];
+				const ws = utils.sheet_to_json(workbook.Sheets[wsname]);
+
+				ws.forEach((item: any) => {
+					console.log(item);
+				});
+			} catch (e) {
+				this.$message.error("上传格式不正确,请上传xls或者xlsx格式");
+				return false;
+			}
+		};
+	}
 
 	public async sendAddWaterMeterWell(): Promise<void> {
 		let res = await this.axios.post(

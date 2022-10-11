@@ -61,7 +61,7 @@ import Title from "../../components/title.vue";
 @Component({
 	components: {
 		Title,
-		Buiding
+		Buiding,
 	},
 })
 export default class InputInfor extends Vue {
@@ -96,7 +96,7 @@ export default class InputInfor extends Vue {
 		});
 	}
 
-	public readExcel(e: { target: { files: any } }) {
+	public readExcel(e: { target: { files: any } }): void | boolean {
 		this.ExcelInfo = [];
 		const files = e.target.files;
 		// 如果没有文件名
@@ -108,9 +108,10 @@ export default class InputInfor extends Vue {
 		}
 
 		const fileReader = new FileReader();
-		fileReader.onload = (ev) => {
+		fileReader.onload = (ev: ProgressEvent<EventTarget>) => {
 			try {
-				const data = ev!.target!.result;
+				// 防止ts报错
+				const data = (ev.target as FileReader).result;
 				// 切换为新的调用方式
 				const workbook = read(data, {
 					type: "binary",

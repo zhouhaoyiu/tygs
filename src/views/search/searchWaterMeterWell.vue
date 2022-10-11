@@ -489,6 +489,10 @@ export default class SearchAll extends Vue {
 		await this.getRes();
 	}
 
+	public async deleteWaterMeterWell(id: number): Promise<void> {
+		// const res = await this["axios"].get()
+	}
+
 	public async getRes(): Promise<void> {
 		this.tableLoading = true;
 		const res = await this["axios"].get("/WaterMeterWell/getAllWaterMeterWellInfo");
@@ -598,6 +602,7 @@ export default class SearchAll extends Vue {
 		);
 		this.$message.success(res.data.msg);
 		this.waterMeterInfoArr = res.data.data;
+		console.log(res.data.data);
 	}
 
 	// 更新水表信息
