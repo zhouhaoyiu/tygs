@@ -3,6 +3,7 @@
 		<Title><!-- 城北营销分公司 -->供水附属设施登记卡</Title>
 		<span style="color: gray; user-select: none; cursor: not-allowed">所属管线</span>
 		<el-input disabled style="width: 200px; margin-left: 20px; margin-bottom: 20px"></el-input>
+		<el-button disabled style="margin-left: 20px" type="primary">查询</el-button>
 		<div>
 			<el-descriptions
 				class="margin-top"

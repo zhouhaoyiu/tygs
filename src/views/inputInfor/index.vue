@@ -41,12 +41,68 @@
 				<el-button type="primary">提交</el-button>
 			</div>
 		</div>
-		<div v-show="inputType === '信息录入'">
-			<el-form size="small" ref="form" :model="form" label-width="80px">
-				<!-- <el-form-item label="填写人">
-					<el-input v-model="form.filledBy"></el-input>
-				</el-form-item> -->
-				<Buiding>正在建设中</Buiding>
+		<div class="inputCard" v-show="inputType === '信息录入'">
+			<el-form
+				style="display: flex; flex-wrap: wrap; flex-direction: column"
+				size="small"
+				ref="form"
+				:model="form"
+				label-width="80px"
+				>
+				<div style="display: flex;flex-wrap: wrap;">
+					<el-form-item label="设施名称">
+						<el-input style="width: 240px" v-model="form.ssmc"></el-input>
+					</el-form-item>
+					<el-form-item label="规格型号">
+						<el-input style="width: 240px" v-model="form.ggxh"></el-input>
+					</el-form-item>
+					<el-form-item label="使用状态">
+						<el-input style="width: 240px" v-model="form.syzt"></el-input>
+					</el-form-item>
+					<el-form-item label="所属管线">
+						<el-input style="width: 240px" v-model="form.ssgx"></el-input>
+					</el-form-item>
+					<el-form-item label="井室编号">
+						<el-input style="width: 240px" v-model="form.jsbh"></el-input>
+					</el-form-item>
+					<el-form-item label="井室类型">
+						<el-input style="width: 240px" v-model="form.jslx"></el-input>
+					</el-form-item>
+					<el-form-item label="井室坐标">
+						<el-input style="width: 240px" v-model="form.jszb"></el-input>
+					</el-form-item>
+					<el-form-item label="运行状态">
+						<el-input style="width: 240px" v-model="form.yxzt"></el-input>
+					</el-form-item>
+					<el-form-item label="井室情况">
+						<el-input style="width: 240px" v-model="form.jsqk"></el-input>
+					</el-form-item>
+					<el-form-item label="开关方向">
+						<el-input style="width: 240px" v-model="form.kgfx"></el-input>
+					</el-form-item>
+					<el-form-item label="相对位置">
+						<el-input style="width: 240px" v-model="form.xdwz"></el-input>
+					</el-form-item>
+					<el-form-item label="井  深">
+						<el-input style="width: 240px" v-model="form.js"></el-input>
+					</el-form-item>
+					<el-form-item label="生产厂家">
+						<el-input style="width: 240px" v-model="form.sccj"></el-input>
+					</el-form-item>
+					<el-form-item label="安装时间">
+						<el-date-picker
+							v-model="form.azsj"
+							type="date"
+							placeholder="选择日期"
+						></el-date-picker>
+					</el-form-item>
+				</div>
+
+				<div>
+					<el-button size="small">重置</el-button>
+					<el-button size="small" type="primary">提交</el-button>
+				</div>
+				<!-- <Buiding>正在建设中</Buiding> -->
 			</el-form>
 		</div>
 	</div>
@@ -68,7 +124,20 @@ export default class InputInfor extends Vue {
 	public outputs = [];
 
 	public form = {
-		filledBy: "",
+		ssmc: "",
+		ggxh: "",
+		syzt: "",
+		ssgx: "",
+		jsbh: "",
+		jslx: "",
+		jszb: "",
+		yxzt: "",
+		jsqk: "",
+		kgfx: "",
+		xdwz: "",
+		js: "",
+		sccj: "",
+		azsj: "",
 	};
 
 	public ssmc: string[] = [];
