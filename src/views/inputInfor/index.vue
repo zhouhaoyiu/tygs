@@ -38,7 +38,7 @@
 				<!-- {{ ggxh }} -->
 			</div>
 			<div class="submit">
-				<el-button type="primary">提交</el-button>
+				<el-button @click="submitFile()" type="primary">提交</el-button>
 			</div>
 		</div>
 		<div class="inputCard" v-show="inputType === '信息录入'">
@@ -48,8 +48,8 @@
 				ref="form"
 				:model="form"
 				label-width="80px"
-				>
-				<div style="display: flex;flex-wrap: wrap;">
+			>
+				<div style="display: flex; flex-wrap: wrap">
 					<el-form-item label="设施名称">
 						<el-input style="width: 240px" v-model="form.ssmc"></el-input>
 					</el-form-item>
@@ -164,6 +164,13 @@ export default class InputInfor extends Vue {
 			this.readExcel(e);
 		});
 	}
+
+	public submitFile = () => {
+		this.$message({
+			message: "提交成功",
+			type: "success",
+		});
+	};
 
 	public readExcel(e: { target: { files: any } }): void | boolean {
 		this.ExcelInfo = [];
