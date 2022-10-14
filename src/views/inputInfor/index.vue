@@ -124,20 +124,20 @@ export default class InputInfor extends Vue {
 	public outputs = [];
 
 	public form = {
-		ssmc: "",
-		ggxh: "",
-		syzt: "",
-		ssgx: "",
-		jsbh: "",
-		jslx: "",
-		jszb: "",
-		yxzt: "",
-		jsqk: "",
-		kgfx: "",
-		xdwz: "",
-		js: "",
-		sccj: "",
-		azsj: "",
+		ssmc: "", // 设施名称
+		ggxh: "", // 规格型号
+		syzt: "", // 使用状态
+		ssgx: "", // 所属管线
+		jsbh: "", // 井室编号
+		jslx: "", // 井室类型
+		jszb: "", // 井室坐标
+		yxzt: "", // 运行状态
+		jsqk: "", // 井室情况
+		kgfx: "", // 开关方向
+		xdwz: "", // 相对位置
+		js: "", // 井深
+		sccj: "", // 生产厂家
+		azsj: "", // 安装时间
 	};
 
 	public ssmc: string[] = [];

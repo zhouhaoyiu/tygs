@@ -4,8 +4,18 @@
 		<!-- <Buliding>Building...</Buliding> -->
 		<el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
 			<el-tab-pane label="文件导入" name="first">
-				<label class="input-file-button" for="upload">请选择XLS文件</label>
-				<input type="file" ref="upload" id="upload" accept=".xls,.xlsx" class="upButton" />
+				<label class="input-file-button" for="upload">请选择卡片文件</label>
+				<input type="file" id="upload" ref="upload" accept=".xls,.xlsx" class="upButton" />
+				<el-table
+					border
+					stripe
+					:data="ExcelInfo"
+					max-height="500px"
+					style="margin-top: 20px; width: 97%"
+				>
+					<el-table-column align="center" prop="wellDepth" label="井深（必填）">
+					</el-table-column>
+				</el-table>
 			</el-tab-pane>
 			<el-tab-pane label="手动输入" name="second">
 				<el-form size="small" ref="form" :model="form" label-width="80px">
@@ -92,7 +102,7 @@ enum WaterMeterWellFormKey {
 	operatingStatus = "运行状态",
 	waterNature = "用水性质",
 	wellDepth = "井深",
-	includedFacilities = "包含设施",
+	includedFacilities = "内含设施",
 	waterMeterManufacturer = "水表厂家",
 	accountIdentifier = "编号",
 }
@@ -103,6 +113,21 @@ enum WaterMeterWellFormKey {
 export default class AddWaterMeterWell extends Vue {
 	public activeName = "first";
 	public ExcelInfo: any[] = [];
+
+	public jnpz: string[] = [];
+	public jwpz: string[] = [];
+	public txr: string[] = [];
+	public hm: string[] = [];
+	public hh: string[] = [];
+	public dz: string[] = [];
+	public zb: string[] = [];
+	public kj: string[] = [];
+	public yxzt: string[] = [];
+	public ysxz: string[] = [];
+	public js: string[] = [];
+	public nhss: string[] = [];
+	public sbcj: string[] = [];
+	public bh: string[] = [];
 
 	public excelArrs = {
 		filledBy: [], // 填写人
@@ -140,11 +165,16 @@ export default class AddWaterMeterWell extends Vue {
 
 	public mounted(): void {
 		console.log("addWaterMeterWell");
+		(this.$refs!.upload! as HTMLElement).addEventListener("change", (e: { target: any }) => {
+			//绑定监听表格导入事件
+			this.readExcel(e);
+		});
 	}
 
 	public readExcel(e: { target: { files: any } }): void | boolean {
 		this.ExcelInfo = [];
 		const files = e.target.files;
+		// 如果没有文件名
 		if (files.length <= 0) {
 			return false;
 		} else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
@@ -155,21 +185,59 @@ export default class AddWaterMeterWell extends Vue {
 		const fileReader = new FileReader();
 		fileReader.onload = (ev: ProgressEvent<EventTarget>) => {
 			try {
+				// 防止ts报错
 				const data = (ev.target as FileReader).result;
+				// 切换为新的调用方式
 				const workbook = read(data, {
 					type: "binary",
 				});
+				// 取第一张表
 				const wsname = workbook.SheetNames[0];
+				// 切换为新的调用方式 生成json表格内容
 				const ws = utils.sheet_to_json(workbook.Sheets[wsname]);
 
+				console.log(wsname);
+
 				ws.forEach((item: any) => {
-					console.log(item);
+					// console.log(item);
+					this.js.push(item["井深（必填）"] ? item["井深（必填）"] : "");
+					this.nhss.push(item["内含设施（必填）"] ? item["内含设施（必填）"] : []);
+					this.sbcj.push(item["水表厂家（必填）"] ? item["水表厂家（必填）"] : "");
+					this.bh.push(item["编号"] ? item["编号"] : "");
+					this.kj.push(item["口径"] ? item["口径"] : "");
+					this.yxzt.push(item["运行状态（必填）"] ? item["运行状态（必填）"] : "");
+					this.ysxz.push(item["用水性质（必填）"] ? item["用水性质（必填）"] : "");
+					this.zb.push(item["坐标"] ? item["坐标"] : "");
+					this.dz.push(item["街道地址"] ? item["街道地址"] : "");
+					this.hh.push(item["户号"] ? item["户号"] : "");
+					this.hm.push(item["户名"] ? item["户名"] : "");
+					this.txr.push(item["填写人"] ? item["填写人"] : "");
+					this.jnpz.push(item["井内拍照（必填）"] ? item["井内拍照（必填）"] : "");
+					this.jwpz.push(item["井外拍照（必填）"] ? item["井外拍照（必填）"] : "");
 				});
+				for (let i = 0; i < ws.length; i++) {
+					this.ExcelInfo.push({
+						filledBy: this.txr[i],
+						accountName: this.hm[i],
+						accountNumber: this.hh[i],
+						address: this.dz[i],
+						coordinates: this.zb[i],
+						caliber: this.kj[i],
+						operatingStatus: this.yxzt[i],
+						waterNature: this.ysxz[i],
+						wellDepth: this.js[i],
+						includedFacilities: this.nhss[i],
+						waterMeterManufacturer: this.sbcj[i],
+						accountIdentifier: this.bh[i],
+					});
+				}
+				console.log(this.ExcelInfo);
 			} catch (e) {
 				this.$message.error("上传格式不正确,请上传xls或者xlsx格式");
 				return false;
 			}
 		};
+		fileReader.readAsBinaryString(files[0]);
 	}
 
 	public async sendAddWaterMeterWell(): Promise<void> {
