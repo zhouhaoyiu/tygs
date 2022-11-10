@@ -165,7 +165,13 @@ export default class InputInfor extends Vue {
 		});
 	}
 
-	public submitFile = () => {
+	public submitFile = async () => {
+		for (let i = 0; i < this.ExcelInfo.length; i++) {
+			const res = await this.axios.post("card/addCard", this.ExcelInfo[i]);
+
+			console.log(res);
+		}
+
 		this.$message({
 			message: "提交成功",
 			type: "success",

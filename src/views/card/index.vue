@@ -88,7 +88,18 @@ import Title from "../../components/title.vue";
 		Title,
 	},
 })
-export default class Card extends Vue {}
+export default class Card extends Vue {
+	public async mounted() {
+		// await this.getCard();
+	}
+
+	public async getCard(): Promise<void> {
+		const res = await this.axios.get("/card/getAllCard");
+		// console.log(res);
+	}
+
+	public async searchCard() {}
+}
 </script>
 
 <style lang="scss">
