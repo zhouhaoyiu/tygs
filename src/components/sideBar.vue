@@ -8,37 +8,24 @@
 		</div>
 		<div class="buttons">
 			<div class="button" v-for="(button, buttonIndex) in calcButtonArr" :key="button.name">
-				<button
-					:class="getActive(button.path, button.children) ? 'active' : ''"
-					@click="emitGoPage(button.path, buttonIndex)"
-					class="button-inside"
-					:disabled="button.disable ? true : false"
+				<button :class="getActive(button.path, button.children) ? 'active' : ''"
+					@click="emitGoPage(button.path, buttonIndex)" class="button-inside" :disabled="button.disable ? true : false"
 					:style="
 						button.disable
 							? 'color: #eee;background:#aaa;border-color:#aaa;cursor: not-allowed;'
 							: ''
-					"
-				>
+					">
 					{{ button.name }}
 					<i v-if="button.children" class="button-inside-svg fas fa-caret-down"></i>
 				</button>
-				<div
-					style="display: flex; flex-direction: column"
-					v-if="getChildrenListShow(button)"
-				>
-					<button
-						@click="emitGoChildPage(childrenBtn.path, childrenBtnIndex)"
-						class="button-child-inside"
-						:disabled="childrenBtn.disable ? true : false"
-						:class="getChildActive(childrenBtn.path) ? 'active' : ''"
+				<div style="display: flex; flex-direction: column" v-if="getChildrenListShow(button)">
+					<button @click="emitGoChildPage(childrenBtn.path, childrenBtnIndex)" class="button-child-inside"
+						:disabled="childrenBtn.disable ? true : false" :class="getChildActive(childrenBtn.path) ? 'active' : ''"
 						:style="
 							childrenBtn.disable
 								? 'color: #eee;background:#aaa;border-color:#aaa;cursor: not-allowed;'
 								: ''
-						"
-						v-for="(childrenBtn, childrenBtnIndex) in button.children"
-						:key="childrenBtnIndex"
-					>
+						" v-for="(childrenBtn, childrenBtnIndex) in button.children" :key="childrenBtnIndex">
 						{{ childrenBtn.name }}
 					</button>
 				</div>
@@ -137,6 +124,11 @@ export default class SideBar extends Vue {
 			role: 1,
 		},
 		{
+			name: "三供一业",
+			path: "threeSupply",
+			role: 1,
+		},
+		{
 			name: "新增",
 			path: "add",
 			role: 1,
@@ -211,7 +203,7 @@ export default class SideBar extends Vue {
 				});
 				this.$emit("logOut");
 			})
-			.catch(() => {});
+			.catch(() => { });
 	}
 
 	public get routePath(): string {
@@ -287,6 +279,7 @@ export default class SideBar extends Vue {
 		.info-name {
 			margin-top: 12px;
 		}
+
 		.info-time {
 			margin-top: 12px;
 			margin-bottom: 12px;
@@ -305,6 +298,7 @@ export default class SideBar extends Vue {
 			width: 100%;
 			justify-content: space-between;
 			margin-bottom: 10px;
+
 			// box-shadow: 0 0px 1px 1px #aaa;
 			.button-inside {
 				position: relative;

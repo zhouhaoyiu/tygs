@@ -127,6 +127,12 @@ const routes: Array<RouteConfig> = [
 				name: "map",
 				component: () => import(/* webpackChunkName: "map" */ "../views/map/index.vue"),
 			},
+			{
+				path: "threeSupply",
+				name: "threeSupply",
+				component: () =>
+					import(/* webpackChunkName: "threeSupply" */ "../views/threeSupply/index.vue"),
+			}
 		],
 	},
 	// {
