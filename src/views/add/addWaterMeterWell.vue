@@ -6,13 +6,11 @@
 			<el-tab-pane label="文件导入" name="first">
 				<label class="input-file-button" for="upload">请选择卡片文件</label>
 				<input type="file" id="upload" ref="upload" accept=".xls,.xlsx" class="upButton" />
-				<el-table
-					border
-					stripe
-					:data="ExcelInfo"
-					max-height="500px"
-					style="margin-top: 20px; width: 97%"
-				>
+				<el-table border stripe :data="ExcelInfo" max-height="500px" style="margin-top: 20px; width: 97%">
+					<el-table-column align="center" prop="accountName" label="户名（必填）">
+					</el-table-column>
+					<el-table-column align="center" prop="accountNumber" label="户号（必填）"></el-table-column>
+					<el-table-column align="center" prop="address" label="地址（必填）"></el-table-column>
 					<el-table-column align="center" prop="wellDepth" label="井深（必填）">
 					</el-table-column>
 				</el-table>
@@ -274,6 +272,7 @@ export default class AddWaterMeterWell extends Vue {
 	.upButton {
 		display: none;
 	}
+
 	.input-file-button {
 		padding: 6px 15px;
 		background: #2b5cab;
