@@ -13,7 +13,7 @@
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@fortawesome/fontawesome-free": "^6.2.1",
     "axios": "^1.2.2",
-    "core-js": "^3.27.0",
+    "core-js": "^3.27.1",
     "dayjs": "^1.11.7",
     "echarts": "^5.4.1",
     "element-ui": "^2.15.12",
