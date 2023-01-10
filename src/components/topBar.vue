@@ -6,7 +6,11 @@
 		<!-- <div class="banner-box"> -->
 		<!-- <img class="banner" :src="require('../assets/banner.jpg')" alt=""> -->
 		<!-- </div> -->
-		<div @click="screenSaver()" class="sitename-box">城北<!-- 营销分公司 表井 -->信息数据库</div>
+		<div class="sitename-box">
+			<span @click="screenSaver()">
+				城北<!-- 营销分公司 表井 -->信息数据库
+			</span>
+		</div>
 	</div>
 </template>
 
@@ -39,12 +43,14 @@ export default class TopBar extends Vue {
 	color: #000;
 	text-align: center;
 	box-shadow: 0px 0px 8px 0px rgba(29, 35, 41, 0.05);
+
 	.logo-box {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		min-width: 208px;
 		height: 100%;
+
 		// border-right: 1px solid #ccc;
 		.logo {
 			width: 100px;
@@ -53,18 +59,21 @@ export default class TopBar extends Vue {
 			cursor: pointer;
 		}
 	}
+
 	.banner-box {
 		display: flex;
 		// justify-content: center;
 		align-items: center;
 		width: 800px;
 		height: 100%;
+
 		.banner {
 			width: 800px;
 			height: 100%;
 			object-fit: cover;
 		}
 	}
+
 	.sitename-box {
 		display: flex;
 		justify-content: center;

@@ -7,7 +7,7 @@
 			</div>
 		</div>
 		<div style="margin-top: 40px; display: flex">
-			<div style="width: 30%; height: 270px" id="chart"></div>
+			<div style="width: 35%; height: 270px" id="chart"></div>
 			<!-- <div style="width: 800px; height: 450px" id="chart2"></div> -->
 		</div>
 	</div>

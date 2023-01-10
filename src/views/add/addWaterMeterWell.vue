@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import Buliding from "@/components/Buiding.vue";
+import Building from "@/components/Building.vue";
 import Title from "@/components/title.vue";
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -106,7 +106,7 @@ enum WaterMeterWellFormKey {
 }
 
 @Component({
-	components: { Title, Buliding },
+	components: { Title, Building },
 })
 export default class AddWaterMeterWell extends Vue {
 	public activeName = "first";

@@ -22,10 +22,6 @@ const calibers: elOptionArray = [
     label: "DN50",
   },
   {
-    value: "DN80",
-    label: "DN80",
-  },
-  {
     value: "DN100",
     label: "DN100",
   },
@@ -46,13 +42,49 @@ const calibers: elOptionArray = [
     label: "DN400",
   },
   {
+    value: "DN500",
+    label: "DN500",
+  },
+  {
+    value: "DN600",
+    label: "DN600",
+  },
+  {
+    value: "DN700",
+    label: "DN700",
+  },
+  {
     value: "DN800",
     label: "DN800",
   },
   {
     value: "DN900",
     label: "DN900",
-  }
+  },
+  {
+    value: "DN1000",
+    label: "DN1000",
+  },
+  {
+    value: "DN1200",
+    label: "DN1200",
+  },
+  {
+    value: "DN1400",
+    label: "DN1400",
+  },
+  {
+    value: "DN1600",
+    label: "DN1600",
+  },
+  {
+    value: "DN2000",
+    label: "DN2000",
+  },
+  {
+    value: "其他",
+    label: "其他",
+  },
 ];
 
 const wellChamberTypes: elOptionArray = [

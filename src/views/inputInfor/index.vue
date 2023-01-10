@@ -112,7 +112,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { read, utils } from "xlsx";
-import Buiding from "../../components/Buiding.vue";
+import Buiding from "../../components/Building.vue";
 import Title from "../../components/title.vue";
 @Component({
 	components: {

@@ -29,7 +29,7 @@
 					>
 					</el-option>
 				</el-select>
-				<span>厂家: </span>
+				<!-- <span>厂家: </span>
 				<el-select multiple v-model="searchSelectBy.manufactor" class="searchSelect">
 					<el-option
 						v-for="item in wellChamberTypes"
@@ -38,7 +38,7 @@
 						:value="item.value"
 					>
 					</el-option>
-				</el-select>
+				</el-select> -->
 			</div>
 			<div class="searchInput">
 				<el-select v-model="searchTextBy" style="margin-right: 15px">
