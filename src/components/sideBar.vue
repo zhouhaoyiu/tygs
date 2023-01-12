@@ -119,7 +119,7 @@ export default class SideBar extends Vue {
 			role: 1,
 		},
 		{
-			name: "录入",
+			name: "表卡录入",
 			path: "InputInfor",
 			role: 1,
 		},

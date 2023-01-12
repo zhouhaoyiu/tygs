@@ -1,6 +1,6 @@
 <template>
 	<div class="page">
-		<Title>数据录入</Title>
+		<Title>表卡数据录入</Title>
 		<el-radio-group v-model="inputType">
 			<el-radio-button label="表卡输入"></el-radio-button>
 			<el-radio-button label="信息录入"></el-radio-button>

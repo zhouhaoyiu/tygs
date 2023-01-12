@@ -134,7 +134,7 @@ export default class homeIndex extends Vue {
 			path: "/card",
 		},
 		{
-			title: "录入",
+			title: "表卡录入",
 			path: "/InputInfor",
 		},
 	];

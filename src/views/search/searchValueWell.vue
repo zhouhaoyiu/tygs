@@ -96,12 +96,10 @@
 			<el-table-column align="center" prop="wellChamberType" width="150px" label="井室类型">
 			</el-table-column>
 			<el-table-column align="center" prop="caliber" width="150px" label="口径">
-				<!-- -->
 			</el-table-column>
 			<el-table-column align="center" prop="runningState" width="150px" label="运行状态">
 			</el-table-column>
 			<el-table-column align="center" prop="quantity" width="150px" label="数量">
-				<!-- -->
 			</el-table-column>
 			<el-table-column align="center" prop="wellDepth" width="150px" label="井深">
 			</el-table-column>
