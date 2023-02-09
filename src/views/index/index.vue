@@ -25,7 +25,7 @@ import { piePatternImg } from "./image";
 	},
 })
 export default class homeIndex extends Vue {
-	public async mounted() {
+	public async mounted():Promise<void> {
 		try {
 			const res = await this.axios.get("/Tygs/getWaterMeterCount");
 			this.setCharts(res.data);
