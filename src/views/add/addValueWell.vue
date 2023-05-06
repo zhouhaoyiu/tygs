@@ -36,8 +36,8 @@
       <!-- 运行状态 -->
       <el-form-item label="运行状态">
         <el-select v-model="form.runningState" placeholder="请选择">
-          <e-option v-for="item in runStatusOptions" :key="item.value" :label="item.label"
-            :value="item.value"></e-option>
+          <el-option v-for="item in runStatusOptions" :key="item.value" :label="item.label"
+            :value="item.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="井深（米）">
