@@ -132,7 +132,38 @@ const routes: Array<RouteConfig> = [
 				name: "threeSupply",
 				component: () =>
 					import(/* webpackChunkName: "threeSupply" */ "../views/threeSupply/index.vue"),
+			},
+			{
+				// 户表户管
+				path: "hubiaohuguan",
+				name: "hubiaohuguan",
+				component: () =>
+					import(
+						/* webpackChunkName: "hubiaohuguan" */ "../views/communityDetail/hubiaohuguan.vue"
+					),
+					
+			},
+			{
+				// 户表总管
+				path: "hubiaozongguan",
+				name: "hubiaozongguan",
+				component: () =>
+					import(
+						/* webpackChunkName: "hubiaozongguan" */ "../views/communityDetail/hubiaozongguan.vue"
+					),
+					
+			},
+			{
+				// 未户总管
+				path: "weihuzongguan",
+				name: "weihuzongguan",
+				component: () =>
+					import(
+						/* webpackChunkName: "weihuzongguan" */ "../views/communityDetail/weihuzongguan.vue"
+					),
+					
 			}
+
 		],
 	},
 	// {
