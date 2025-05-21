@@ -7356,10 +7356,10 @@ pinkie@^2.0.0:
   resolved "https://registry.npmmirror.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha512-MnUuEycAemtSaeFSjXKW/aroV7akBbY+Sv+RkyqFjgAe73F+MR0TBWKBRDkmfWq/HiFmdavfZ1G7h4SPZXaCSg==
 
-pinyin@^4.0.0-alpha.3:
-  version "4.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/pinyin/-/pinyin-4.0.0-alpha.3.tgz#fd319a794b2916f8c39f91a8d14089f5c11ddc4a"
-  integrity sha512-awc8YxhwfTN9Jl3tCiOf3bV8qmgeXdPZ9Umas91j4DXlGyd3T4/MOpqJcrkf2epTJOuakLVmbWzwsRaPOyJUaw==
+pinyin@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/pinyin/-/pinyin-4.0.0.tgz#9c15fd9d45c08b6813221fc602f77759429bfa4f"
+  integrity sha512-vHpV5K+vpp6XUUpZNGRDuHoN+1xcmieM3EWlH4QjSX2kkpG/gVOwpqwV9EOJ9x9c9UERFKeLml5XVSukE/PLgQ==
   dependencies:
     commander "~1.1.1"
 
