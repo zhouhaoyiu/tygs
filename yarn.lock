@@ -6242,10 +6242,10 @@ jsbn@~0.1.0:
   resolved "https://registry.npmmirror.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
 
-jsencrypt@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.npmmirror.com/jsencrypt/-/jsencrypt-3.3.2.tgz#b0f1a2278810c7ba1cb8957af11195354622df7c"
-  integrity sha512-arQR1R1ESGdAxY7ZheWr12wCaF2yF47v5qpB76TtV64H1pyGudk9Hvw8Y9tb/FiTIaaTRUyaSnm5T/Y53Ghm/A==
+jsencrypt@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/jsencrypt/-/jsencrypt-3.5.1.tgz#e4074111e5ba3da7d66d3e42d846dc1627d88175"
+  integrity sha512-Yh4q/BSUlNzBkHRZI0G7+2LUM4rYpq1hqGck38yGALh4pdxiC5CQ3jBSBWfUBK2LprsJVjaFP9B0GoFLGNq9ow==
 
 jsesc@^2.5.1:
   version "2.5.2"
