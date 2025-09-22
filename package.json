@@ -20,7 +20,7 @@
     "element-ui": "^2.15.14",
     "jsencrypt": "^3.5.4",
     "lodash": "^4.17.21",
-    "nanoid": "^4.0.2",
+    "nanoid": "^5.1.6",
     "pinyin": "^4.0.0",
     "vue": "^2.6.11",
     "vue-axios": "^3.5.2",
