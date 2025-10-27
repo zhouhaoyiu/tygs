@@ -13,7 +13,7 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@fortawesome/fontawesome-free": "^7.1.0",
-    "axios": "^1.12.2",
+    "axios": "^1.13.0",
     "core-js": "^3.46.0",
     "dayjs": "^1.11.18",
     "echarts": "^6.0.0",
