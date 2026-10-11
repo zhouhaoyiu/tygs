@@ -199,4 +199,9 @@ const router = new VueRouter({
 	routes,
 });
 
+router.beforeEach((to, from, next) => {
+  if (to.path === "/regis") return next("/login");
+  if (to.path !== "/login" && !sessionStorage.getItem("facilityToken")) return next("/login");
+  next();
+});
 export default router;

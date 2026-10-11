@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve ",
-    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "pbuild": " vue-cli-service build",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
@@ -22,7 +22,7 @@
     "lodash": "^4.17.23",
     "nanoid": "^4.0.2",
     "pinyin": "^4.0.0",
-    "vue": "^2.6.11",
+    "vue": "2.7.16",
     "vue-axios": "^3.5.2",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
@@ -32,16 +32,17 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.26",
     "@types/node": "25.0.10",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-babel": "~5.0.9",
     "@vue/cli-plugin-e2e-cypress": "~5.0.9",
-    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~5.0.9",
     "@vue/cli-plugin-router": "~5.0.9",
-    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~5.0.9",
     "@vue/cli-plugin-vuex": "~5.0.9",
-    "@vue/cli-service": "~4.5.0",
+    "@vue/cli-service": "~5.0.9",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
     "eslint": "^6.7.2",
@@ -49,9 +50,9 @@
     "eslint-plugin-vue": "^6.2.2",
     "prettier": "3.8.1",
     "sass": "1.32.13",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^13.3.3",
     "typescript": "5.9.3",
-    "vue-template-compiler": "^2.7.16"
+    "vue-template-compiler": "2.7.16"
   },
   "eslintConfig": {
     "root": true,
@@ -74,5 +75,6 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "packageManager": "pnpm@11.15.1"
 }

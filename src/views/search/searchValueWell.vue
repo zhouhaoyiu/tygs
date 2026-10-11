@@ -177,10 +177,12 @@
 			</div>
 			<el-input
 				style="width: 240px; margin-right: 24px"
+				:disabled="repairSaving || repairLoading"
 				v-model="addRepairText"
 				placeholder="请输入维修记录"
 			/>
 			<el-date-picker
+				:disabled="repairSaving || repairLoading"
 				v-model="addRepairTime"
 				type="date"
 				placeholder="选择日期"
@@ -188,6 +190,7 @@
 				style="width: 240px; margin-right: 12px"
 			/>
 			<el-input
+				:disabled="repairSaving || repairLoading"
 				v-model="addRepairRemarks"
 				type="textarea"
 				style="margin-top: 12px"
@@ -391,7 +394,12 @@ export default class SearchValueWell extends Vue {
 		return this.displayRes.length;
 	}
 	public get updateRepairDisabled(): boolean {
-		return this.addRepairText === "" || this.addRepairTime === "";
+		return (
+			this.repairSaving ||
+			this.repairLoading ||
+			this.addRepairText === "" ||
+			this.addRepairTime === ""
+		);
 	}
 
 	public get insertWaterMeterInfoDisabled(): boolean {
@@ -563,48 +571,72 @@ export default class SearchValueWell extends Vue {
 		void info;
 	}
 
+	public repairSaving = false;
+	public repairLoading = false;
+	public repairRequestId = nanoid();
 	public async updateRepair(): Promise<void> {
-		let repairInfo: string | repairInfoArray = this.repairInfo;
 		if (
-			this.repairInfo.length === 0 ||
-			this.repairInfo === null ||
-			this.repairInfo === undefined
-		) {
-			repairInfo = [
-				{
-					text: this.addRepairText,
-					repairTime: this.addRepairTime,
-					remarks: this.addRepairRemarks,
-					time: new Date().toLocaleString(),
-				},
-			];
-		} else {
-			const repairInfoArr = this.repairInfo;
-			repairInfoArr.push({
-				text: this.addRepairText,
-				repairTime: this.addRepairTime,
-				remarks: this.addRepairRemarks,
-				time: new Date().toLocaleString(),
+			this.repairSaving ||
+			this.repairLoading ||
+			!this.addRepairText.trim() ||
+			!this.addRepairTime
+		)
+			return;
+		this.repairSaving = true;
+		const original = Array.isArray(this.repairInfo) ? this.repairInfo : [];
+		try {
+			const res = await this.axios.post("ValueWell/updateValueWellRepairInfoWithId", {
+				id: this.repairId,
+				requestId: this.repairRequestId,
+				expectedInfo: JSON.stringify(original),
+				repairInfo: JSON.stringify([
+					...original,
+					{
+						text: this.addRepairText,
+						repairTime: this.addRepairTime,
+						remarks: this.addRepairRemarks,
+					},
+				]),
 			});
-		}
-
-		const res = await this["axios"].post(`ValueWell/updateValueWellRepairInfoWithId`, {
-			id: this.repairId,
-			repairInfo: JSON.stringify(repairInfo),
-		});
-		if (res.data.code === 0) {
-			this.$message.success(res.data.msg);
+			if (res.data.code !== 0) throw new Error(res.data.msg);
 			this.addRepairText = "";
 			this.addRepairTime = "";
 			this.addRepairRemarks = "";
+			this.repairRequestId = nanoid();
+			await this.getRepair(this.repairId);
+			this.$message.success("维修记录已保存");
+		} catch (error) {
+			this.$message.error("未保存，请核对提示后重试");
+		} finally {
+			this.repairSaving = false;
 		}
-		await this.getRepair(this.repairId);
 	}
 
 	public async openRepair(id: number): Promise<void> {
+		if (this.repairSaving || this.repairLoading) return;
+		if (
+			this.addRepairText &&
+			id !== this.repairId &&
+			!window.confirm("切换设施会清除未保存的维修内容，继续？")
+		)
+			return;
+		if (id !== this.repairId) {
+			this.addRepairText = "";
+			this.addRepairTime = "";
+			this.addRepairRemarks = "";
+			this.repairRequestId = nanoid();
+		}
+		this.repairLoading = true;
+		this.repairInfo = [];
 		this.repairDialog = true;
 		this.repairId = id;
-		await this.getRepair(id);
+		try {
+			await this.getRepair(id);
+		} catch {
+			this.repairDialog = false;
+		} finally {
+			this.repairLoading = false;
+		}
 	}
 
 	public async getRepair(id: number): Promise<void> {
@@ -617,7 +649,14 @@ export default class SearchValueWell extends Vue {
 		if (res.data.data === null || res.data.data === undefined || res.data.data === "") {
 			this.repairInfo = [];
 		} else {
-			this.repairInfo = res.data.data;
+			const raw = res.data.data;
+			try {
+				const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+				this.repairInfo = Array.isArray(parsed) ? parsed : [];
+			} catch {
+				this.$message.error("维修记录格式错误");
+				throw new Error("Invalid repair record");
+			}
 		}
 	}
 
@@ -670,10 +709,15 @@ export default class SearchValueWell extends Vue {
 	}
 
 	public async deleteWaterMeter(waterMeterId: string): Promise<void> {
-		const res = await this["axios"].get(`ValueWell/deleteWaterMeterInfoById`, {
-			params: {
-				waterMeterId: waterMeterId,
-			},
+		const confirmation = await this.$prompt("停用原因", "停用水表", {
+			inputPattern: /\S+/,
+			inputErrorMessage: "请填写原因",
+		}).catch(() => null);
+		if (!confirmation || typeof confirmation === "string") return;
+		const res = await this.axios.post("ValueWell/deleteWaterMeterInfoById", {
+			waterMeterId,
+			wallId: this.waterMeterDialogId,
+			reason: confirmation.value,
 		});
 		if (res.data.code === 0) {
 			this.$message.success(res.data.msg);
