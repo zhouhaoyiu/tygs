@@ -22,6 +22,7 @@
     "lodash": "^4.17.23",
     "nanoid": "^4.0.2",
     "pinyin": "^4.0.0",
+    "tslib": "2.8.1",
     "vue": "2.7.16",
     "vue-axios": "^3.5.2",
     "vue-class-component": "^7.2.3",
