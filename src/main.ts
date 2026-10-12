@@ -1,9 +1,7 @@
-import "@fortawesome/fontawesome-free/css/all.css";
 import axios from "axios";
 import ElementPlus, { ElMessage } from "element-plus";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
-import * as ElementIcons from "@element-plus/icons-vue";
-import _ from "lodash";
+import * as ElementIcons from "./lib/icons";
 import { createApp } from "vue";
 import App from "./App.vue";
 import "element-plus/dist/index.css";
@@ -11,7 +9,6 @@ import "./assets/reset.scss";
 import router from "./router";
 import store from "./store";
 const app = createApp(App);
-app.config.globalProperties._ = _;
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.$axios = axios;
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE || "/api";
@@ -23,6 +20,7 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
 	(response) => response,
 	(error) => {
+		if (axios.isCancel(error)) return Promise.reject(error);
 		if (error.response?.status === 401) {
 			sessionStorage.removeItem("facilityToken");
 			if (router.currentRoute.value.path !== "/login") router.replace("/login");

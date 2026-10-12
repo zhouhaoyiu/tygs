@@ -21,7 +21,7 @@
 				>
 				</el-input>
 				<el-button
-					:loading="searchLoading"
+					:loading="facilityQuery.loading"
 					@click="search()"
 					style="margin-left: 30px"
 					type="primary"
@@ -35,11 +35,15 @@
         </el-button> -->
 			</div>
 		</div>
+		<p v-if="facilityQuery.error" class="facility-error" role="alert">
+			{{ facilityQuery.error }}
+			<el-button icon="Refresh" size="small" @click="getRes">重试</el-button>
+		</p>
 		<el-table
 			border
 			stripe
-			v-loading="tableLoading"
-			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+			v-loading="facilityQuery.loading"
+			:data="facilityQuery.rows"
 			max-height="575px"
 			class="table"
 		>
@@ -47,9 +51,9 @@
 			</el-table-column>
 			<el-table-column align="center" prop="accountIdentifier" width="150px" label="编号">
 			</el-table-column>
-			<el-table-column align="center" prop="communityName" width="200px" label="小区名称">
+			<el-table-column align="center" prop="communityName" min-width="200" label="小区名称">
 			</el-table-column>
-			<el-table-column align="center" prop="detailedAddress" width="200px" label="详细地址">
+			<el-table-column align="center" prop="detailedAddress" min-width="200" label="详细地址">
 			</el-table-column>
 			<el-table-column align="center" width="150px" label="位置">
 				<template v-slot="scope">
@@ -140,8 +144,8 @@
 			background
 			@size-change="handleSizeChange"
 			@current-change="handleCurrentChange"
-			:current-page="currentPage"
-			:page-size="30"
+			:current-page="facilityQuery.page"
+			:page-size="facilityQuery.size"
 			layout="total, prev, pager, next, jumper"
 			:total="total"
 			class="pagination"
@@ -285,7 +289,8 @@
 <script lang="ts">
 import { repairDateOptions } from "./date-options";
 
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
+import { useFacilityQuery } from "@/lib/facility-query";
 
 import dayjs from "dayjs";
 
@@ -295,6 +300,9 @@ import Title from "../../components/title.vue";
 
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
 export default defineComponent({
+	setup() {
+		return { facilityQuery: reactive(useFacilityQuery("rooms")) };
+	},
 	name: "SearchAll",
 	components: {
 		Title,
@@ -321,12 +329,8 @@ export default defineComponent({
 				{ value: "accountNumber", label: "户号" },
 				{ value: "accountName", label: "户名" },
 			] as elOptionArray,
-			searchRes: [] as objectArray,
-			displayRes: [] as objectArray,
 			formLabelWidth: "120px",
 			exportLoading: false,
-			searchLoading: false,
-			tableLoading: false,
 			repairDialog: false,
 			repairId: 0,
 			repairInfo: [] as repairInfoArray,
@@ -344,8 +348,6 @@ export default defineComponent({
 			},
 			wallInfoDialog: false,
 			wallInfoId: 0,
-			pageSize: 30,
-			currentPage: 1,
 			repairSaving: false,
 			repairLoading: false,
 			repairRequestId: nanoid(),
@@ -353,7 +355,7 @@ export default defineComponent({
 	},
 	computed: {
 		total(): number {
-			return this.displayRes.length;
+			return this.facilityQuery.total;
 		},
 		updateRepairDisabled(): boolean {
 			return (
@@ -374,36 +376,13 @@ export default defineComponent({
 	},
 	methods: {
 		handleSizeChange(val: number) {
-			this.pageSize = val;
+			void this.facilityQuery.changeSize(val);
 		},
 		handleCurrentChange(val: number) {
-			this.currentPage = val;
+			void this.facilityQuery.changePage(val);
 		},
 		async search(): Promise<void> {
-			this.searchLoading = true;
-			this.tableLoading = true;
-			this.displayRes = this.searchRes.filter((item) => {
-				if (item) {
-					if (typeof item[this.searchTextBy] === "string") {
-						return (
-							(item[this.searchTextBy] as string)
-								.toLowerCase()
-								.indexOf(this.searchText.trim().toLowerCase()) > -1
-						);
-					} else if (typeof item[this.searchTextBy] === "number") {
-						return (
-							(item[this.searchTextBy] as unknown as number) ===
-							Number(this.searchText)
-						);
-					} else {
-						return false;
-					}
-				}
-			});
-			this.searchLoading = false;
-			this.tableLoading = false;
-
-			await this.$nextTick();
+			await this.facilityQuery.search({ field: this.searchTextBy, q: this.searchText });
 		},
 		waterMeterSearch() {
 			this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item) => {
@@ -426,23 +405,11 @@ export default defineComponent({
 			});
 		},
 		async getRes(): Promise<void> {
-			this.tableLoading = true;
-			const res = await this["axios"].get("/WaterMeterRoom/getAllWaterMeterRoomInfo");
-			this.searchRes = res.data;
-			// .sort(
-			//   (a: { filledBy: string }, b: { filledBy: string }) => {
-			//     return a.filledBy.localeCompare(b.filledBy);
-			//   }
-			// );
-
-			this.displayRes = this.searchRes;
-			// .slice(0, 30);
-			this.tableLoading = false;
+			await this.facilityQuery.load();
 		},
 		async clearRes(): Promise<void> {
-			this.searchRes = [];
 			this.searchText = "";
-			await this.getRes();
+			await this.facilityQuery.search();
 		},
 		modify(info: any): void {
 			void info;
@@ -622,7 +589,7 @@ export default defineComponent({
 	}
 	.table {
 		margin-top: 20px;
-		width: 1600px;
+		width: 100%;
 		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 	}
 	.pagination {

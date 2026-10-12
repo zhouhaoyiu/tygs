@@ -26,7 +26,7 @@
 					</el-option>
 				</el-select>
 				<el-button
-					:loading="searchLoading"
+					:loading="facilityQuery.loading"
 					@click="search()"
 					style="margin-left: 20px"
 					type="primary"
@@ -37,11 +37,15 @@
 			</div>
 			<div></div>
 		</div>
+		<p v-if="facilityQuery.error" class="facility-error" role="alert">
+			{{ facilityQuery.error }}
+			<el-button icon="Refresh" size="small" @click="getRes">重试</el-button>
+		</p>
 		<el-table
 			border
 			stripe
-			v-loading="tableLoading"
-			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+			v-loading="facilityQuery.loading"
+			:data="facilityQuery.rows"
 			max-height="580px"
 			class="table"
 		>
@@ -50,7 +54,7 @@
 
 			<el-table-column align="center" prop="accountIdentifier" width="130px" label="编号">
 			</el-table-column>
-			<el-table-column align="center" prop="streetName" width="100px" label="街道名称">
+			<el-table-column align="center" prop="streetName" min-width="180" label="街道名称">
 			</el-table-column>
 			<el-table-column align="center" width="120px" prop="wellChamberType" label="井室类型">
 			</el-table-column>
@@ -131,8 +135,8 @@
 			background
 			@size-change="handleSizeChange"
 			@current-change="handleCurrentChange"
-			:current-page="currentPage"
-			:page-size="30"
+			:current-page="facilityQuery.page"
+			:page-size="facilityQuery.size"
 			layout="total, prev, pager, next, jumper"
 			:total="total"
 			class="pagination"
@@ -241,7 +245,8 @@
 <script lang="ts">
 import { repairDateOptions } from "./date-options";
 
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
+import { useFacilityQuery } from "@/lib/facility-query";
 
 interface FireHydrant {}
 
@@ -255,6 +260,9 @@ import { calibers } from "./info";
 
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
 export default defineComponent({
+	setup() {
+		return { facilityQuery: reactive(useFacilityQuery("hydrants")) };
+	},
 	name: "SearchAll",
 	components: {
 		Title,
@@ -282,12 +290,8 @@ export default defineComponent({
 				{ value: "accountName", label: "户名" },
 			] as elOptionArray,
 			calibers: calibers as elOptionArray,
-			searchRes: [] as objectArray,
-			displayRes: [] as objectArray,
 			formLabelWidth: "120px",
 			exportLoading: false,
-			searchLoading: false,
-			tableLoading: false,
 			repairDialog: false,
 			repairId: 0,
 			repairInfo: [] as repairInfoArray,
@@ -305,8 +309,6 @@ export default defineComponent({
 			},
 			wallInfoDialog: false,
 			wallInfoId: 0,
-			pageSize: 30,
-			currentPage: 1,
 			repairSaving: false,
 			repairLoading: false,
 			repairRequestId: nanoid(),
@@ -314,7 +316,7 @@ export default defineComponent({
 	},
 	computed: {
 		total(): number {
-			return this.displayRes.length;
+			return this.facilityQuery.total;
 		},
 		updateRepairDisabled(): boolean {
 			return (
@@ -335,51 +337,13 @@ export default defineComponent({
 	},
 	methods: {
 		handleSizeChange(val: number): void {
-			this.pageSize = val;
+			void this.facilityQuery.changeSize(val);
 		},
 		handleCurrentChange(val: number): void {
-			this.currentPage = val;
+			void this.facilityQuery.changePage(val);
 		},
 		async search(): Promise<void> {
-			this.searchLoading = true;
-			this.tableLoading = true;
-
-			const searchText: Record<string, any> = {
-				caliber: this.searchSelectBy.caliber as string[],
-				manufactor: this.searchSelectBy.manufactor,
-				streetName: this.searchSelectBy.streetName,
-			};
-
-			for (const key in searchText) {
-				if (searchText[key] === "" || searchText[key].length === 0) {
-					delete searchText[key];
-				}
-			}
-			// 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
-			// searchText的属性值可以是数组，包含数组中的任意一个值就可以
-			const promise = new Promise<void>((resolve, _) => {
-				this.displayRes = this.searchRes.filter((item) => {
-					for (const key in searchText) {
-						if (Array.isArray(searchText[key])) {
-							if (!searchText[key].includes(item[key])) {
-								return false;
-							}
-						} else {
-							if (!String(item[key]).includes(searchText[key] as string)) {
-								return false;
-							}
-						}
-					}
-					return true;
-				});
-				resolve();
-			});
-			await promise;
-
-			this.searchLoading = false;
-			this.tableLoading = false;
-
-			await this.$nextTick();
+			await this.facilityQuery.search({ ...this.searchSelectBy });
 		},
 		waterMeterSearch(): void {
 			this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item) => {
@@ -405,23 +369,12 @@ export default defineComponent({
 			void info;
 		},
 		async getRes(): Promise<void> {
-			this.tableLoading = true;
-			const res = await this["axios"].get("/FireHydrant/getAllFireHydrantInfo");
-			this.searchRes = res.data;
-			// .sort(
-			//   (a: { filledBy: string }, b: { filledBy: string }) => {
-			//     return a.filledBy.localeCompare(b.filledBy);
-			//   }
-			// );
-			// 结果前100条
-			this.displayRes = this.searchRes;
-			// .slice(0, 100);
-			this.tableLoading = false;
+			await this.facilityQuery.load();
 		},
 		async clearRes(): Promise<void> {
-			this.searchRes = [];
 			this.searchText = "";
-			await this.getRes();
+			this.searchSelectBy = { streetName: "", manufactor: "", caliber: [] };
+			await this.facilityQuery.search();
 		},
 		async updateRepair(): Promise<void> {
 			if (
@@ -598,7 +551,7 @@ export default defineComponent({
 
 	.table {
 		margin-top: 20px;
-		width: 1600px;
+		width: 100%;
 		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 	}
 	.pagination {

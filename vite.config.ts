@@ -13,7 +13,18 @@ export default defineConfig(({ mode }) => {
 				env.VITE_API_BASE || env.VUE_APP_API_BASE || "/api",
 			),
 		},
-		server: { host: "127.0.0.1" },
+		server: {
+			host: "127.0.0.1",
+			proxy: env.VITE_API_PROXY
+				? {
+						"/api": {
+							target: env.VITE_API_PROXY,
+							changeOrigin: true,
+							rewrite: (path) => path.replace(/^\/api/, ""),
+						},
+					}
+				: undefined,
+		},
 		build: { sourcemap: false },
 		test: { environment: "jsdom", clearMocks: true },
 	};

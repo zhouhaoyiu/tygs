@@ -32,10 +32,16 @@ export default defineComponent({
 			userName: sessionStorage.getItem("facilityName") || "",
 			navigation: [
 				["index", "工作台", "HomeFilled"],
+				...(import.meta.env.VITE_LOCAL_LEDGER === "1"
+					? [["ledger", "采集台账", "Collection"]]
+					: []),
 				["searchWaterMeterWell", "表井", "Menu"],
 				["searchWaterMeterRoom", "水表间", "OfficeBuilding"],
 				["searchFireHydrant", "消防栓", "FirstAidKit"],
 				["searchValueWell", "阀门井", "SetUp"],
+				...(import.meta.env.VITE_LOCAL_LEDGER === "1"
+					? [["searchWell", "户表信息", "Tickets"]]
+					: []),
 				["card", "表卡查询", "Document"],
 				["InputInfor", "表卡录入", "Edit"],
 				["threeSupply", "三供一业", "School"],

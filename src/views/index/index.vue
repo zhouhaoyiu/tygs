@@ -37,6 +37,12 @@
 				><el-icon><Edit /></el-icon><span>表卡录入</span><el-icon><ArrowRight /></el-icon
 			></router-link>
 		</div>
+		<div v-if="localModules" class="facility-links facility-additions">
+			<router-link v-for="item in additions" :key="item.path" :to="'/home/' + item.path">
+				<el-icon><CirclePlus /></el-icon><span>{{ item.name }}</span
+				><el-icon><ArrowRight /></el-icon>
+			</router-link>
+		</div>
 		<h2>小区资料</h2>
 		<div class="facility-links">
 			<router-link to="/home/threeSupply"
@@ -63,6 +69,14 @@ export default defineComponent({
 		return {
 			loading: false,
 			error: "",
+			localModules: import.meta.env.VITE_LOCAL_LEDGER === "1",
+			additions: [
+				{ path: "addWaterMeterRoom", name: "新增水表间" },
+				{ path: "addFireHydrant", name: "新增消防栓" },
+				{ path: "addValueWell", name: "新增阀门井" },
+				{ path: "addWell", name: "新增户表" },
+				{ path: "searchWell", name: "户表查询" },
+			],
 			counts: {} as Record<string, number>,
 			facilities: [
 				{

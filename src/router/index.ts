@@ -18,6 +18,15 @@ const routes: Array<RouteRecordRaw> = [
 		redirect: "/home/index",
 		component: Home,
 		children: [
+			...(import.meta.env.VITE_LOCAL_LEDGER === "1"
+				? [
+						{
+							path: "ledger",
+							name: "ledger",
+							component: () => import("../views/ledger/Ledger.vue"),
+						},
+					]
+				: []),
 			{
 				path: "index",
 				name: "homeIndex",

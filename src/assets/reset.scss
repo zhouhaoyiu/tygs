@@ -94,9 +94,14 @@ h2 {
 	font-size: 18px;
 }
 .facility-main {
-	padding: 30px;
+	padding: 24px 20px;
+	width: 100%;
 	min-width: 0;
 	overflow: hidden;
+}
+.facility-main > * {
+	width: 100%;
+	min-width: 0;
 }
 .facility-page-heading {
 	display: flex;
@@ -232,8 +237,34 @@ h2 {
 	box-shadow: none !important;
 }
 .facility-main .page {
+	width: 100%;
 	min-width: 0;
 	max-width: 100%;
+}
+.facility-main .el-table {
+	width: 100% !important;
+}
+.el-dialog .el-table {
+	width: 100% !important;
+}
+.facility-main .searchInput {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+.facility-main .searchInput > .el-select {
+	width: 220px;
+	max-width: 100%;
+	margin: 0 !important;
+}
+.facility-main .searchInput > .el-input {
+	width: 400px;
+	max-width: 100%;
+	min-width: 0;
+}
+.facility-main .searchInput > .el-button {
+	margin: 0 !important;
 }
 .facility-main .searchSelects {
 	display: flex;
@@ -324,5 +355,15 @@ h2 {
 	.facility-main .el-select,
 	.facility-main .el-date-editor {
 		max-width: 100%;
+	}
+	.facility-main .searchInput > .el-select,
+	.facility-main .searchInput > .el-input {
+		width: 100% !important;
+	}
+	.facility-main .el-table .el-table__cell.el-table-fixed-column--right {
+		position: static !important;
+	}
+	.facility-main .el-table .el-table-fixed-column--right::before {
+		display: none;
 	}
 }

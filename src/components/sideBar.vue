@@ -52,6 +52,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from "vue";
+import "@fortawesome/fontawesome-free/css/all.css";
 
 import { GET_ADMIN_INFO } from "@/store/type/getter-type";
 

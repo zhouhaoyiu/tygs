@@ -58,17 +58,17 @@
 		<!-- <div v-for="(people, peopleIndex) in searchRes" :key="peopleIndex">
       {{ people.FilledBy }}
     </div> -->
-		<el-table :data="displayRes" max-height="550px" style="margin-top: 20px; width: 1600px">
+		<el-table :data="displayRes" max-height="550px" style="margin-top: 20px; width: 100%">
 			<el-table-column align="center" prop="filledBy" width="120px" label="填写人">
 			</el-table-column>
 			<el-table-column align="center" prop="department" width="150px" label="所在部门">
 			</el-table-column>
 
-			<el-table-column align="center" prop="accountName" width="150px" label="户名">
+			<el-table-column align="center" prop="accountName" min-width="150" label="户名">
 			</el-table-column>
 			<el-table-column align="center" prop="accountNumber" width="150px" label="户号">
 			</el-table-column>
-			<el-table-column align="center" prop="coordinates" width="250px" label="坐标">
+			<el-table-column align="center" prop="coordinates" min-width="250" label="坐标">
 			</el-table-column>
 			<el-table-column align="center" prop="caliber" width="100px" label="口径">
 			</el-table-column>
@@ -192,7 +192,6 @@ import { defineComponent } from "vue";
 
 import { SET_INFO } from "@/store/type/mutation-type";
 
-import _ from "lodash";
 
 import Title from "../../components/title.vue";
 

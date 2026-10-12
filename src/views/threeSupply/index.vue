@@ -1,28 +1,4 @@
-<template>
-	<div class="page">
-		<Title>查询 三供一业</Title>
-		<Building>Building...</Building>
-	</div>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-
-import Building from "@/components/Building.vue";
-
-import Title from "../../components/title.vue";
-export default defineComponent({
-	name: "ThreeSupply",
-	components: {
-		Title,
-		Building,
-	},
-	data() {
-		return {};
-	},
-	computed: {},
-	methods: {},
-});
+<template><WorkspaceRecords module-key="supply" /></template>
+<script setup lang="ts">
+import WorkspaceRecords from "@/components/WorkspaceRecords.vue";
 </script>
-
-<style lang="scss" scoped></style>

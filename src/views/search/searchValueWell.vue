@@ -59,7 +59,7 @@
 				>
 				</el-input>
 				<el-button
-					:loading="searchLoading"
+					:loading="facilityQuery.loading"
 					@click="search()"
 					style="margin-left: 30px"
 					type="primary"
@@ -68,9 +68,8 @@
 				</el-button>
 				<el-button @click="clearRes()" style="margin-left: 15px"> 重置 </el-button>
 				<el-button
-					disabled
+					:disabled="facilityQuery.loading || !!facilityQuery.error || !facilityQuery.total"
 					type="success"
-					round
 					@click="exportExcel()"
 					:loading="exportLoading"
 				>
@@ -79,11 +78,15 @@
 				</el-button>
 			</div>
 		</div>
+		<p v-if="facilityQuery.error" class="facility-error" role="alert">
+			{{ facilityQuery.error }}
+			<el-button icon="Refresh" size="small" @click="getRes">重试</el-button>
+		</p>
 		<el-table
 			border
 			stripe
-			v-loading="tableLoading"
-			:data="displayRes.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+			v-loading="facilityQuery.loading"
+			:data="facilityQuery.rows"
 			max-height="530px"
 			class="table"
 		>
@@ -91,7 +94,7 @@
 			</el-table-column>
 			<el-table-column align="center" prop="accountIdentifier" width="150px" label="编号">
 			</el-table-column>
-			<el-table-column align="center" prop="streetName" width="100px" label="街道名称">
+			<el-table-column align="center" prop="streetName" min-width="180" label="街道名称">
 			</el-table-column>
 			<el-table-column align="center" prop="wellChamberType" width="150px" label="井室类型">
 			</el-table-column>
@@ -153,8 +156,8 @@
 			background
 			@size-change="handleSizeChange"
 			@current-change="handleCurrentChange"
-			:current-page="currentPage"
-			:page-size="30"
+			:current-page="facilityQuery.page"
+			:page-size="facilityQuery.size"
 			layout="total, prev, pager, next, jumper"
 			:total="total"
 			class="pagination"
@@ -306,13 +309,12 @@
 <script lang="ts">
 import { repairDateOptions } from "./date-options";
 
-import { defineComponent } from "vue";
+import { defineComponent, reactive } from "vue";
+import { useFacilityQuery } from "@/lib/facility-query";
 
 import dayjs from "dayjs";
 
 import { nanoid } from "nanoid";
-
-import { utils, writeFileXLSX } from "xlsx";
 
 import Title from "../../components/title.vue";
 
@@ -320,6 +322,9 @@ import { calibers, wellChamberTypes } from "./info";
 
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
 export default defineComponent({
+	setup() {
+		return { facilityQuery: reactive(useFacilityQuery("valves")) };
+	},
 	name: "SearchValueWell",
 	components: {
 		Title,
@@ -354,12 +359,8 @@ export default defineComponent({
 			] as elOptionArray,
 			calibers: calibers as elOptionArray,
 			wellChamberTypes: wellChamberTypes as elOptionArray,
-			searchRes: [] as objectArray,
-			displayRes: [] as objectArray,
 			formLabelWidth: "120px",
 			exportLoading: false,
-			searchLoading: false,
-			tableLoading: false,
 			repairDialog: false,
 			repairId: 0,
 			repairInfo: [] as repairInfoArray,
@@ -377,8 +378,6 @@ export default defineComponent({
 			},
 			wallInfoDialog: false,
 			wallInfoId: 0,
-			pageSize: 30,
-			currentPage: 1,
 			repairSaving: false,
 			repairLoading: false,
 			repairRequestId: nanoid(),
@@ -386,7 +385,7 @@ export default defineComponent({
 	},
 	computed: {
 		total(): number {
-			return this.displayRes.length;
+			return this.facilityQuery.total;
 		},
 		updateRepairDisabled(): boolean {
 			return (
@@ -407,53 +406,19 @@ export default defineComponent({
 	},
 	methods: {
 		handleSizeChange(val: number): void {
-			this.pageSize = val;
+			void this.facilityQuery.changeSize(val);
 		},
 		handleCurrentChange(val: number): void {
-			this.currentPage = val;
+			void this.facilityQuery.changePage(val);
 		},
 		async search(): Promise<void> {
-			this.searchLoading = true;
-			this.tableLoading = true;
-
-			const searchText = {
-				[this.searchTextBy]: this.searchText,
-				caliber: this.searchSelectBy.caliber as string[],
-				wellChamberType: this.searchSelectBy.wellChamberType as string[],
+			await this.facilityQuery.search({
+				field: this.searchTextBy,
+				q: this.searchText,
+				caliber: this.searchSelectBy.caliber,
+				wellChamberType: this.searchSelectBy.wellChamberType,
 				streetName: this.searchSelectBy.streetName,
-			};
-
-			for (const key in searchText) {
-				if (searchText[key] === "" || searchText[key].length === 0) {
-					delete searchText[key];
-				}
-			}
-			// 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
-			// searchText的属性值可以是数组，包含数组中的任意一个值就可以
-			const promise = new Promise<void>((resolve, _) => {
-				this.displayRes = this.searchRes.filter((item) => {
-					for (const key in searchText) {
-						if (Array.isArray(searchText[key])) {
-							if (!searchText[key].includes(item[key])) {
-								return false;
-							}
-						} else {
-							if (!String(item[key]).includes(searchText[key] as string)) {
-								return false;
-							}
-						}
-					}
-					return true;
-				});
-				resolve();
 			});
-			await promise;
-
-			this.searchLoading = false;
-			this.tableLoading = false;
-
-			// 解决视图不更新的问题
-			await this.$nextTick();
 		},
 		waterMeterSearch() {
 			this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item) => {
@@ -467,7 +432,7 @@ export default defineComponent({
 						);
 					} else if (typeof item[this.waterMeterInfoSearchBy] === "number") {
 						return (
-							(item[this.waterMeterInfoSearchBy] as unknown as Number) ===
+							(item[this.waterMeterInfoSearchBy] as unknown as number) ===
 							Number(this.waterMeterInfoSearchText)
 						);
 					} else {
@@ -476,61 +441,32 @@ export default defineComponent({
 				}
 			});
 		},
-		exportExcel(): void {
+		async exportExcel(): Promise<void> {
+			if (this.exportLoading) return;
 			this.exportLoading = true;
-
-			const promise = new Promise<void>((resolve, _) => {
-				const data = this.displayRes;
-				const ws = utils.json_to_sheet(data);
-				const wb = utils.book_new();
-
-				// 根据搜索条件+时间生成文件名
-				const searchText = this.searchText ? this.searchText : "空";
-				const searchTextBy = this.searchTextBy === "filledBy" ? "填写人" : "";
-				const caliber = this.searchSelectBy.caliber
-					? this.searchSelectBy.caliber.join(",")
-					: "";
-				const wellChamberType = this.searchSelectBy.wellChamberType
-					? this.searchSelectBy.wellChamberType.join(",")
-					: "";
-				const streetName = this.searchSelectBy.streetName
-					? this.searchSelectBy.streetName
-					: "";
-				// 详细到时分秒
-				const time = "+" + dayjs().format("YYYY-MM-DD HH:mm:ss");
-				const fileName = `${searchTextBy}+${searchText}+${caliber}+${wellChamberType}+${streetName}+${time}`;
-
-				utils.book_append_sheet(wb, ws, "SheetJS");
-				writeFileXLSX(wb, fileName);
-				resolve();
-			});
-			promise.then(() => {
-				this.$message({
-					message: "导出成功",
-					type: "success",
-				});
+			try {
+				const data = await this.facilityQuery.exportRows();
+				const { utils, writeFileXLSX } = await import("xlsx");
+				const workbook = utils.book_new();
+				utils.book_append_sheet(workbook, utils.json_to_sheet(data), "SheetJS");
+				writeFileXLSX(
+					workbook,
+					"阀门井-筛选结果-" + dayjs().format("YYYY-MM-DD-HHmmss") + ".xlsx",
+				);
+				this.$message.success("导出成功");
+			} catch (error) {
+				this.$message.error(error instanceof Error ? error.message : "导出失败，请重试");
+			} finally {
 				this.exportLoading = false;
-			});
+			}
 		},
 		async getRes(): Promise<void> {
-			this.tableLoading = true;
-			const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
-			this.searchRes = res.data;
-			// .sort(
-			//   (a: { filledBy: string }, b: { filledBy: string }) => {
-			//     return a.filledBy.localeCompare(b.filledBy);
-			//   }
-			// );
-
-			this.displayRes = this.searchRes;
-			// .slice(0, 30);
-
-			this.tableLoading = false;
+			await this.facilityQuery.load();
 		},
 		async clearRes(): Promise<void> {
-			this.searchRes = [];
 			this.searchText = "";
-			await this.getRes();
+			this.searchSelectBy = { streetName: "", wellChamberType: [], caliber: [], manufactor: [] };
+			await this.facilityQuery.search();
 		},
 		modify(info: any): void {
 			void info;
@@ -704,7 +640,7 @@ export default defineComponent({
 
 	.table {
 		margin-top: 20px;
-		width: 1600px;
+		width: 100%;
 		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 	}
 
