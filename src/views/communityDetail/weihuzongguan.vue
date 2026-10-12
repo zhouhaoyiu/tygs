@@ -63,52 +63,49 @@
 </template>
 
 <script lang="ts">
-import _ from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
-import Title from "../../components/title.vue";
+import { defineComponent } from "vue";
 
-@Component({
+import _ from "lodash";
+
+import Title from "../../components/title.vue";
+export default defineComponent({
+	name: "Hubiaozongguan",
 	components: {
 		Title,
 	},
-})
-export default class Hubiaozongguan extends Vue {
-	public name: string = "Hubiaozongguan";
+	data() {
+		return {
+			name: "Hubiaozongguan" as string,
+			communityInfoList: [] as any[],
+		};
+	},
+	computed: {},
+	methods: {
+		accountnameSort(a: any, b: any) {
+			if (!a.accountname || !b.accountname) return 0;
+			return a.accountname.localeCompare(b.accountname, "zh");
+		},
+		residentialwaterSort(a: any, b: any) {
+			return Number(a.residentialwater) - b;
+		},
+		nonresidentialwaterSort(a: any, b: any) {
+			console.log(a, b);
+			return Number(a.nonresidentialwater) - b;
+		},
 
-	// accountname 户 名
-	// address 地址
-	// residentialwater 居民用水（户）
-	// nonresidentialwater 非居民用水（户）
-	// secondarywatersupply 二次供水设施
-	// watersupplycontract 供用水合同
-	// remarks 备注
-
-	public communityInfoList: any[] = [];
-
-	public accountnameSort = (a: any, b: any) => {
-		if(!a.accountname || !b.accountname) return 0;
-    return a.accountname.localeCompare(b.accountname, "zh");   
-	};
-	public residentialwaterSort = (a: any, b: any) => {
-		return Number(a.residentialwater) - b;
-	};
-	public nonresidentialwaterSort = (a: any, b: any) => {
-		console.log(a, b);
-		return Number(a.nonresidentialwater) - b;
-	};
-	public secondarywatersupplyFilterHandler(value: any, row: any) {
-		return row.secondarywatersupply === value;
-	}
-	public watersupplycontractFilterHandler(value: any, row: any) {
-		return row.watersupplycontract === value;
-	}
-	public async mounted(): Promise<void> {
+		secondarywatersupplyFilterHandler(value: any, row: any) {
+			return row.secondarywatersupply === value;
+		},
+		watersupplycontractFilterHandler(value: any, row: any) {
+			return row.watersupplycontract === value;
+		},
+	},
+	async mounted(): Promise<void> {
 		const res = await this["axios"].get("/Weihuzongguan/getAllWeihuzongguan");
 		console.log(res);
 		this.communityInfoList = res.data;
-	}
-}
+	},
+});
 </script>
 <style lang="scss">
 .page {

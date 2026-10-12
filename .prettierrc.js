@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   semi: true, // 不使用分号
   singleQuote: false, // 使用单引号
   trailingComma: 'all', // 不使用尾逗号 有三个可选值"<none|es5|all>"
@@ -20,7 +20,7 @@ module.exports = {
         singleQuote: false,
         trailingComma: 'all',
         bracketSpacing: true,
-        jsxBracketSameLine: false,
+        bracketSameLine: false,
         arrowParens: 'always',
         printWidth: 100,
         endOfLine: 'auto',

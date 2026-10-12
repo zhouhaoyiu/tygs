@@ -10,11 +10,16 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Component({})
-export default class Building extends Vue {}
+export default defineComponent({
+	name: "Building",
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {},
+});
 </script>
 
 <style lang="scss" scoped></style>

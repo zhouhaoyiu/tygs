@@ -13,7 +13,7 @@
 					</el-option>
 				</el-select>
 				<el-input
-					@keyup.enter.native="searchFilled()"
+					@keyup.enter="searchFilled()"
 					style="width: 400px"
 					v-model="searchText"
 					clearable
@@ -113,12 +113,12 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		<el-dialog title="维修记录" :visible.sync="repairDialog">
+		<el-dialog title="维修记录" v-model="repairDialog">
 			{{ repairInfo }}
 			<el-input v-model="addRepairText" />
 			<el-button @click="updateRepair()">添加</el-button>
 		</el-dialog>
-		<el-dialog center title="水表信息" :visible.sync="waterMeterDialog">
+		<el-dialog center title="水表信息" v-model="waterMeterDialog">
 			<!-- {{ waterMeterInfo }}  -->
 			<!-- <div
         v-for="waterMeterInfoText in waterMeterInfoArr"
@@ -128,7 +128,7 @@
         <el-button
           @click="deleteWaterMeter(waterMeterInfoText.id)"
           type="danger"
-          size="mini"
+          size="small"
         >
           删除
         </el-button>
@@ -188,207 +188,196 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
+
 import { SET_INFO } from "@/store/type/mutation-type";
+
 import _ from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
+
 import Title from "../../components/title.vue";
+
 import { nanoid } from "nanoid";
+
 import dayjs from "dayjs";
-@Component({
+export default defineComponent({
+	name: "SearchAll",
 	components: {
 		Title,
 	},
-})
-export default class SearchAll extends Vue {
-	public searchBy = "filledBy";
-	public searchText = "";
-	public searchRes: Record<string, string>[] = [
-		// {
-		//   AccountName: "",
-		//   FilledBy: "",
-		// },
-	];
-
-	public formLabelWidth = "120px";
-
-	public displayRes: Record<string, string>[] = [
-		// {
-		//   AccountName: "",
-		//   FilledBy: "",
-		// },
-	];
-
-	public res = [];
-
-	public repairDialog = false;
-	public repairId = 0;
-	public repairInfo = "";
-	public addRepairText = ""; // 新增的维修记录
-
-	public waterMeterDialog = false;
-	public waterMeterDialogId = 0;
-	public waterMeterInfoArr = [];
-	public waterMeterForm = {
-		paymentNumber: "", //缴费号
-		accountNumber: "", //户号
-		accountName: "", //户名
-		status: "", //状态
-	};
-
-	public searchFilled() {
-		this.displayRes = this.res.filter((item) => {
-			if (item) {
-				// return item[this.searchBy] === this.searchText;
-				// 匹配搜索字段
-				return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
-			}
-		});
-	}
-
-	public options: Record<string, string>[] = [
-		{
-			value: "filledBy",
-			label: "填写人",
-		},
-		{
-			value: "department",
-			label: "所在部门",
-		},
-		{
-			value: "accountIdentifier",
-			label: "编号",
-		},
-		{
-			value: "caliber",
-			label: "口径",
-		},
-		{
-			value: "waterNature",
-			label: "用水性质",
-		},
-	];
-
-	public async mounted(): Promise<void> {
-		await this.getRes();
-	}
-
-	public async getRes(): Promise<void> {
-		const res = await this["axios"].get("/Tygs/getAllInfo");
-		this.res = res.data;
-		this.$store.commit(SET_INFO, res.data);
-		this.searchRes = res.data.sort((a: { filledBy: string }, b: { filledBy: string }) => {
-			return a.filledBy.localeCompare(b.filledBy);
-		});
-		// 结果前100条
-		this.displayRes = this.searchRes.slice(0, 100);
-	}
-
-	public async clearRes(): Promise<void> {
-		this.searchRes = [];
-		this.searchText = "";
-		await this.getRes();
-	}
-
-	public async updateRepair(): Promise<void> {
-		let repairInfo: string | Record<string, string>[] = this.repairInfo;
-		if (this.repairInfo === "") {
-			repairInfo = [];
-			repairInfo.push({
-				text: this.addRepairText,
-				time: new Date().toLocaleString(),
-			});
-		} else {
-			const repairInfoArr =
-				(this.repairInfo as any) instanceof Array
-					? this.repairInfo
-					: JSON.parse(this.repairInfo);
-			repairInfoArr.push({
-				text: this.addRepairText,
-				time: new Date().toLocaleString(),
-			});
-		}
-		const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
-			id: this.repairId,
-			repairInfo: JSON.stringify(repairInfo),
-		});
-
-		if (res.data.code === 0) {
-			this.addRepairText = "";
-		}
-	}
-
-	public async openRepair(id: number): Promise<void> {
-		this.repairDialog = true;
-		this.repairId = id;
-		await this.getRepair(id);
-	}
-
-	public async getRepair(id: number): Promise<void> {
-		const res = await this["axios"].get(`Tygs/getRepairInfoById`, {
-			params: {
-				id: id,
-			},
-		});
-		this.$message.success(res.data.msg);
-		this.repairInfo = res.data.data;
-	}
-
-	// 打开水表信息编辑弹窗
-	public async openWaterMeter(id: number): Promise<void> {
-		this.waterMeterDialog = true;
-		this.waterMeterDialogId = id;
-		await this.getWaterMeterInfoById(id);
-	}
-
-	// 根据id获取水表信息
-	public async getWaterMeterInfoById(wallId: number): Promise<void> {
-		const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
-			params: {
-				wallId: wallId,
-			},
-		});
-
-		this.$message.success(res.data.msg);
-		this.waterMeterInfoArr = res.data.data;
-	}
-
-	// 更新水表信息
-	public async insertWaterMeterInfo(): Promise<void> {
-		this.sendWaterMeterInfo(this.waterMeterForm);
-	}
-
-	public async sendWaterMeterInfo(waterMeterForm: {
-		paymentNumber: string; //缴费号
-		accountNumber: string; //户号
-		accountName: string; //户名
-		status: string;
-	}): Promise<void> {
-		const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
-			wallId: this.waterMeterDialogId,
-			waterMeterId: nanoid(),
-			updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-			...waterMeterForm,
-		});
-
-		if (res.data.code === 0) {
-			this.waterMeterForm = {
+	data() {
+		return {
+			searchBy: "filledBy",
+			searchText: "",
+			searchRes: [
+				// {
+				//   AccountName: "",
+				//   FilledBy: "",
+				// },
+			] as Record<string, string>[],
+			formLabelWidth: "120px",
+			displayRes: [
+				// {
+				//   AccountName: "",
+				//   FilledBy: "",
+				// },
+			] as Record<string, string>[],
+			res: [],
+			repairDialog: false,
+			repairId: 0,
+			repairInfo: "",
+			addRepairText: "",
+			waterMeterDialog: false,
+			waterMeterDialogId: 0,
+			waterMeterInfoArr: [],
+			waterMeterForm: {
 				paymentNumber: "", //缴费号
 				accountNumber: "", //户号
 				accountName: "", //户名
 				status: "", //状态
-			};
-			await this.getWaterMeterInfoById(this.waterMeterDialogId);
-		}
-	}
+			},
+			options: [
+				{
+					value: "filledBy",
+					label: "填写人",
+				},
+				{
+					value: "department",
+					label: "所在部门",
+				},
+				{
+					value: "accountIdentifier",
+					label: "编号",
+				},
+				{
+					value: "caliber",
+					label: "口径",
+				},
+				{
+					value: "waterNature",
+					label: "用水性质",
+				},
+			] as Record<string, string>[],
+		};
+	},
+	computed: {},
+	methods: {
+		searchFilled() {
+			this.displayRes = this.res.filter((item) => {
+				if (item) {
+					// return item[this.searchBy] === this.searchText;
+					// 匹配搜索字段
+					return (item[this.searchBy] as string).indexOf(this.searchText) > -1;
+				}
+			});
+		},
+		async getRes(): Promise<void> {
+			const res = await this["axios"].get("/Tygs/getAllInfo");
+			this.res = res.data;
+			this.$store.commit(SET_INFO, res.data);
+			this.searchRes = res.data.sort((a: { filledBy: string }, b: { filledBy: string }) => {
+				return a.filledBy.localeCompare(b.filledBy);
+			});
+			// 结果前100条
+			this.displayRes = this.searchRes.slice(0, 100);
+		},
+		async clearRes(): Promise<void> {
+			this.searchRes = [];
+			this.searchText = "";
+			await this.getRes();
+		},
+		async updateRepair(): Promise<void> {
+			let repairInfo: string | Record<string, string>[] = this.repairInfo;
+			if (this.repairInfo === "") {
+				repairInfo = [];
+				repairInfo.push({
+					text: this.addRepairText,
+					time: new Date().toLocaleString(),
+				});
+			} else {
+				const repairInfoArr =
+					(this.repairInfo as any) instanceof Array
+						? this.repairInfo
+						: JSON.parse(this.repairInfo);
+				repairInfoArr.push({
+					text: this.addRepairText,
+					time: new Date().toLocaleString(),
+				});
+			}
+			const res = await this["axios"].post(`Tygs/updateRepairInfo`, {
+				id: this.repairId,
+				repairInfo: JSON.stringify(repairInfo),
+			});
 
-	public async deleteWaterMeter(waterMeterId: string): Promise<void> {
-		// 从this.waterMeterInfoArr中删除waterMeterId对应的数据
-		this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item: { id: string }) => {
-			return item.id !== waterMeterId;
-		});
-	}
-}
+			if (res.data.code === 0) {
+				this.addRepairText = "";
+			}
+		},
+		async openRepair(id: number): Promise<void> {
+			this.repairDialog = true;
+			this.repairId = id;
+			await this.getRepair(id);
+		},
+		async getRepair(id: number): Promise<void> {
+			const res = await this["axios"].get(`Tygs/getRepairInfoById`, {
+				params: {
+					id: id,
+				},
+			});
+			this.$message.success(res.data.msg);
+			this.repairInfo = res.data.data;
+		},
+		async openWaterMeter(id: number): Promise<void> {
+			this.waterMeterDialog = true;
+			this.waterMeterDialogId = id;
+			await this.getWaterMeterInfoById(id);
+		},
+		async getWaterMeterInfoById(wallId: number): Promise<void> {
+			const res = await this["axios"].get(`Tygs/getWaterMeterByWallId`, {
+				params: {
+					wallId: wallId,
+				},
+			});
+
+			this.$message.success(res.data.msg);
+			this.waterMeterInfoArr = res.data.data;
+		},
+		async insertWaterMeterInfo(): Promise<void> {
+			this.sendWaterMeterInfo(this.waterMeterForm);
+		},
+		async sendWaterMeterInfo(waterMeterForm: {
+			paymentNumber: string; //缴费号
+			accountNumber: string; //户号
+			accountName: string; //户名
+			status: string;
+		}): Promise<void> {
+			const res = await this["axios"].post(`Tygs/insertWaterMeterInfo`, {
+				wallId: this.waterMeterDialogId,
+				waterMeterId: nanoid(),
+				updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				...waterMeterForm,
+			});
+
+			if (res.data.code === 0) {
+				this.waterMeterForm = {
+					paymentNumber: "", //缴费号
+					accountNumber: "", //户号
+					accountName: "", //户名
+					status: "", //状态
+				};
+				await this.getWaterMeterInfoById(this.waterMeterDialogId);
+			}
+		},
+		async deleteWaterMeter(waterMeterId: string): Promise<void> {
+			// 从this.waterMeterInfoArr中删除waterMeterId对应的数据
+			this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item: { id: string }) => {
+				return item.id !== waterMeterId;
+			});
+		},
+	},
+	async mounted(): Promise<void> {
+		await this.getRes();
+	},
+});
 </script>
 
 <style lang="scss">

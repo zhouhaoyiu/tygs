@@ -5,16 +5,20 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-@Component({
+import { defineComponent } from "vue";
+
+export default defineComponent({
+	name: "App",
 	components: {},
-})
-export default class App extends Vue {
-	public mounted(): void {
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {},
+	mounted(): void {
 		console.log("%chomeIndex mounted", "color: red; font-size: 20px;font-weight:bold");
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

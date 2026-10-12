@@ -51,235 +51,222 @@
 </template>
 
 <script lang="ts">
+import { defineComponent, type PropType } from "vue";
+
 import { GET_ADMIN_INFO } from "@/store/type/getter-type";
+
 import dayjs from "dayjs";
-import Vue from "vue";
-import { Component, Prop } from "vue-property-decorator";
+
 import { btn } from "./type";
-
-@Component({
+export default defineComponent({
+	name: "SideBar",
 	components: {},
-})
-export default class SideBar extends Vue {
-	@Prop() userName!: string;
-	@Prop() identity!: string;
-	@Prop() goPage!: (page: string) => void;
-	@Prop() logOut!: () => void;
-
-	public index = 0;
-	public childrenIndex = 0;
-	public timeNow = dayjs().format("YYYY-MM-DD HH:mm:ss");
-	public timeInterval: any = null;
-
-	public mounted(): void {
+	props: {
+		userName: { type: String, required: true },
+		identity: { type: String, required: true },
+		goPage: { type: Function as PropType<(page: string) => void>, required: true },
+		logOut: { type: Function as PropType<() => void>, required: true },
+	},
+	data() {
+		return {
+			index: 0,
+			childrenIndex: 0,
+			timeNow: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+			timeInterval: null as any,
+			buttonArr: [
+				{
+					name: "首页",
+					path: "index",
+					role: 1,
+				},
+				{
+					name: "小区信息",
+					path: "community",
+					role: 1,
+					children: [
+						{
+							name: "户表户管",
+							path: "hubiaohuguan",
+							role: 1,
+						},
+						{
+							name: "户表总管",
+							path: "hubiaozongguan",
+							role: 1,
+						},
+						{
+							name: "未户总管",
+							path: "weihuzongguan",
+							role: 1,
+						},
+					],
+				},
+				{
+					name: "查询",
+					role: 1,
+					path: "search",
+					children: [
+						// {
+						//   name: "全部",
+						//   path: "searchAll",
+						//   role: 1,
+						// },
+						{
+							name: "表井(总表)",
+							path: "searchWaterMeterWell",
+							role: 1,
+						},
+						{
+							name: "阀门井",
+							path: "searchValueWell",
+							role: 1,
+						},
+						{
+							name: "水表间(户表)",
+							path: "searchWaterMeterRoom",
+							role: 1,
+						},
+						{
+							name: "消火栓",
+							path: "searchFireHydrant",
+							role: 1,
+						},
+						{
+							name: "水表信息(户表)",
+							path: "searchWell",
+							role: 1,
+							disable: false,
+						},
+					],
+				},
+				{
+					name: "卡片",
+					path: "card",
+					role: 1,
+				},
+				{
+					name: "表卡录入",
+					path: "InputInfor",
+					role: 1,
+				},
+				{
+					name: "三供一业",
+					path: "threeSupply",
+					role: 1,
+				},
+				{
+					name: "新增",
+					path: "add",
+					role: 1,
+					disable: false,
+					children: [
+						{
+							name: "表井(总表)",
+							path: "addWaterMeterWell",
+							role: 1,
+						},
+						{
+							name: "阀门井",
+							path: "addValueWell",
+							role: 1,
+						},
+						{
+							name: "水表间(户表)",
+							path: "addWaterMeterRoom",
+							role: 1,
+						},
+						{
+							name: "消火栓",
+							path: "addFireHydrant",
+							role: 1,
+						},
+						{
+							name: "水表信息(户表)",
+							path: "addWell",
+							role: 1,
+						},
+					],
+				},
+			] as btn[],
+		};
+	},
+	computed: {
+		routePath(): string {
+			return this.$route.path.split("/")[2] || "index";
+		},
+		calcButtonArr(): btn[] {
+			return this.buttonArr.filter((button: btn) => {
+				return button.role >= this.$store.getters[GET_ADMIN_INFO].adminRole;
+			});
+		},
+	},
+	methods: {
+		emitGoPage(path: string, index: number): void {
+			if (!this.buttonArr[index]?.children) {
+				this.$emit("goPage", path);
+				this.index = index ? index : 0;
+			} else {
+				if (this.index !== index) {
+					if (this.buttonArr[index].children!.length > 0) {
+						this.$emit("goPage", this.buttonArr[index].children![0].path);
+					}
+					this.index = index;
+					this.setChildrenIndex(0);
+				}
+			}
+		},
+		emitGoChildPage(path: string, index: number): void {
+			this.$emit("goPage", path);
+			this.setChildrenIndex(index);
+		},
+		setIndex(index: number): void {
+			this.index = index;
+		},
+		setChildrenIndex(index: number): void {
+			this.childrenIndex = index;
+		},
+		askLogOut(): void {
+			this.$confirm("请确认是否登出系统?", "提示", {
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
+				type: "warning",
+			})
+				.then(() => {
+					this.$message({
+						type: "success",
+						message: "退出成功!",
+					});
+					this.$emit("logOut");
+				})
+				.catch(() => {});
+		},
+		getActive(path: string, children: btn[] | undefined) {
+			return (
+				this.routePath === path ||
+				(children && children.some((child) => child.path === this.routePath)) ||
+				false
+			);
+		},
+		getChildrenListShow(button: btn): boolean {
+			return (
+				(button.children &&
+					button.children.some((child) => child.path === this.routePath)) ||
+				false
+			);
+		},
+		getChildActive(path: string): boolean {
+			return this.routePath === path;
+		},
+	},
+	mounted(): void {
 		this.timeInterval = setInterval(() => {
 			this.timeNow = dayjs().format("YYYY-MM-DD HH:mm:ss");
 		}, 1000);
-	}
-
-	// 销毁组件时清除定时器
-	public beforeDestroy(): void {
+	},
+	beforeUnmount(): void {
 		clearInterval(this.timeInterval);
-	}
-
-	public buttonArr: btn[] = [
-		{
-			name: "首页",
-			path: "index",
-			role: 1,
-		},
-		{
-			name: "小区信息",
-			path: "community",
-			role: 1,
-			children: [
-				{
-					name: "户表户管",
-					path: "hubiaohuguan",
-					role: 1,
-				},
-				{
-					name: "户表总管",
-					path: "hubiaozongguan",
-					role: 1,
-				},
-				{
-					name: "未户总管",
-					path: "weihuzongguan",
-					role: 1,
-				},
-			],
-		},
-		{
-			name: "查询",
-			role: 1,
-			path: "search",
-			children: [
-				// {
-				//   name: "全部",
-				//   path: "searchAll",
-				//   role: 1,
-				// },
-				{
-					name: "表井(总表)",
-					path: "searchWaterMeterWell",
-					role: 1,
-				},
-				{
-					name: "阀门井",
-					path: "searchValueWell",
-					role: 1,
-				},
-				{
-					name: "水表间(户表)",
-					path: "searchWaterMeterRoom",
-					role: 1,
-				},
-				{
-					name: "消火栓",
-					path: "searchFireHydrant",
-					role: 1,
-				},
-				{
-					name: "水表信息(户表)",
-					path: "searchWell",
-					role: 1,
-					disable: false,
-				},
-			],
-		},
-		{
-			name: "卡片",
-			path: "card",
-			role: 1,
-		},
-		{
-			name: "表卡录入",
-			path: "InputInfor",
-			role: 1,
-		},
-		{
-			name: "三供一业",
-			path: "threeSupply",
-			role: 1,
-		},
-		{
-			name: "新增",
-			path: "add",
-			role: 1,
-			disable: false,
-			children: [
-				{
-					name: "表井(总表)",
-					path: "addWaterMeterWell",
-					role: 1,
-				},
-				{
-					name: "阀门井",
-					path: "addValueWell",
-					role: 1,
-				},
-				{
-					name: "水表间(户表)",
-					path: "addWaterMeterRoom",
-					role: 1,
-				},
-				{
-					name: "消火栓",
-					path: "addFireHydrant",
-					role: 1,
-				},
-				{
-					name: "水表信息(户表)",
-					path: "addWell",
-					role: 1,
-				},
-			],
-		},
-	];
-
-	public emitGoPage(path: string, index: number): void {
-		if (!this.buttonArr[index]?.children) {
-			this.$emit("goPage", path);
-			this.index = index ? index : 0;
-		} else {
-			if (this.index !== index) {
-				if (this.buttonArr[index].children!.length > 0) {
-					this.$emit("goPage", this.buttonArr[index].children![0].path);
-				}
-				this.index = index;
-				this.setChildrenIndex(0);
-			}
-		}
-	}
-	public emitGoChildPage(path: string, index: number): void {
-		this.$emit("goPage", path);
-		this.setChildrenIndex(index);
-	}
-
-	public setIndex(index: number): void {
-		this.index = index;
-	}
-
-	public setChildrenIndex(index: number): void {
-		this.childrenIndex = index;
-	}
-
-	public askLogOut(): void {
-		this.$confirm("请确认是否登出系统?", "提示", {
-			confirmButtonText: "确定",
-			cancelButtonText: "取消",
-			type: "warning",
-		})
-			.then(() => {
-				this.$message({
-					type: "success",
-					message: "退出成功!",
-				});
-				this.$emit("logOut");
-			})
-			.catch(() => {});
-	}
-
-	public get routePath(): string {
-		return this.$route.path.split("/")[2] || "index";
-	}
-
-	public get calcButtonArr(): btn[] {
-		return this.buttonArr.filter((button: btn) => {
-			return button.role >= this.$store.getters[GET_ADMIN_INFO].adminRole;
-		});
-	}
-	// 根据当前url来判断是否需要高亮显示按钮
-	public getActive(path: string, children: btn[] | undefined) {
-		return (
-			this.routePath === path ||
-			(children && children.some((child) => child.path === this.routePath)) ||
-			false
-		);
-	}
-
-	// 根据当前url来判断是否需要显示子按钮
-	public getChildrenListShow(button: btn): boolean {
-		return (
-			(button.children && button.children.some((child) => child.path === this.routePath)) ||
-			false
-		);
-	}
-
-	// 根据当前url来判断是否需要高亮显示子按钮
-	public getChildActive(path: string): boolean {
-		return this.routePath === path;
-	}
-
-	// mounted(): void {
-	//   if (localStorage.getItem("page")) {
-	//     this["$router"].push(`/home/${localStorage.getItem("page")}`);
-	//   } else {
-	//     this["$router"].push("/home/index");
-	//   }
-	// }
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>
@@ -362,7 +349,9 @@ export default class SideBar extends Vue {
 				height: 35px;
 				border: 1px solid var(--primary-color);
 				border-radius: 8px;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+				box-shadow:
+					0 2px 4px rgba(0, 0, 0, 0.12),
+					0 0 6px rgba(0, 0, 0, 0.04);
 				color: black;
 				background-color: transparent;
 				font-size: 14px;

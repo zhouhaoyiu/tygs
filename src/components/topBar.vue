@@ -1,32 +1,35 @@
 <template>
 	<div class="top-bar">
 		<div class="logo-box">
-			<img class="logo" @click="goHome()" :src="require('../assets/tygs.png')" alt="logo" />
+			<img class="logo" @click="goHome()" src="../assets/tygs.png" alt="logo" />
 		</div>
 		<!-- <div class="banner-box"> -->
-		<!-- <img class="banner" :src="require('../assets/banner.jpg')" alt=""> -->
+		<!-- <img class="banner" src="../assets/banner.jpg" alt=""> -->
 		<!-- </div> -->
 		<div class="sitename-box">
-			<span @click="screenSaver()">
-				城北<!-- 营销分公司 表井 -->信息数据库
-			</span>
+			<span @click="screenSaver()"> 城北<!-- 营销分公司 表井 -->信息数据库 </span>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-@Component({})
-export default class TopBar extends Vue {
-	public goHome(): void {
-		this.$router.push("/");
-	}
+import { defineComponent } from "vue";
 
-	public screenSaver(): void {
-		this.$router.push("/screenSaver");
-	}
-}
+export default defineComponent({
+	name: "TopBar",
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {
+		goHome(): void {
+			this.$router.push("/");
+		},
+		screenSaver(): void {
+			this.$router.push("/screenSaver");
+		},
+	},
+});
 </script>
 
 <style lang="scss">

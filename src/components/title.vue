@@ -6,12 +6,17 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-@Component({
+import { defineComponent } from "vue";
+
+export default defineComponent({
+	name: "Title",
 	components: {},
-})
-export default class Title extends Vue {}
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {},
+});
 </script>
 
 <style lang="scss" scoped>

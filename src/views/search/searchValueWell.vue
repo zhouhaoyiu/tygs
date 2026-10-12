@@ -51,7 +51,7 @@
 					</el-option>
 				</el-select>
 				<el-input
-					@keyup.enter.native="search()"
+					@keyup.enter="search()"
 					style="width: 400px"
 					v-model="searchText"
 					clearable
@@ -75,7 +75,7 @@
 					:loading="exportLoading"
 				>
 					导出
-					<i class="el-icon-download el-icon--right"></i>
+					<el-icon><Download /></el-icon>
 				</el-button>
 			</div>
 		</div>
@@ -110,7 +110,7 @@
 						:content="scope.row.positioningCoordinates"
 						placement="bottom"
 					>
-						<el-button type="text" style="color: #409eff"> 查看 </el-button>
+						<el-button link type="primary"> 查看 </el-button>
 					</el-tooltip>
 				</template>
 			</el-table-column>
@@ -165,7 +165,7 @@
 			:close-on-press-escape="false"
 			center
 			title="维修记录"
-			:visible.sync="repairDialog"
+			v-model="repairDialog"
 		>
 			<div style="height: 400px">
 				<div
@@ -186,7 +186,8 @@
 				v-model="addRepairTime"
 				type="date"
 				placeholder="选择日期"
-				:picker-options="pickerOptions"
+				:disabled-date="pickerOptions.disabledDate"
+				:shortcuts="pickerOptions.shortcuts"
 				style="width: 240px; margin-right: 12px"
 			/>
 			<el-input
@@ -210,7 +211,7 @@
 			:close-on-press-escape="false"
 			center
 			title="水表信息"
-			:visible.sync="waterMeterDialog"
+			v-model="waterMeterDialog"
 		>
 			<div style="display: flex; margin: auto; width: 100%; justify-content: center">
 				<el-select v-model="waterMeterInfoSearchBy" style="margin-right: 20px">
@@ -223,7 +224,7 @@
 					</el-option>
 				</el-select>
 				<el-input
-					@keyup.enter.native="waterMeterSearch()"
+					@keyup.enter="waterMeterSearch()"
 					clearable
 					v-model="waterMeterInfoSearchText"
 					style="width: 300px; margin-right: 20px"
@@ -296,440 +297,394 @@
 			:close-on-press-escape="false"
 			center
 			title="表井信息"
-			:visible.sync="wallInfoDialog"
+			v-model="wallInfoDialog"
 		>
 		</el-dialog>
 	</div>
 </template>
 
 <script lang="ts">
+import { repairDateOptions } from "./date-options";
+
+import { defineComponent } from "vue";
+
 import dayjs from "dayjs";
+
 import { nanoid } from "nanoid";
-import Vue from "vue";
-import Component from "vue-class-component";
+
 import { utils, writeFileXLSX } from "xlsx";
+
 import Title from "../../components/title.vue";
+
 import { calibers, wellChamberTypes } from "./info";
+
 import { elOptionArray, objectArray, repairInfoArray } from "./types";
-@Component({
+export default defineComponent({
+	name: "SearchValueWell",
 	components: {
 		Title,
 	},
-})
-export default class SearchValueWell extends Vue {
-	public pickerOptions = {};
-
-	public searchTextBy: string = "filledBy";
-	public searchText: string = "";
-	public waterMeterInfoSearchBy: string = "accountNumber";
-	public waterMeterInfoSearchText: string = "";
-
-	public searchSelectBy = {
-		caliber: [] as string[], // 口径
-		wellChamberType: [] as string[], // 井室类型
-		streetName: "" as string, // 街道，
-		manufactor: [] as string[], // 厂家
-	};
-
-	public options: objectArray = [
-		{
-			value: "filledBy",
-			label: "填写人",
-		},
-		{
-			value: "accountIdentifier",
-			label: "编号",
-		},
-	];
-
-	public waterMeterInfoSearchOptions: elOptionArray = [
-		{ value: "paymentNumber", label: "缴费号" },
-		{ value: "accountNumber", label: "户号" },
-		{ value: "accountName", label: "户名" },
-	];
-
-	public calibers: elOptionArray = calibers;
-	public wellChamberTypes: elOptionArray = wellChamberTypes;
-
-	public searchRes: objectArray = [];
-	public displayRes: objectArray = [];
-
-	public static formLabelWidth = "120px";
-
-	public exportLoading = false;
-	public searchLoading = false;
-	public tableLoading = false;
-
-	public repairDialog = false;
-	public repairId = 0;
-	public repairInfo: repairInfoArray = [];
-	public addRepairText = ""; // 新增的维修记录
-	public addRepairTime = ""; // 新增的维修时间
-	public addRepairRemarks = ""; // 新增的维修备注
-
-	public waterMeterDialog = false;
-	public waterMeterDialogId = 0;
-	public waterMeterInfoArr = [];
-	public waterMeterForm = {
-		paymentNumber: "", //缴费号
-		accountNumber: "", //户号
-		accountName: "", //户名
-		nature: "", //状态
-	};
-
-	public wallInfoDialog = false;
-	public wallInfoId = 0;
-
-	public handleSizeChange(val: number): void {
-		this.pageSize = val;
-	}
-	public handleCurrentChange(val: number): void {
-		this.currentPage = val;
-	}
-	public pageSize = 30;
-	public currentPage = 1;
-
-	// 计算属性获取displayRes的长度
-	public get total(): number {
-		return this.displayRes.length;
-	}
-	public get updateRepairDisabled(): boolean {
-		return (
-			this.repairSaving ||
-			this.repairLoading ||
-			this.addRepairText === "" ||
-			this.addRepairTime === ""
-		);
-	}
-
-	public get insertWaterMeterInfoDisabled(): boolean {
-		return (
-			this.waterMeterForm.paymentNumber === "" ||
-			this.waterMeterForm.accountNumber === "" ||
-			this.waterMeterForm.accountName === "" ||
-			this.waterMeterForm.nature === ""
-		);
-	}
-
-	public async search(): Promise<void> {
-		this.searchLoading = true;
-		this.tableLoading = true;
-
-		const searchText = {
-			[this.searchTextBy]: this.searchText,
-			caliber: this.searchSelectBy.caliber as string[],
-			wellChamberType: this.searchSelectBy.wellChamberType as string[],
-			streetName: this.searchSelectBy.streetName,
-		};
-
-		for (const key in searchText) {
-			if (searchText[key] === "" || searchText[key].length === 0) {
-				delete searchText[key];
-			}
-		}
-		// 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
-		// searchText的属性值可以是数组，包含数组中的任意一个值就可以
-		const promise = new Promise<void>((resolve, _) => {
-			this.displayRes = this.searchRes.filter((item) => {
-				for (const key in searchText) {
-					if (Array.isArray(searchText[key])) {
-						if (!searchText[key].includes(item[key])) {
-							return false;
-						}
-					} else {
-						if (!String(item[key]).includes(searchText[key] as string)) {
-							return false;
-						}
-					}
-				}
-				return true;
-			});
-			resolve();
-		});
-		await promise;
-
-		this.searchLoading = false;
-		this.tableLoading = false;
-
-		// 解决视图不更新的问题
-		await this.$nextTick();
-	}
-
-	public waterMeterSearch() {
-		this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item) => {
-			if (item) {
-				if (typeof item[this.waterMeterInfoSearchBy] === "string") {
-					return (
-						(item[this.waterMeterInfoSearchBy] as string)
-							.trim()
-							.toLowerCase()
-							.indexOf(this.waterMeterInfoSearchText.trim().toLowerCase()) > -1
-					);
-				} else if (typeof item[this.waterMeterInfoSearchBy] === "number") {
-					return (
-						(item[this.waterMeterInfoSearchBy] as unknown as Number) ===
-						Number(this.waterMeterInfoSearchText)
-					);
-				} else {
-					throw new Error("搜索字段类型错误");
-				}
-			}
-		});
-	}
-
-	public async mounted(): Promise<void> {
-		this.pickerOptions = {
-			disabledDate(time: { getTime: () => number }) {
-				return time.getTime() > Date.now();
+	data() {
+		return {
+			pickerOptions: repairDateOptions(),
+			searchTextBy: "filledBy" as string,
+			searchText: "" as string,
+			waterMeterInfoSearchBy: "accountNumber" as string,
+			waterMeterInfoSearchText: "" as string,
+			searchSelectBy: {
+				caliber: [] as string[], // 口径
+				wellChamberType: [] as string[], // 井室类型
+				streetName: "" as string, // 街道，
+				manufactor: [] as string[], // 厂家
 			},
-			shortcuts: [
+			options: [
 				{
-					text: "今天",
-					onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
-						picker.$emit("pick", new Date());
-					},
+					value: "filledBy",
+					label: "填写人",
 				},
 				{
-					text: "昨天",
-					onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
-						const date = new Date();
-						date.setTime(date.getTime() - 3600 * 1000 * 24);
-						picker.$emit("pick", date);
-					},
+					value: "accountIdentifier",
+					label: "编号",
 				},
-				{
-					text: "一周前",
-					onClick(picker: { $emit: (arg0: string, arg1: Date) => void }) {
-						const date = new Date();
-						date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-						picker.$emit("pick", date);
-					},
-				},
-			],
-		};
-		await this.getRes();
-	}
-
-	public exportExcel(): void {
-		this.exportLoading = true;
-
-		const promise = new Promise<void>((resolve, _) => {
-			const data = this.displayRes;
-			const ws = utils.json_to_sheet(data);
-			const wb = utils.book_new();
-
-			// 根据搜索条件+时间生成文件名
-			const searchText = this.searchText ? this.searchText : "空";
-			const searchTextBy = this.searchTextBy === "filledBy" ? "填写人" : "";
-			const caliber = this.searchSelectBy.caliber
-				? this.searchSelectBy.caliber.join(",")
-				: "";
-			const wellChamberType = this.searchSelectBy.wellChamberType
-				? this.searchSelectBy.wellChamberType.join(",")
-				: "";
-			const streetName = this.searchSelectBy.streetName ? this.searchSelectBy.streetName : "";
-			// 详细到时分秒
-			const time = "+" + dayjs().format("YYYY-MM-DD HH:mm:ss");
-			const fileName = `${searchTextBy}+${searchText}+${caliber}+${wellChamberType}+${streetName}+${time}`;
-
-			utils.book_append_sheet(wb, ws, "SheetJS");
-			writeFileXLSX(wb, fileName);
-			resolve();
-		});
-		promise.then(() => {
-			this.$message({
-				message: "导出成功",
-				type: "success",
-			});
-			this.exportLoading = false;
-		});
-	}
-
-	public async getRes(): Promise<void> {
-		this.tableLoading = true;
-		const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
-		this.searchRes = res.data;
-		// .sort(
-		//   (a: { filledBy: string }, b: { filledBy: string }) => {
-		//     return a.filledBy.localeCompare(b.filledBy);
-		//   }
-		// );
-
-		this.displayRes = this.searchRes;
-		// .slice(0, 30);
-
-		this.tableLoading = false;
-	}
-
-	public async clearRes(): Promise<void> {
-		this.searchRes = [];
-		this.searchText = "";
-		await this.getRes();
-	}
-
-	public modify(info: any): void {
-		void info;
-	}
-
-	public repairSaving = false;
-	public repairLoading = false;
-	public repairRequestId = nanoid();
-	public async updateRepair(): Promise<void> {
-		if (
-			this.repairSaving ||
-			this.repairLoading ||
-			!this.addRepairText.trim() ||
-			!this.addRepairTime
-		)
-			return;
-		this.repairSaving = true;
-		const original = Array.isArray(this.repairInfo) ? this.repairInfo : [];
-		try {
-			const res = await this.axios.post("ValueWell/updateValueWellRepairInfoWithId", {
-				id: this.repairId,
-				requestId: this.repairRequestId,
-				expectedInfo: JSON.stringify(original),
-				repairInfo: JSON.stringify([
-					...original,
-					{
-						text: this.addRepairText,
-						repairTime: this.addRepairTime,
-						remarks: this.addRepairRemarks,
-					},
-				]),
-			});
-			if (res.data.code !== 0) throw new Error(res.data.msg);
-			this.addRepairText = "";
-			this.addRepairTime = "";
-			this.addRepairRemarks = "";
-			this.repairRequestId = nanoid();
-			await this.getRepair(this.repairId);
-			this.$message.success("维修记录已保存");
-		} catch (error) {
-			this.$message.error("未保存，请核对提示后重试");
-		} finally {
-			this.repairSaving = false;
-		}
-	}
-
-	public async openRepair(id: number): Promise<void> {
-		if (this.repairSaving || this.repairLoading) return;
-		if (
-			this.addRepairText &&
-			id !== this.repairId &&
-			!window.confirm("切换设施会清除未保存的维修内容，继续？")
-		)
-			return;
-		if (id !== this.repairId) {
-			this.addRepairText = "";
-			this.addRepairTime = "";
-			this.addRepairRemarks = "";
-			this.repairRequestId = nanoid();
-		}
-		this.repairLoading = true;
-		this.repairInfo = [];
-		this.repairDialog = true;
-		this.repairId = id;
-		try {
-			await this.getRepair(id);
-		} catch {
-			this.repairDialog = false;
-		} finally {
-			this.repairLoading = false;
-		}
-	}
-
-	public async getRepair(id: number): Promise<void> {
-		const res = await this["axios"].get(`ValueWell/getValueWellRepairInfoById`, {
-			params: {
-				id: id,
-			},
-		});
-		this.$message.success(res.data.msg);
-		if (res.data.data === null || res.data.data === undefined || res.data.data === "") {
-			this.repairInfo = [];
-		} else {
-			const raw = res.data.data;
-			try {
-				const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-				this.repairInfo = Array.isArray(parsed) ? parsed : [];
-			} catch {
-				this.$message.error("维修记录格式错误");
-				throw new Error("Invalid repair record");
-			}
-		}
-	}
-
-	// 打开水表信息编辑弹窗
-	public async openWaterMeter(id: number): Promise<void> {
-		this.waterMeterDialog = true;
-		this.waterMeterDialogId = id;
-		await this.getWaterMeterInfoById(id);
-	}
-
-	// 根据id获取水表信息
-	public async getWaterMeterInfoById(wallId: number): Promise<void> {
-		const res = await this["axios"].get(`ValueWell/getValueWellWaterMeterInfoByWallId`, {
-			params: {
-				wallId: wallId,
-			},
-		});
-
-		this.$message.success(res.data.msg);
-		this.waterMeterInfoArr = res.data.data;
-	}
-
-	// 更新水表信息
-	public async insertWaterMeterInfo(): Promise<void> {
-		await this.sendWaterMeterInfo(this.waterMeterForm);
-	}
-
-	public async sendWaterMeterInfo(waterMeterForm: {
-		paymentNumber: string; //缴费号
-		accountNumber: string; //户号
-		accountName: string; //户名
-		nature: string;
-	}): Promise<void> {
-		const res = await this["axios"].post(`ValueWell/insertValueWellWaterMeterInfo`, {
-			wallId: this.waterMeterDialogId,
-			waterMeterId: nanoid(),
-			updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-			...waterMeterForm,
-		});
-
-		if (res.data.code === 0) {
-			this.waterMeterForm = {
+			] as objectArray,
+			waterMeterInfoSearchOptions: [
+				{ value: "paymentNumber", label: "缴费号" },
+				{ value: "accountNumber", label: "户号" },
+				{ value: "accountName", label: "户名" },
+			] as elOptionArray,
+			calibers: calibers as elOptionArray,
+			wellChamberTypes: wellChamberTypes as elOptionArray,
+			searchRes: [] as objectArray,
+			displayRes: [] as objectArray,
+			formLabelWidth: "120px",
+			exportLoading: false,
+			searchLoading: false,
+			tableLoading: false,
+			repairDialog: false,
+			repairId: 0,
+			repairInfo: [] as repairInfoArray,
+			addRepairText: "",
+			addRepairTime: "",
+			addRepairRemarks: "",
+			waterMeterDialog: false,
+			waterMeterDialogId: 0,
+			waterMeterInfoArr: [],
+			waterMeterForm: {
 				paymentNumber: "", //缴费号
 				accountNumber: "", //户号
 				accountName: "", //户名
 				nature: "", //状态
-			};
-			await this.getWaterMeterInfoById(this.waterMeterDialogId);
-		}
-	}
+			},
+			wallInfoDialog: false,
+			wallInfoId: 0,
+			pageSize: 30,
+			currentPage: 1,
+			repairSaving: false,
+			repairLoading: false,
+			repairRequestId: nanoid(),
+		};
+	},
+	computed: {
+		total(): number {
+			return this.displayRes.length;
+		},
+		updateRepairDisabled(): boolean {
+			return (
+				this.repairSaving ||
+				this.repairLoading ||
+				this.addRepairText === "" ||
+				this.addRepairTime === ""
+			);
+		},
+		insertWaterMeterInfoDisabled(): boolean {
+			return (
+				this.waterMeterForm.paymentNumber === "" ||
+				this.waterMeterForm.accountNumber === "" ||
+				this.waterMeterForm.accountName === "" ||
+				this.waterMeterForm.nature === ""
+			);
+		},
+	},
+	methods: {
+		handleSizeChange(val: number): void {
+			this.pageSize = val;
+		},
+		handleCurrentChange(val: number): void {
+			this.currentPage = val;
+		},
+		async search(): Promise<void> {
+			this.searchLoading = true;
+			this.tableLoading = true;
 
-	public async deleteWaterMeter(waterMeterId: string): Promise<void> {
-		const confirmation = await this.$prompt("停用原因", "停用水表", {
-			inputPattern: /\S+/,
-			inputErrorMessage: "请填写原因",
-		}).catch(() => null);
-		if (!confirmation || typeof confirmation === "string") return;
-		const res = await this.axios.post("ValueWell/deleteWaterMeterInfoById", {
-			waterMeterId,
-			wallId: this.waterMeterDialogId,
-			reason: confirmation.value,
-		});
-		if (res.data.code === 0) {
+			const searchText = {
+				[this.searchTextBy]: this.searchText,
+				caliber: this.searchSelectBy.caliber as string[],
+				wellChamberType: this.searchSelectBy.wellChamberType as string[],
+				streetName: this.searchSelectBy.streetName,
+			};
+
+			for (const key in searchText) {
+				if (searchText[key] === "" || searchText[key].length === 0) {
+					delete searchText[key];
+				}
+			}
+			// 按照searchText的属性进行筛选，只要内容包含searchText的属性值就可以
+			// searchText的属性值可以是数组，包含数组中的任意一个值就可以
+			const promise = new Promise<void>((resolve, _) => {
+				this.displayRes = this.searchRes.filter((item) => {
+					for (const key in searchText) {
+						if (Array.isArray(searchText[key])) {
+							if (!searchText[key].includes(item[key])) {
+								return false;
+							}
+						} else {
+							if (!String(item[key]).includes(searchText[key] as string)) {
+								return false;
+							}
+						}
+					}
+					return true;
+				});
+				resolve();
+			});
+			await promise;
+
+			this.searchLoading = false;
+			this.tableLoading = false;
+
+			// 解决视图不更新的问题
+			await this.$nextTick();
+		},
+		waterMeterSearch() {
+			this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item) => {
+				if (item) {
+					if (typeof item[this.waterMeterInfoSearchBy] === "string") {
+						return (
+							(item[this.waterMeterInfoSearchBy] as string)
+								.trim()
+								.toLowerCase()
+								.indexOf(this.waterMeterInfoSearchText.trim().toLowerCase()) > -1
+						);
+					} else if (typeof item[this.waterMeterInfoSearchBy] === "number") {
+						return (
+							(item[this.waterMeterInfoSearchBy] as unknown as Number) ===
+							Number(this.waterMeterInfoSearchText)
+						);
+					} else {
+						throw new Error("搜索字段类型错误");
+					}
+				}
+			});
+		},
+		exportExcel(): void {
+			this.exportLoading = true;
+
+			const promise = new Promise<void>((resolve, _) => {
+				const data = this.displayRes;
+				const ws = utils.json_to_sheet(data);
+				const wb = utils.book_new();
+
+				// 根据搜索条件+时间生成文件名
+				const searchText = this.searchText ? this.searchText : "空";
+				const searchTextBy = this.searchTextBy === "filledBy" ? "填写人" : "";
+				const caliber = this.searchSelectBy.caliber
+					? this.searchSelectBy.caliber.join(",")
+					: "";
+				const wellChamberType = this.searchSelectBy.wellChamberType
+					? this.searchSelectBy.wellChamberType.join(",")
+					: "";
+				const streetName = this.searchSelectBy.streetName
+					? this.searchSelectBy.streetName
+					: "";
+				// 详细到时分秒
+				const time = "+" + dayjs().format("YYYY-MM-DD HH:mm:ss");
+				const fileName = `${searchTextBy}+${searchText}+${caliber}+${wellChamberType}+${streetName}+${time}`;
+
+				utils.book_append_sheet(wb, ws, "SheetJS");
+				writeFileXLSX(wb, fileName);
+				resolve();
+			});
+			promise.then(() => {
+				this.$message({
+					message: "导出成功",
+					type: "success",
+				});
+				this.exportLoading = false;
+			});
+		},
+		async getRes(): Promise<void> {
+			this.tableLoading = true;
+			const res = await this["axios"].get("/ValueWell/getAllValueWellInfo");
+			this.searchRes = res.data;
+			// .sort(
+			//   (a: { filledBy: string }, b: { filledBy: string }) => {
+			//     return a.filledBy.localeCompare(b.filledBy);
+			//   }
+			// );
+
+			this.displayRes = this.searchRes;
+			// .slice(0, 30);
+
+			this.tableLoading = false;
+		},
+		async clearRes(): Promise<void> {
+			this.searchRes = [];
+			this.searchText = "";
+			await this.getRes();
+		},
+		modify(info: any): void {
+			void info;
+		},
+		async updateRepair(): Promise<void> {
+			if (
+				this.repairSaving ||
+				this.repairLoading ||
+				!this.addRepairText.trim() ||
+				!this.addRepairTime
+			)
+				return;
+			this.repairSaving = true;
+			const original = Array.isArray(this.repairInfo) ? this.repairInfo : [];
+			try {
+				const res = await this.axios.post("ValueWell/updateValueWellRepairInfoWithId", {
+					id: this.repairId,
+					requestId: this.repairRequestId,
+					expectedInfo: JSON.stringify(original),
+					repairInfo: JSON.stringify([
+						...original,
+						{
+							text: this.addRepairText,
+							repairTime: this.addRepairTime,
+							remarks: this.addRepairRemarks,
+						},
+					]),
+				});
+				if (res.data.code !== 0) throw new Error(res.data.msg);
+				this.addRepairText = "";
+				this.addRepairTime = "";
+				this.addRepairRemarks = "";
+				this.repairRequestId = nanoid();
+				await this.getRepair(this.repairId);
+				this.$message.success("维修记录已保存");
+			} catch (error) {
+				this.$message.error("未保存，请核对提示后重试");
+			} finally {
+				this.repairSaving = false;
+			}
+		},
+		async openRepair(id: number): Promise<void> {
+			if (this.repairSaving || this.repairLoading) return;
+			if (
+				this.addRepairText &&
+				id !== this.repairId &&
+				!window.confirm("切换设施会清除未保存的维修内容，继续？")
+			)
+				return;
+			if (id !== this.repairId) {
+				this.addRepairText = "";
+				this.addRepairTime = "";
+				this.addRepairRemarks = "";
+				this.repairRequestId = nanoid();
+			}
+			this.repairLoading = true;
+			this.repairInfo = [];
+			this.repairDialog = true;
+			this.repairId = id;
+			try {
+				await this.getRepair(id);
+			} catch {
+				this.repairDialog = false;
+			} finally {
+				this.repairLoading = false;
+			}
+		},
+		async getRepair(id: number): Promise<void> {
+			const res = await this["axios"].get(`ValueWell/getValueWellRepairInfoById`, {
+				params: {
+					id: id,
+				},
+			});
 			this.$message.success(res.data.msg);
-			await this.getWaterMeterInfoById(this.waterMeterDialogId);
-		} else {
-			this.$message.error(res.data.msg);
-		}
-		// this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item: { waterMeterId: string }) => {
-		// 	return item.waterMeterId !== waterMeterId;
-		// });
-	}
-}
+			if (res.data.data === null || res.data.data === undefined || res.data.data === "") {
+				this.repairInfo = [];
+			} else {
+				const raw = res.data.data;
+				try {
+					const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+					this.repairInfo = Array.isArray(parsed) ? parsed : [];
+				} catch {
+					this.$message.error("维修记录格式错误");
+					throw new Error("Invalid repair record");
+				}
+			}
+		},
+		async openWaterMeter(id: number): Promise<void> {
+			this.waterMeterDialog = true;
+			this.waterMeterDialogId = id;
+			await this.getWaterMeterInfoById(id);
+		},
+		async getWaterMeterInfoById(wallId: number): Promise<void> {
+			const res = await this["axios"].get(`ValueWell/getValueWellWaterMeterInfoByWallId`, {
+				params: {
+					wallId: wallId,
+				},
+			});
+
+			this.$message.success(res.data.msg);
+			this.waterMeterInfoArr = res.data.data;
+		},
+		async insertWaterMeterInfo(): Promise<void> {
+			await this.sendWaterMeterInfo(this.waterMeterForm);
+		},
+		async sendWaterMeterInfo(waterMeterForm: {
+			paymentNumber: string; //缴费号
+			accountNumber: string; //户号
+			accountName: string; //户名
+			nature: string;
+		}): Promise<void> {
+			const res = await this["axios"].post(`ValueWell/insertValueWellWaterMeterInfo`, {
+				wallId: this.waterMeterDialogId,
+				waterMeterId: nanoid(),
+				updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+				...waterMeterForm,
+			});
+
+			if (res.data.code === 0) {
+				this.waterMeterForm = {
+					paymentNumber: "", //缴费号
+					accountNumber: "", //户号
+					accountName: "", //户名
+					nature: "", //状态
+				};
+				await this.getWaterMeterInfoById(this.waterMeterDialogId);
+			}
+		},
+		async deleteWaterMeter(waterMeterId: string): Promise<void> {
+			const confirmation = await this.$prompt("停用原因", "停用水表", {
+				inputPattern: /\S+/,
+				inputErrorMessage: "请填写原因",
+			}).catch(() => null);
+			if (!confirmation) return;
+			const res = await this.axios.post("ValueWell/deleteWaterMeterInfoById", {
+				waterMeterId,
+				wallId: this.waterMeterDialogId,
+				reason: confirmation.value,
+			});
+			if (res.data.code === 0) {
+				this.$message.success(res.data.msg);
+				await this.getWaterMeterInfoById(this.waterMeterDialogId);
+			} else {
+				this.$message.error(res.data.msg);
+			}
+			// this.waterMeterInfoArr = this.waterMeterInfoArr.filter((item: { waterMeterId: string }) => {
+			// 	return item.waterMeterId !== waterMeterId;
+			// });
+		},
+	},
+	async mounted(): Promise<void> {
+		await this.getRes();
+	},
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,15 +1,7 @@
-import Vue from "vue";
-import VueRouter, { RawLocation, RouteConfig } from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 
-Vue.use(VueRouter);
-
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location: RawLocation) {
-	return (originalPush as Function).call(this, location).catch((err: Error) => err);
-};
-
-const routes: Array<RouteConfig> = [
+const routes: Array<RouteRecordRaw> = [
 	{
 		path: "/",
 		name: "index",
@@ -141,7 +133,6 @@ const routes: Array<RouteConfig> = [
 					import(
 						/* webpackChunkName: "hubiaohuguan" */ "../views/communityDetail/hubiaohuguan.vue"
 					),
-					
 			},
 			{
 				// 户表总管
@@ -151,7 +142,6 @@ const routes: Array<RouteConfig> = [
 					import(
 						/* webpackChunkName: "hubiaozongguan" */ "../views/communityDetail/hubiaozongguan.vue"
 					),
-					
 			},
 			{
 				// 未户总管
@@ -161,9 +151,7 @@ const routes: Array<RouteConfig> = [
 					import(
 						/* webpackChunkName: "weihuzongguan" */ "../views/communityDetail/weihuzongguan.vue"
 					),
-					
-			}
-
+			},
 		],
 	},
 	// {
@@ -188,20 +176,18 @@ const routes: Array<RouteConfig> = [
 		component: () => import(/* webpackChunkName: "404" */ "../views/404.vue"),
 	},
 	{
-		path: "*",
+		path: "/:pathMatch(.*)*",
 		redirect: "/404",
 	},
 ];
 
-const router = new VueRouter({
-	mode: "history",
-	base: process.env.BASE_URL,
+const router = createRouter({
+	history: createWebHistory(import.meta.env.BASE_URL),
 	routes,
 });
 
-router.beforeEach((to, from, next) => {
-  if (to.path === "/regis") return next("/login");
-  if (to.path !== "/login" && !sessionStorage.getItem("facilityToken")) return next("/login");
-  next();
+router.beforeEach((to) => {
+	if (to.path === "/regis") return "/login";
+	if (to.path !== "/login" && !sessionStorage.getItem("facilityToken")) return "/login";
 });
 export default router;

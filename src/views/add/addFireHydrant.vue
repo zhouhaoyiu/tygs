@@ -1,18 +1,25 @@
 <template>
 	<div>
-    <Title>新增 消火栓</Title>
-    <Building>Building...</Building>
-  </div>
+		<Title>新增 消火栓</Title>
+		<Building>Building...</Building>
+	</div>
 </template>
 
 <script lang="ts">
-import Building from "@/components/Building.vue";
-import Title from "@/components/title.vue";
-import Vue from "vue";
-import Component from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Component({ components: { Title, Building } })
-export default class AddFireHydrant extends Vue {}
+import Building from "@/components/Building.vue";
+
+import Title from "@/components/title.vue";
+export default defineComponent({
+	name: "AddFireHydrant",
+	components: { Title, Building },
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {},
+});
 </script>
 
 <style lang="scss" scoped></style>

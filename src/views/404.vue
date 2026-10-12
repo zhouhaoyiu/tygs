@@ -318,16 +318,26 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Component({
+export default defineComponent({
 	name: "NotFound",
-})
-export default class NotFound extends Vue {
-	public time = "5";
-
-	public mounted(): void {
+	data() {
+		return {
+			time: "5",
+		};
+	},
+	computed: {},
+	methods: {
+		goHome(): void {
+			this.$router.push("/");
+			localStorage.removeItem("page ");
+		},
+		goBack(): void {
+			this.$router.go(-1);
+		},
+	},
+	mounted(): void {
 		this.time = "5";
 		let timer = setInterval(() => {
 			this.time = (Number(this.time) - 1).toString();
@@ -336,17 +346,8 @@ export default class NotFound extends Vue {
 				this.goBack();
 			}
 		}, 1000);
-	}
-
-	public goHome(): void {
-		this.$router.push("/");
-		localStorage.removeItem("page ");
-	}
-
-	public goBack(): void {
-		this.$router.go(-1);
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

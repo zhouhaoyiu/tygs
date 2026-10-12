@@ -15,7 +15,7 @@
 					style="width: 400px; margin-right: 20px"
 					v-model="searchText"
 					placeholder="请输入用户名"
-					@keyup.enter.native="searchInfoBySearch"
+					@keyup.enter="searchInfoBySearch"
 				/>
 			</div>
 			<el-button type="primary" @click="searchInfoBySearch()">搜索</el-button>
@@ -58,110 +58,109 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
+
 import Title from "@/components/title.vue";
+
 import axios from "axios";
-import Vue from "vue";
-import Component from "vue-class-component";
-@Component({
+export default defineComponent({
+	name: "SearchWell",
 	components: {
 		Title,
 	},
-})
-export default class SearchWell extends Vue {
-	public searchText = "";
-	public searchBy = "mc";
-	public currentPage = 1;
-	public displayRes = [];
-	public pageSize = 30; // 每页显示的条数
-	public listLength = 0; //
-	public tableLoading = false;
+	data() {
+		return {
+			searchText: "",
+			searchBy: "mc",
+			currentPage: 1,
+			displayRes: [],
+			pageSize: 30,
+			listLength: 0,
+			tableLoading: false,
+			options: [
+				{ value: "mc", label: "名称" },
+				{ value: "jfh", label: "缴费号" },
+				{ value: "hh", label: "户号" },
+				{ value: "xxdz", label: "地址" },
+			],
+		};
+	},
+	computed: {},
+	methods: {
+		async searchInfoBySearch(): Promise<void> {
+			this.currentPage = 1;
 
-	public options = [
-		{ value: "mc", label: "名称" },
-		{ value: "jfh", label: "缴费号" },
-		{ value: "hh", label: "户号" },
-		{ value: "xxdz", label: "地址" },
-	];
+			await this.getInfoBySearchBy();
+		},
+		async getInfoBy(By: string, Param: string): Promise<void> {
+			const res = await axios.get(`sheet1/getInfoByPageAnd${By}`, {
+				params: {
+					page: this.currentPage,
+					[Param]: this.searchText,
+				},
+			});
+			const length = await axios.get(`sheet1/getInfoByPageAnd${By}Count`, {
+				params: {
+					[Param]: this.searchText,
+				},
+			});
 
-	public async searchInfoBySearch(): Promise<void> {
-		this.currentPage = 1;
+			this.displayRes = res.data;
+			this.listLength = length.data;
+		},
+		async getInfo(): Promise<void> {
+			const res = await axios.get("sheet1/getInfoByPage", {
+				params: {
+					page: this.currentPage,
+				},
+			});
 
-		await this.getInfoBySearchBy();
-	}
+			const length = await axios.get("sheet1/getInfoByPageCount");
 
-	public async getInfoBy(By: string, Param: string): Promise<void> {
-		const res = await axios.get(`sheet1/getInfoByPageAnd${By}`, {
-			params: {
-				page: this.currentPage,
-				[Param]: this.searchText,
-			},
-		});
-		const length = await axios.get(`sheet1/getInfoByPageAnd${By}Count`, {
-			params: {
-				[Param]: this.searchText,
-			},
-		});
+			this.displayRes = res.data;
+			this.listLength = length.data;
+			console.log(this.displayRes);
+		},
+		async changePage(page: number): Promise<void> {
+			if (page < 1) {
+				return;
+			}
+			this.currentPage = page;
 
-		this.displayRes = res.data;
-		this.listLength = length.data;
-	}
+			if (!this.searchText) {
+				await this.getInfo();
+				return;
+			}
 
-	public async getInfo(): Promise<void> {
-		const res = await axios.get("sheet1/getInfoByPage", {
-			params: {
-				page: this.currentPage,
-			},
-		});
-
-		const length = await axios.get("sheet1/getInfoByPageCount");
-
-		this.displayRes = res.data;
-		this.listLength = length.data;
-		console.log(this.displayRes);
-	}
-
-	public async changePage(page: number): Promise<void> {
-		if (page < 1) {
-			return;
-		}
-		this.currentPage = page;
-
-		if (!this.searchText) {
+			await this.getInfoBySearchBy();
+		},
+		async getInfoBySearchBy(): Promise<void> {
+			switch (this.searchBy) {
+				case "mc":
+					await this.getInfoBy("Name", "mc");
+					break;
+				case "jfh":
+					await this.getInfoBy("Jfh", "jfh");
+					break;
+				case "hh":
+					await this.getInfoBy("Hh", "hh");
+					break;
+				case "xxdz":
+					await this.getInfoBy("Xxdz", "xxdz");
+					break;
+			}
+		},
+		async resetInfo(): Promise<void> {
+			this.searchText = "";
+			this.searchBy = "mc";
+			this.currentPage = 1;
 			await this.getInfo();
-			return;
-		}
-
-		await this.getInfoBySearchBy();
-	}
-
-	public async getInfoBySearchBy(): Promise<void> {
-		switch (this.searchBy) {
-			case "mc":
-				await this.getInfoBy("Name", "mc");
-				break;
-			case "jfh":
-				await this.getInfoBy("Jfh", "jfh");
-				break;
-			case "hh":
-				await this.getInfoBy("Hh", "hh");
-				break;
-			case "xxdz":
-				await this.getInfoBy("Xxdz", "xxdz");
-				break;
-		}
-	}
-
-	public async resetInfo(): Promise<void> {
-		this.searchText = "";
-		this.searchBy = "mc";
-		this.currentPage = 1;
+		},
+	},
+	async mounted(): Promise<void> {
 		await this.getInfo();
-	}
-
-	public async mounted(): Promise<void> {
-		await this.getInfo();
-	}
-}
+	},
+});
 </script>
 
 <style lang="scss" scoped>

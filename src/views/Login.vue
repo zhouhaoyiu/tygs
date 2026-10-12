@@ -18,35 +18,43 @@
 	</main>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { defineComponent } from "vue";
+
 import { SET_ADMIN_INFO } from "@/store/type/mutation-type";
-@Component
-export default class Login extends Vue {
-	public username = "";
-	public password = "";
-	public busy = false;
-	public async login(): Promise<void> {
-		if (this.busy || !this.username || !this.password) return;
-		this.busy = true;
-		try {
-			const response = await this.axios.post("/admin/adminLogin", {
-				userName: this.username,
-				passWord: this.password,
-			});
-			if (!response.data.token) throw new Error("登录未返回会话");
-			sessionStorage.setItem("facilityToken", response.data.token);
-			sessionStorage.setItem("facilityName", response.data.data.userName);
-			sessionStorage.setItem("facilityRole", String(response.data.data.adminRole));
-			localStorage.removeItem("userName");
-			localStorage.removeItem("UUid");
-			localStorage.removeItem("publicKey");
-			this.$store.commit(SET_ADMIN_INFO, response.data.data);
-			await this.$router.replace("/home/index");
-		} catch {
-			this.$message.error("登录失败，请核对账号和密码");
-		} finally {
-			this.busy = false;
-		}
-	}
-}
+export default defineComponent({
+	name: "Login",
+	data() {
+		return {
+			username: "",
+			password: "",
+			busy: false,
+		};
+	},
+	computed: {},
+	methods: {
+		async login(): Promise<void> {
+			if (this.busy || !this.username || !this.password) return;
+			this.busy = true;
+			try {
+				const response = await this.axios.post("/admin/adminLogin", {
+					userName: this.username,
+					passWord: this.password,
+				});
+				if (!response.data.token) throw new Error("登录未返回会话");
+				sessionStorage.setItem("facilityToken", response.data.token);
+				sessionStorage.setItem("facilityName", response.data.data.userName);
+				sessionStorage.setItem("facilityRole", String(response.data.data.adminRole));
+				localStorage.removeItem("userName");
+				localStorage.removeItem("UUid");
+				localStorage.removeItem("publicKey");
+				this.$store.commit(SET_ADMIN_INFO, response.data.data);
+				await this.$router.replace("/home/index");
+			} catch {
+				this.$message.error("登录失败，请核对账号和密码");
+			} finally {
+				this.busy = false;
+			}
+		},
+	},
+});
 </script>

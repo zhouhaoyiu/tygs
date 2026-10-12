@@ -2,12 +2,7 @@
 	<div class="page">
 		<!-- 123 -->
 		<div>
-			<img
-				class="logo"
-				@click="$router.replace('/')"
-				:src="require('../assets/tygs.png')"
-				alt="logo"
-			/>
+			<img class="logo" @click="$router.replace('/')" src="../assets/tygs.png" alt="logo" />
 		</div>
 		<div class="name">太原供水集团</div>
 		<div class="eName" @click="infoMessageBox()">TAIYUAN WATER SUPPLY GROUP CO,.LTD</div>
@@ -15,20 +10,25 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
+import { defineComponent } from "vue";
 
-@Component({})
-export default class ScreenSaver extends Vue {
-	public async mounted(): Promise<void> {}
-	public infoMessageBox(): void {
-		this.$alert(
-			"太原供水集团有限公司成立于1998年03月28日,注册地位于太原市杏花岭区北大街109号,法定代表人为杨怀军。经营范围包括城市自来水产、供、销；机械设备租赁；供水设施建、修、造等综合经营；水源开发工程；供水工程施工；机械加工修理；水表产销；房屋租赁；污水处理及其再生利用；水环境污染防治服务。（依法须经批准的项目，经相关部门批准后方可开展经营活动）",
-			"太原供水",
-			{ center: true },
-		);
-	}
-}
+export default defineComponent({
+	name: "ScreenSaver",
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {
+		infoMessageBox(): void {
+			this.$alert(
+				"太原供水集团有限公司成立于1998年03月28日,注册地位于太原市杏花岭区北大街109号,法定代表人为杨怀军。经营范围包括城市自来水产、供、销；机械设备租赁；供水设施建、修、造等综合经营；水源开发工程；供水工程施工；机械加工修理；水表产销；房屋租赁；污水处理及其再生利用；水环境污染防治服务。（依法须经批准的项目，经相关部门批准后方可开展经营活动）",
+				"太原供水",
+				{ center: true },
+			);
+		},
+	},
+	async mounted(): Promise<void> {},
+});
 </script>
 
 <style lang="scss" scoped>

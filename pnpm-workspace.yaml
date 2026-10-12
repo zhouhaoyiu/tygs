@@ -1,8 +1,5 @@
-patchedDependencies:
-  vue-loader@15.11.1: patches/vue-loader@15.11.1.patch
+overrides:
+  'minimatch@9': 9.0.9
 
-# Production builds do not need funding notices, a browser download or Git hooks.
 allowBuilds:
-  core-js: false
-  cypress: false
-  yorkie: false
+  '@parcel/watcher': true

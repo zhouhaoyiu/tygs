@@ -6,18 +6,23 @@
 </template>
 
 <script lang="ts">
-import Building from "@/components/Building.vue";
-import Vue from "vue";
-import Component from "vue-class-component";
-import Title from "../../components/title.vue";
+import { defineComponent } from "vue";
 
-@Component({
+import Building from "@/components/Building.vue";
+
+import Title from "../../components/title.vue";
+export default defineComponent({
+	name: "ThreeSupply",
 	components: {
 		Title,
 		Building,
 	},
-})
-export default class ThreeSupply extends Vue {}
+	data() {
+		return {};
+	},
+	computed: {},
+	methods: {},
+});
 </script>
 
 <style lang="scss" scoped></style>

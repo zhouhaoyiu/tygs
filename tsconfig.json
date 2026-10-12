@@ -1,35 +1,20 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"strict": true,
 		"jsx": "preserve",
-		"importHelpers": true,
-		"moduleResolution": "node",
-		"experimentalDecorators": true,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
-		"sourceMap": true,
-		"baseUrl": ".",
-		"types": ["webpack-env", "element-ui", "node"],
+		"noEmit": true,
+		"types": ["vite/client", "node"],
 		"paths": {
-			"@/*": ["src/*"]
+			"vuex": ["./node_modules/vuex/types/index.d.ts"],
+			"@/*": ["./src/*"]
 		},
-		"lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+		"lib": ["ES2022", "DOM", "DOM.Iterable"]
 	},
-	"include": [
-		"utils/*.ts",
-		"src/**/*.ts",
-		"src/**/*.tsx",
-		"src/**/*.vue",
-		"tests/**/*.ts",
-		"tests/**/*.tsx",
-		"src/utils/excel.js"
-	],
-	"exclude": ["node_modules"],
-	"vueCompilerOptions": {
-		"preserveWhitespace": false, // 保留空格
-		"target": 2.7
-	}
+	"include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts", "vite.config.ts"]
 }
