@@ -29,7 +29,7 @@
     "nanoid": "6.0.2",
     "pinyin": "4.0.0",
     "vue": "3.5.43",
-    "vue-router": "4.6.4",
+    "vue-router": "5.4.0",
     "vuex": "4.1.0",
     "vuex-along": "1.2.13",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
