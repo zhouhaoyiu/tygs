@@ -85,6 +85,8 @@ node scripts/local-tygs.mjs start
 
 ## 开发与生产配置
 
+工具链采用 [Vue 上游的双版本配置](https://github.com/vuejs/language-tools/pull/6123)：`@typescript/native` 提供 TypeScript 7 的 `tsc` 命令，`typescript` 别名指向 `@typescript/typescript6`，为 `vue-tsc` 提供兼容的 JavaScript API。`pnpm type-check` 继续检查 TypeScript 和 Vue 单文件组件，不跳过模板类型检查。
+
 `pnpm type-check`、`pnpm test`、`pnpm lint`、`pnpm build` 用于验证。本地启动脚本设置 `VITE_API_BASE=/api`、`VITE_API_PROXY=http://127.0.0.1:8097` 和 `VITE_LOCAL_LEDGER=1`。未启用最后一个开关时不提供本地专用采集台账入口；原生产部署仍需真实 MySQL 配置和独立验证。
 
 启动脚本支持 `LOCAL_RUN_DATA_DIR`、`LOCAL_BACKEND_PORT`、`LOCAL_FRONTEND_PORT`，可用不同目录和端口建立隔离测试实例，启动、停止、状态和备份时需使用同一组配置。跨域白名单只包含该实例的回环前端地址，不开放任意来源。本次页面测试实例使用 `local-tygs-qa-20261012` 和 8098/5198，模拟记录与正式本地库完全分离。
