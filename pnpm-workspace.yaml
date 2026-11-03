@@ -1,5 +1,10 @@
 overrides:
-  'minimatch@9': 9.0.9
+  glob@>=9.0.0 <=14.0.1: ^14.0.2
+  minimatch@<11.0.1: ^11.0.1
 
 allowBuilds:
   '@parcel/watcher': true
+
+minimumReleaseAgeExclude:
+  - minimatch@11.0.1
+  - glob@14.0.2
